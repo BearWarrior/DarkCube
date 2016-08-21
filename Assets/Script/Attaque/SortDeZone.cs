@@ -70,7 +70,6 @@ public class SortDeZone : Attaque
 
     public override void Attaquer()
     {
-        Debug.Log("lol");
         if (canShoot)
         {
             if (gabarit == EnumScript.GabaritSortDeZone.Cercle)
