@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-
-
 public class WorldBehaviour : MonoBehaviour
 {
     struct Coord
@@ -12,34 +10,74 @@ public class WorldBehaviour : MonoBehaviour
         public int x;
         public int y;
     }
+
     public GameObject player;
     public GameObject cam;
     public GameObject projector;
 
-    List<List<int>> room = new List<List<int>>();
-    Coord posDepart;
-    Vector3 begining;
+    public Vector3 scaleRoom = new Vector3(.75f, 1, .75f); //Facteur de multiplication de l'échelle de la salle
 
+    private int nbRoom = 0;
+    private int widthRooms = 0;
+    private int lengthRooms = 0;
+    private int nbSolRooms = 0;
+
+    private List<List<List<int>>> allRooms = new List<List<List<int>>>();
+    private List<List<List<int>>> allRoomDetails = new List<List<List<int>>>();
+    private List<List<List<GameObject>>> allRoomsTilesGameObjects = new List<List<List<GameObject>>>();
+    private List<GameObject> allRoomsGameObject = new List<GameObject>();
+    private List<List<Coord>> coordPortalsBeginEnd = new List<List<Coord>>();
+    private List<List<GameObject>> portalBeginEndGameObject = new List<List<GameObject>>();
+
+    private Coord posDepart; //position dans le tableau de l'emplacement de départ
+    private GameObject spawnPoint; //GameObject où le joueur doit spawn
+
+    private int playerRoom = 0;
 
     // Use this for initialization
     void Start()
     {
-        GenerateRoom(10, 15, 11);
+        nbRoom = (nbRoom == 0) ? 5 : nbRoom;
+        widthRooms = (widthRooms == 0) ? 10 : widthRooms;
+        lengthRooms = (lengthRooms == 0) ? 15 : lengthRooms;
+        nbSolRooms = (nbSolRooms == 0) ? 11 : nbSolRooms;
 
-        Instantiate(player, begining, new Quaternion(0, 0, 0, 0));
+        //Génération de la premeire salle + instantiation du joueur et de la caméra
+        GenerateRoom(widthRooms, lengthRooms, nbSolRooms, new Vector3(0, 0, 0), true);
+        Instantiate(player, spawnPoint.transform.position + new Vector3(0, 6, 0), new Quaternion(0, 0, 0, 0));
         Instantiate(cam);
 
-        GenerateRoom(10, 15, 11);
+        Vector3 offset = new Vector3(0, 50, 0);
+        for(int i = 0; i < nbRoom-1; i++)
+        {
+            GenerateRoom(widthRooms, lengthRooms, nbSolRooms, (i + 1) * offset, false);
+        }
+
+
+        //Optimisation : on affiche que la salle dans laquelle le player se trouve
+        for (int i = 1; i < nbRoom; i++)
+        {
+            allRoomsGameObject[i].SetActive(false);
+        }
     }
 
-    public void GenerateRoom(int width, int length, int nbSol)
+
+    public void GenerateRoom(int width, int length, int nbSol, Vector3 posRoom, bool firstRoom)
     {
-        CreateRoom(width, length, nbSol);
-        InstantiateRoom(width + 1, length + 2);
+        List<List<int>> room = CreateRoom(width, length, nbSol);
+        GameObject gameObjectRoom = InstantiateRoom(room, width + 1, length + 2, firstRoom);
+        decorateRoom(allRoomDetails[allRoomDetails.Count - 1], new Vector3(0, 0, 0), gameObjectRoom);
+        allRooms.Add(room);
+        allRoomsGameObject.Add(gameObjectRoom);
+
+        gameObjectRoom.transform.position = posRoom;
+        gameObjectRoom.transform.localScale = scaleRoom;
     }
 
-    void CreateRoom(int width, int length, int nbSolWanted)
+    List<List<int>> CreateRoom(int width, int length, int nbSolWanted)
     {
+        List<List<int>> room = new List<List<int>>();
+
         int nbSol = 0;
         room.Clear();
         for (int wid = 0; wid < width; wid++)
@@ -56,12 +94,10 @@ public class WorldBehaviour : MonoBehaviour
         int rand = Random.Range(2, length - 3);
 
         room[width - 1][rand] = 1; room[width - 1][rand - 1] = 1; room[width - 1][rand + 1] = 1;
-        room[width - 2][rand] = 3; room[width - 2][rand - 1] = 1; room[width - 2][rand + 1] = 1;
+        room[width - 2][rand] = 4; room[width - 2][rand - 1] = 1; room[width - 2][rand + 1] = 1;
         room[width - 3][rand] = 4; //sol
 
         nbSol = 2;
-
-        begining = new Vector3(rand * 36 + 36, 5, -(width - 1) * 36 + 36 / 2);
 
         posDepart.x = rand;
         posDepart.y = width - 2;
@@ -199,7 +235,7 @@ public class WorldBehaviour : MonoBehaviour
             room[i].Insert(room[i].Count, 0);
         }
         room.Insert(room.Count, new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
-
+        posDepart.x++; //le départ est donc décalé à droite
 
         //Circle with walls
         for (int wid = 0; wid < width; wid++)
@@ -220,28 +256,38 @@ public class WorldBehaviour : MonoBehaviour
                 }
             }
         }
+
+        return room;
     }
 
 
-    // Update is called once per frame
-    void Update()
+    /* 0 Void
+     * 1 WallStraight
+     * 2 Corridor
+     * 3 WallAngleExt
+     * 4 WallAngleInt
+     * 5 CorridorCorner
+     * 6 TWall
+     * 7 Ground */
+    GameObject InstantiateRoom(List<List<int>> room, int width, int length, bool firstRoom)
     {
+        GameObject roomGO = new GameObject("room");
+        roomGO.transform.position = new Vector3(0, 0, 0);
+        GameObject tuile = null;
 
-    }
+        Coord posFin;
+        posFin.x = 0;
+        posFin.y = 0;
 
-    void InstantiateRoom(int width, int length)
-    {
-        GameObject roomGO = new GameObject("salle");
-        GameObject tuile = new GameObject();
-
-        //Placer la tuile de début
-
-        //Puis la noter comme sol
-        room[posDepart.y][posDepart.x+1] = 4; //x+1 car on a rajouté une colonne
+        List<List<GameObject>> roomGameObject = new List<List<GameObject>>();
+        List<List<int>> roomDetail = new List<List<int>>();
+        List<Coord> portalBeginEnd = new List<Coord>();
 
         //On place les tuiles correctement (Straight, Corner ...) : 
         for (int wid = 0; wid < width; wid++)
         {
+            List<int> line = new List<int>();
+            List<GameObject> roomGameObjectLine = new List<GameObject>();
             for (int leng = 0; leng < length; leng++)
             {
                 if (room[wid][leng] == 1) //Mur
@@ -251,100 +297,389 @@ public class WorldBehaviour : MonoBehaviour
                     {
                         if ((leng + 1 <= length - 1 && room[wid][leng + 1] == 4)) // Si le sol est  à droite
                             if ((leng - 1 >= 0 && room[wid][leng - 1] == 4)) //Et a droite
+                            {
                                 tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/Corridor"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, 90, 0));
+                                line.Add(2);
+                            }
                             else
+                            {
                                 tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/WallStraight"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, 90, 0));
+                                line.Add(1);
+                            }
                         else //SI le sol est à gauche
+                        {
                             tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/WallStraight"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, -90, 0));
+                            line.Add(1);
+                        }
                     }
                     if ((leng + 1 <= length - 1 && room[wid][leng + 1] == 1) && (leng - 1 >= 0 && room[wid][leng - 1] == 1)  &&  (wid + 1 <= width - 1 && room[wid + 1][leng] != 1) && (wid - 1 >= 0 && room[wid - 1][leng] != 1)) //droite gauche ET pas haut pas bas
                     {
                         if ((wid + 1 <= width - 1 && room[wid + 1][leng] == 4)) // Si le sol est  en bas
                             if ((wid - 1>= 0 && room[wid - 1][leng] == 4))
+                            {
                                 tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/Corridor"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, 180, 0));
+                                line.Add(2);
+                            }
                             else
+                            {
                                 tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/WallStraight"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, 180, 0));
+                                line.Add(1);
+                            }
                         else // SI le sol est en haut
+                        {
                             tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/WallStraight"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, 0, 0));
+                            line.Add(1);
+                        }
                     }
 
                     //CORNER
                     if (((leng + 1 <= length - 1 && room[wid][leng + 1] == 1) && (wid + 1 <= width - 1 && room[wid + 1][leng] == 1)  &&  (leng - 1 >= 0 && room[wid][leng - 1] != 1) && (wid - 1 >= 0 && room[wid - 1][leng] != 1))) //droite et bas ET pas haut pas gauche
                     {
                         if (((leng - 1 >= 0) && room[wid][leng - 1] == 4)) //Si le sol est à gauche -> coin ext
+                        {
                             tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/WallAngleExt"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, 0, 0));
+                            line.Add(3);
+                        }
                         else //le sol est en haut a gauche
+                        {
                             tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/WallAngleInt"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, 180, 0));
+                            line.Add(4);
+                        }
                     }
                     if (((leng - 1 >= 0 && room[wid][leng - 1] == 1) && (wid - 1 >= 0 && room[wid - 1][leng] == 1)  &&  (leng + 1 <= length - 1 && room[wid][leng + 1] != 1) && (wid + 1 <= width - 1 && room[wid + 1][leng] != 1))) //gauche et haut ET pas droite et pas bas
                     {
                         if (((leng + 1 <= length - 1) && room[wid][leng + 1] == 4)) //Si le sol est a droite -> coin ext
+                        {
                             tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/WallAngleExt"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, 180, 0));
+                            line.Add(3);
+                        }
                         else //le sol est en haut a gauche
+                        {
                             tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/WallAngleInt"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, 0, 0));
+                            line.Add(4);
+                        }
                     }
                     if (((leng + 1 <= length - 1 && room[wid][leng + 1] == 1) && (wid - 1 >= 0 && room[wid - 1][leng] == 1)  &&  (leng - 1 >= 0 && room[wid][leng - 1] != 1) && (wid + 1 <= width - 1 && room[wid + 1][leng] != 1))) //droite et haut ET pas auche et pas bas
                     {
                         if (((leng - 1 >= 0) && room[wid][leng - 1] == 4)) //Si le sol est da gauche -> coin ext
+                        {
                             tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/WallAngleExt"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, 270, 0));
+                            line.Add(3);
+                        }
                         else //le sol est en haut a droite
+                        {
                             tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/WallAngleInt"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, 90, 0));
+                            line.Add(4);
+                        }
                     }
                     if (((leng - 1 >= 0 && room[wid][leng - 1] == 1) && (wid + 1 <= width - 1 && room[wid + 1][leng] == 1)  &&  (leng + 1 <= length - 1 && room[wid][leng + 1] != 1) && (wid - 1 >= 0 && room[wid - 1][leng] != 1))) //gauhe et bas ET pas haut et pas droite
                     {
                         if (((leng + 1 <= length - 1) && room[wid][leng + 1] == 4)) //Si le sol est da droite -> coin ext
+                        {
                             tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/WallAngleExt"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, 90, 0));
+                            line.Add(3);
+                        }
                         else //le sol est en haut a droite
+                        {
                             tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/WallAngleInt"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, 270, 0));
+                            line.Add(4);
+                        }
                     }
 
                     //Corridor
                     if ((leng + 1 <= length - 1 && room[wid][leng + 1] == 1) && (leng - 1 >= 0 && room[wid][leng - 1] != 1) && (wid + 1 <= width - 1 && room[wid + 1][leng] != 1) && (wid - 1 >= 0 && room[wid - 1][leng] != 1))
                     {
                         tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/CorridorCorner"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, 0, 0));
+                        line.Add(5);
                     }
                     if ((leng + 1 <= length - 1 && room[wid][leng + 1] != 1) && (leng - 1 >= 0 && room[wid][leng - 1] == 1) && (wid + 1 <= width - 1 && room[wid + 1][leng] != 1) && (wid - 1 >= 0 && room[wid - 1][leng] != 1)) 
                     {
                         tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/CorridorCorner"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, 180, 0));
+                        line.Add(5);
                     }
                     if ((leng + 1 <= length - 1 && room[wid][leng + 1] != 1) && (leng - 1 >= 0 && room[wid][leng - 1] != 1) && (wid + 1 <= width - 1 && room[wid + 1][leng] == 1) && (wid - 1 >= 0 && room[wid - 1][leng] != 1)) 
                     {
                         /*ok*/tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/CorridorCorner"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, 90, 0));
+                        line.Add(5);
                     }
                     if ((leng + 1 <= length - 1 && room[wid][leng + 1] != 1) && (leng - 1 >= 0 && room[wid][leng - 1] != 1) && (wid + 1 <= width - 1 && room[wid + 1][leng] != 1) && (wid - 1 >= 0 && room[wid - 1][leng] == 1))
                     {
                         tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/CorridorCorner"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, 270, 0));
+                        line.Add(5);
                     }
 
                     //TWall
                     if ((wid + 1 <= width - 1 && room[wid + 1][leng] == 1) && (wid - 1 >= 0 && room[wid - 1][leng] == 1) && (leng + 1 <= length - 1 && room[wid][leng + 1] == 1) && (leng - 1 >= 0 && room[wid][leng - 1] != 1)) //haut bas droite pas gauche
                     {
                         tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/TWall"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, 90, 0));
+                        line.Add(6);
                     }
                     if ((wid + 1 <= width - 1 && room[wid + 1][leng] == 1) && (wid - 1 >= 0 && room[wid - 1][leng] == 1) && (leng + 1 <= length - 1 && room[wid][leng + 1] != 1) && (leng - 1 >= 0 && room[wid][leng - 1] == 1)) //haut bas pas droite gauche
                     {
                         tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/TWall"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, 270, 0));
+                        line.Add(6);
                     }
                     if ((leng + 1 <= length - 1 && room[wid][leng + 1] == 1) && (leng - 1 >= 0 && room[wid][leng - 1] == 1) && (wid + 1 <= width - 1 && room[wid + 1][leng] == 1) && (wid - 1 >= 0 && room[wid - 1][leng] != 1)) //droite gauche pas haut bas
                     {
                         tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/TWall"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, 180, 0));
+                        line.Add(6);
                     }
                     if ((leng + 1 <= length - 1 && room[wid][leng + 1] == 1) && (leng - 1 >= 0 && room[wid][leng - 1] == 1) && (wid + 1 <= width - 1 && room[wid + 1][leng] != 1) && (wid - 1 >= 0 && room[wid - 1][leng] == 1)) //droite gauche haut pas bas
                     {
                         tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/TWall"), new Vector3(36 * leng, 0, -36 * wid), Quaternion.Euler(0, 0, 0));
+                        line.Add(6);
                     }
                 }
                 else if (room[wid][leng] == 4) //Ground
                 {
                     tuile = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/Ground"), new Vector3(36 * leng, 0, -36 * wid), new Quaternion(0, 0, 0, 0));
+                    line.Add(7);
+                }
+                else
+                {
+                    line.Add(0);
+                    tuile = null;
                 }
 
-                tuile.transform.SetParent(roomGO.transform);
+                roomGameObjectLine.Add(tuile);
+                
+                if(tuile != null)
+                    tuile.transform.SetParent(roomGO.transform);
+            }
+            roomGameObject.Add(roomGameObjectLine);
+            roomDetail.Add(line);
+        }
+
+        allRoomsTilesGameObjects.Add(roomGameObject);
+
+        portalBeginEnd.Add(posDepart); //On ajoute la position de départ (peu importe si spawnPoint ou départ)
+        List<GameObject> portalsOfheRoom = new List<GameObject>();
+        //Placer l'élément de début sur la tuile de début (Spawn Point ou Portal)
+        if (firstRoom)
+        {
+            GameObject go = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/SpawnPoint"), new Vector3(36 * (posDepart.x), 0, -36 * posDepart.y - 18), Quaternion.Euler(0, 135, 0));
+            go.transform.SetParent(roomGO.transform);
+            spawnPoint = go;
+        }
+        else
+        {
+            GameObject go = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/Portal"), new Vector3(36 * (posDepart.x), 0, -36 * posDepart.y - 18), Quaternion.Euler(0, 0, 0));
+            go.transform.SetParent(roomGO.transform);
+            go.GetComponentInChildren<PortalBehaviour>().direction = -1;
+            go.GetComponentInChildren<PortalBehaviour>().wolrdBehaviour = this.GetComponent<WorldBehaviour>();
+            go.GetComponentInChildren<PortalBehaviour>().usable = false;
+            portalsOfheRoom.Add(go);
+        }
+
+        //Placer l'élément de fin
+        //Recherche de la case la plus éloignée
+        float distance = 0;
+        for (int wid = 0; wid < width; wid++)
+        {
+            for (int leng = 0; leng < length; leng++)
+            {
+                if (room[wid][leng] == 1 || room[wid][leng] == 4) //Mur ou sol
+                {
+                    float temp = Mathf.Sqrt((wid - posDepart.y) * (wid - posDepart.y) + (leng - posDepart.x)*(leng - posDepart.x));
+                    if (temp > distance)
+                    {
+                        distance = temp;
+                        posFin.y = wid;
+                        posFin.x = leng;
+                    }
+                }
+            }
+        }
+
+        portalBeginEnd.Add(posFin); //On ajoute la position de fin
+
+        //On place le point de fin en fct de la tuile et de son orientation (sachant que l'objet de fin ne peut pas être sur tous les types de tuiles)
+        int OFFSET = 18;
+        Vector3 offset = new Vector3(0, 0, 0); ;
+        //Clip l'angle sur une valeur exact
+        float previousAngle = roomGameObject[posFin.y][posFin.x].transform.eulerAngles.y;
+        int angle = (previousAngle > 80 && previousAngle < 100) ? 90 : (previousAngle > 170 && previousAngle < 190) ? 180 : (previousAngle > 260 && previousAngle < 280) ? 270 : 0;
+
+        switch (roomDetail[posFin.y][posFin.x])
+        {
+            case 1: //wall straight
+                if (angle == 0)
+                    offset = new Vector3(0, 0, OFFSET);
+                else if (angle == 90)
+                    offset = new Vector3(OFFSET, 0, 0);
+                else if (angle == 180)
+                    offset = new Vector3(0, 0, -OFFSET);
+                else if (angle == 270)
+                    offset = new Vector3(-OFFSET, 0, 0);
+                break;
+            case 2://corridor
+                break;
+            case 3://wallAngleExt
+                if (angle == 0)
+                    offset = new Vector3(-OFFSET, 0, OFFSET);
+                else if (angle == 90)
+                    offset = new Vector3(OFFSET, 0, OFFSET);
+                else if (angle == 180)
+                    offset = new Vector3(OFFSET, 0, -OFFSET);
+                else if (angle == 270)
+                    offset = new Vector3(-OFFSET, 0, -OFFSET);
+                break;
+            case 4://wallAngleInt
+                if (angle == 0)
+                    offset = new Vector3(-OFFSET, 0, OFFSET);
+                else if (angle == 90)
+                    offset = new Vector3(OFFSET, 0, OFFSET);
+                else if (angle == 180)
+                    offset = new Vector3(OFFSET, 0, -OFFSET);
+                else if (angle == 270)
+                    offset = new Vector3(-OFFSET, 0, -OFFSET);
+                break;
+            case 5://CorridorCorner
+                break;
+            case 6://TWall
+                break;
+            case 7://Ground
+                break;
+        }
+
+        GameObject go2 = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/Portal"), new Vector3(36 * posFin.x, 0, -36 * posFin.y) + offset, Quaternion.Euler(0, 0, 0));
+        go2.transform.SetParent(roomGO.transform);
+        go2.GetComponentInChildren<PortalBehaviour>().direction = 1;
+        go2.GetComponentInChildren<PortalBehaviour>().wolrdBehaviour = this.GetComponent<WorldBehaviour>();
+        go2.GetComponentInChildren<PortalBehaviour>().usable = true;
+        portalsOfheRoom.Add(go2);
+
+        portalBeginEndGameObject.Add(portalsOfheRoom);
+        allRoomDetails.Add(roomDetail);
+        coordPortalsBeginEnd.Add(portalBeginEnd);
+
+        return roomGO;
+    }
+
+
+
+    /* room -> roomDetail (un numéro par type de tuile)
+     */ 
+    void decorateRoom(List<List<int>> room, Vector3 offsetRoom, GameObject gameObjectRoom)
+    {
+        //Recehrche de patterns :
+
+        // sol sol -> chance de mettre un pillier au centre
+        // sol sol
+        int width = room.Count;
+        int length = room[0].Count;
+
+        //liste de déors pour vérifier qu'il n'y en ai pas autour (0 -> pas de pillier   1 -> pillier)
+        List<List<int>> decors = new List<List<int>>();
+        for (int wid = 0; wid < width; wid++)
+        {
+            List<int> decorsLine = new List<int>();
+            for (int leng = 0; leng < length; leng++)
+                decorsLine.Add(0);
+            decors.Add(decorsLine);
+        }
+        //decors[posDepart.y][posDepart.x] = 1; // pas de décors sur la case de départ
+        decors[coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][0].y][coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][0].x] = 1; //posDebut
+        decors[coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][1].y][coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][1].x] = 1; //posFin
+
+        for (int wid = 0; wid < width; wid++)
+        {
+            for (int leng = 0; leng < length; leng++)
+            {
+
+                //4 Sols en carré -> pillar
+                if (room[wid][leng] == 7) //case actuel = sol
+                {
+                    if (wid - 1 >= 0 && room[wid - 1][leng] == 7) // haut = sol
+                    {
+                        if (leng + 1 <= length - 1 && room[wid][leng + 1] == 7) // droite  = sol
+                        {
+                            if (room[wid - 1][leng + 1] == 7) // haut droite  = sol
+                            {
+                                //y a t'il des pilliers autour ?
+                                if (wid + 1 <= width - 1 && decors[wid - 1][leng] != 1 && decors[wid + 1][leng] != 1 && decors[wid][leng - 1] != 1 && decors[wid][leng + 1] != 1)
+                                {
+                                    GameObject pillar = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/Pillar"), new Vector3(36 * leng + 18, 0, -36 * wid + 18) + offsetRoom, Quaternion.Euler(0, 0, 0));
+                                    pillar.transform.SetParent(gameObjectRoom.transform);
+                                    //print("wid : " + wid + "   leng : " + leng);
+                                    decors[wid][leng] = 1;
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                // coin straight coin (vertical ou horizontal) -> DoubleCorner
+                bool doubleCornerOK = false;
+                if (room[wid][leng] == 1) //case actuel = straight 
+                {
+                    if (wid - 1 >= 0 && room[wid - 1][leng] == 4 && decors[wid - 1][leng] != 1) // haut = angleInt  et ni début ni fin
+                    {
+                        if (wid + 1 <= width - 1 && room[wid + 1][leng] == 4 && decors[wid + 1][leng] != 1)  // bas  = angleInt  et ni début ni fin
+                        {
+                            doubleCornerOK = true;
+                        }
+                    }
+                    else if (leng - 1 >= 0 && room[wid][leng - 1] == 4 && decors[wid][leng - 1] != 1) // droite = angleInt  et ni début ni fin
+                    {
+                        if (leng + 1 <= length - 1 && room[wid][leng + 1] == 4 && decors[wid][leng + 1] != 1)  // gauche  = angleInt  et ni début ni fin
+                        {
+                            doubleCornerOK = true;
+                        }
+                    }
+                }
+                if (doubleCornerOK)
+                {
+                    float tuileGOeulerY = allRoomsTilesGameObjects[allRoomsTilesGameObjects.Count - 1][wid][leng].transform.eulerAngles.y;
+                    decors[wid][leng] = 1;
+
+                    GameObject doubleCorner = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/DoubleCorner"), new Vector3(36 * leng, 0, -36 * wid) + offsetRoom , allRoomsTilesGameObjects[allRoomsTilesGameObjects.Count - 1][wid][leng].transform.rotation);
+                    doubleCorner.transform.SetParent(gameObjectRoom.transform);
+                }
             }
         }
     }
 
+    public void setRoomSize(int p_nbRoom, int w, int l, int nbSol)
+    {
+        nbRoom = p_nbRoom;
+        widthRooms = w;
+        lengthRooms = l;
+        nbSolRooms = nbSol;
+    }
 
+    /* direction = 1 -> salle suivante
+     * direction = -1 -> salle précédente
+     */ 
+    public void changeRoom(int direction)
+    {
+        print("direction: " + direction);
+        int temp = playerRoom + direction;
+
+        /* activer le gameobject de la salle souhaitée
+         * placer le joueur sur le portal
+         * désactiver la salle ou il était
+         */
+        if (temp != playerRoom)
+        {
+            playerRoom = temp;
+            allRoomsGameObject[playerRoom].SetActive(true);
+            //GameObject.FindWithTag("Player").transform.position = new Vector3(coordPortalsBeginEnd[playerRoom][0].x * 36, 50 * (playerRoom + 1), coordPortalsBeginEnd[playerRoom][0].y * -36);
+
+            GameObject.FindWithTag("Player").transform.position = portalBeginEndGameObject[playerRoom][0].transform.position + new Vector3(0, 4, 0);
+
+            allRoomsGameObject[playerRoom - direction].SetActive(false);
+        }
+
+
+        
+    }
+
+
+    /* Fonction d'afficahge d'un tableau a deux dimension sous forme de 
+     * List<List<int>>
+     */ 
     void printTable(List<List<int>> table)
     {
         string affichage = "";
