@@ -17,17 +17,18 @@ public class WorldBehaviour : MonoBehaviour
 
     public Vector3 scaleRoom = new Vector3(.75f, 1, .75f); //Facteur de multiplication de l'échelle de la salle
 
+    //parametres des salles
     private int nbRoom = 0;
     private int widthRooms = 0;
     private int lengthRooms = 0;
     private int nbSolRooms = 0;
 
-    private List<List<List<int>>> allRooms = new List<List<List<int>>>();
-    private List<List<List<int>>> allRoomDetails = new List<List<List<int>>>();
-    private List<List<List<GameObject>>> allRoomsTilesGameObjects = new List<List<List<GameObject>>>();
-    private List<GameObject> allRoomsGameObject = new List<GameObject>();
-    private List<List<Coord>> coordPortalsBeginEnd = new List<List<Coord>>();
-    private List<List<GameObject>> portalBeginEndGameObject = new List<List<GameObject>>();
+    private List<List<List<int>>> allRooms = new List<List<List<int>>>(); // Stock toutes les salles sous forme d'un tableau à deux dimensions ou les 1 sont des murs et les 4 des sols
+    private List<List<List<int>>> allRoomDetails = new List<List<List<int>>>(); // Stock le détail de chacune des salles en fonction des tuiles placées (1-straight 2-Corridor ...)
+    private List<List<List<GameObject>>> allRoomsTilesGameObjects = new List<List<List<GameObject>>>(); //Stock toutes les tuiles de toutes les salles (GameObject)
+    private List<GameObject> allRoomsGameObject = new List<GameObject>(); // Stockes toutes les salle (pour les désactiver par la suite)
+    private List<List<Coord>> coordPortalsBeginEnd = new List<List<Coord>>(); // Stocke les coordonnée x y de tous les portals de toutes les salles (util pour la décoration)
+    private List<List<GameObject>> portalBeginEndGameObject = new List<List<GameObject>>(); // stocke les position global de tous les portals afin de TP le joueur dessus (offset 0 4 0)
 
     private Coord posDepart; //position dans le tableau de l'emplacement de départ
     private GameObject spawnPoint; //GameObject où le joueur doit spawn
@@ -37,39 +38,37 @@ public class WorldBehaviour : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        nbRoom = (nbRoom == 0) ? 5 : nbRoom;
+        nbRoom = (nbRoom == 0) ? 3 : nbRoom;
         widthRooms = (widthRooms == 0) ? 10 : widthRooms;
         lengthRooms = (lengthRooms == 0) ? 15 : lengthRooms;
         nbSolRooms = (nbSolRooms == 0) ? 11 : nbSolRooms;
 
         //Génération de la premeire salle + instantiation du joueur et de la caméra
-        GenerateRoom(widthRooms, lengthRooms, nbSolRooms, new Vector3(0, 0, 0), true);
+        GenerateRoom(widthRooms, lengthRooms, nbSolRooms, new Vector3(0, 0, 0), true, false);
         Instantiate(player, spawnPoint.transform.position + new Vector3(0, 6, 0), new Quaternion(0, 0, 0, 0));
         Instantiate(cam);
 
-        Vector3 offset = new Vector3(0, 50, 0);
+        Vector3 offset = new Vector3(0, 50, 0); //les salles sont les une au dessus des autres
         for(int i = 0; i < nbRoom-1; i++)
-        {
-            GenerateRoom(widthRooms, lengthRooms, nbSolRooms, (i + 1) * offset, false);
-        }
+            GenerateRoom(widthRooms, lengthRooms, nbSolRooms, (i + 1) * offset, false, ((nbRoom - 2) == i)); //((nbRoom-2)==i) -> false sauf pour la derniere salle
 
 
         //Optimisation : on affiche que la salle dans laquelle le player se trouve
         for (int i = 1; i < nbRoom; i++)
-        {
             allRoomsGameObject[i].SetActive(false);
-        }
     }
 
 
-    public void GenerateRoom(int width, int length, int nbSol, Vector3 posRoom, bool firstRoom)
+    public void GenerateRoom(int width, int length, int nbSol, Vector3 posRoom, bool firstRoom, bool lastRoom)
     {
-        List<List<int>> room = CreateRoom(width, length, nbSol);
-        GameObject gameObjectRoom = InstantiateRoom(room, width + 1, length + 2, firstRoom);
+        List<List<int>> room = CreateRoom(width, length, nbSol); 
+        GameObject gameObjectRoom = InstantiateRoom(room, width + 1, length + 2, firstRoom, lastRoom);
         decorateRoom(allRoomDetails[allRoomDetails.Count - 1], new Vector3(0, 0, 0), gameObjectRoom);
+
         allRooms.Add(room);
         allRoomsGameObject.Add(gameObjectRoom);
 
+        //Placement et redimensionnement
         gameObjectRoom.transform.position = posRoom;
         gameObjectRoom.transform.localScale = scaleRoom;
     }
@@ -95,9 +94,9 @@ public class WorldBehaviour : MonoBehaviour
 
         room[width - 1][rand] = 1; room[width - 1][rand - 1] = 1; room[width - 1][rand + 1] = 1;
         room[width - 2][rand] = 4; room[width - 2][rand - 1] = 1; room[width - 2][rand + 1] = 1;
-        room[width - 3][rand] = 4; //sol
+        room[width - 3][rand] = 4; //sol au dessus pour débuter l'algorithme
 
-        nbSol = 2;
+        nbSol = 2; //début + au dessus
 
         posDepart.x = rand;
         posDepart.y = width - 2;
@@ -174,7 +173,6 @@ public class WorldBehaviour : MonoBehaviour
         }
 
 
-   
         //Fill the blanks
         for (int wid = 0; wid < width; wid++)
         {
@@ -237,6 +235,7 @@ public class WorldBehaviour : MonoBehaviour
         room.Insert(room.Count, new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
         posDepart.x++; //le départ est donc décalé à droite
 
+
         //Circle with walls
         for (int wid = 0; wid < width; wid++)
         {
@@ -256,7 +255,6 @@ public class WorldBehaviour : MonoBehaviour
                 }
             }
         }
-
         return room;
     }
 
@@ -269,7 +267,7 @@ public class WorldBehaviour : MonoBehaviour
      * 5 CorridorCorner
      * 6 TWall
      * 7 Ground */
-    GameObject InstantiateRoom(List<List<int>> room, int width, int length, bool firstRoom)
+    GameObject InstantiateRoom(List<List<int>> room, int width, int length, bool firstRoom, bool lastRoom)
     {
         GameObject roomGO = new GameObject("room");
         roomGO.transform.position = new Vector3(0, 0, 0);
@@ -457,18 +455,18 @@ public class WorldBehaviour : MonoBehaviour
         //Placer l'élément de début sur la tuile de début (Spawn Point ou Portal)
         if (firstRoom)
         {
-            GameObject go = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/SpawnPoint"), new Vector3(36 * (posDepart.x), 0, -36 * posDepart.y - 18), Quaternion.Euler(0, 135, 0));
-            go.transform.SetParent(roomGO.transform);
-            spawnPoint = go;
+            GameObject spawnPointGO = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/SpawnPoint"), new Vector3(36 * (posDepart.x), 0, -36 * posDepart.y - 18), Quaternion.Euler(0, 135, 0));
+            spawnPointGO.transform.SetParent(roomGO.transform);
+            spawnPoint = spawnPointGO;
         }
         else
         {
-            GameObject go = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/Portal"), new Vector3(36 * (posDepart.x), 0, -36 * posDepart.y - 18), Quaternion.Euler(0, 0, 0));
-            go.transform.SetParent(roomGO.transform);
-            go.GetComponentInChildren<PortalBehaviour>().direction = -1;
-            go.GetComponentInChildren<PortalBehaviour>().wolrdBehaviour = this.GetComponent<WorldBehaviour>();
-            go.GetComponentInChildren<PortalBehaviour>().usable = false;
-            portalsOfheRoom.Add(go);
+            GameObject portalBeginning = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/Portal"), new Vector3(36 * (posDepart.x), 0, -36 * posDepart.y - 18), Quaternion.Euler(0, 0, 0));
+            portalBeginning.transform.SetParent(roomGO.transform);
+            portalBeginning.GetComponentInChildren<PortalBehaviour>().direction = -1;
+            portalBeginning.GetComponentInChildren<PortalBehaviour>().wolrdBehaviour = this.GetComponent<WorldBehaviour>();
+            portalBeginning.GetComponentInChildren<PortalBehaviour>().usable = false;
+            portalsOfheRoom.Add(portalBeginning);
         }
 
         //Placer l'élément de fin
@@ -542,12 +540,13 @@ public class WorldBehaviour : MonoBehaviour
                 break;
         }
 
-        GameObject go2 = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/Portal"), new Vector3(36 * posFin.x, 0, -36 * posFin.y) + offset, Quaternion.Euler(0, 0, 0));
-        go2.transform.SetParent(roomGO.transform);
-        go2.GetComponentInChildren<PortalBehaviour>().direction = 1;
-        go2.GetComponentInChildren<PortalBehaviour>().wolrdBehaviour = this.GetComponent<WorldBehaviour>();
-        go2.GetComponentInChildren<PortalBehaviour>().usable = true;
-        portalsOfheRoom.Add(go2);
+        GameObject portalEnd = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/Portal"), new Vector3(36 * posFin.x, 0, -36 * posFin.y) + offset, Quaternion.Euler(0, 0, 0));
+        portalEnd.transform.SetParent(roomGO.transform);
+        portalEnd.GetComponentInChildren<PortalBehaviour>().direction = 1;
+        portalEnd.GetComponentInChildren<PortalBehaviour>().wolrdBehaviour = this.GetComponent<WorldBehaviour>();
+        portalEnd.GetComponentInChildren<PortalBehaviour>().usable = true;
+        portalEnd.GetComponentInChildren<PortalBehaviour>().lastPortal = lastRoom;
+        portalsOfheRoom.Add(portalEnd);
 
         portalBeginEndGameObject.Add(portalsOfheRoom);
         allRoomDetails.Add(roomDetail);
@@ -555,7 +554,6 @@ public class WorldBehaviour : MonoBehaviour
 
         return roomGO;
     }
-
 
 
     /* room -> roomDetail (un numéro par type de tuile)
@@ -569,7 +567,7 @@ public class WorldBehaviour : MonoBehaviour
         int width = room.Count;
         int length = room[0].Count;
 
-        //liste de déors pour vérifier qu'il n'y en ai pas autour (0 -> pas de pillier   1 -> pillier)
+        //liste de déors pour vérifier qu'il n'y en ai pas autour (0 -> libre   1 -> occupé)
         List<List<int>> decors = new List<List<int>>();
         for (int wid = 0; wid < width; wid++)
         {
@@ -578,7 +576,6 @@ public class WorldBehaviour : MonoBehaviour
                 decorsLine.Add(0);
             decors.Add(decorsLine);
         }
-        //decors[posDepart.y][posDepart.x] = 1; // pas de décors sur la case de départ
         decors[coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][0].y][coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][0].x] = 1; //posDebut
         decors[coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][1].y][coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][1].x] = 1; //posFin
 
@@ -586,7 +583,6 @@ public class WorldBehaviour : MonoBehaviour
         {
             for (int leng = 0; leng < length; leng++)
             {
-
                 //4 Sols en carré -> pillar
                 if (room[wid][leng] == 7) //case actuel = sol
                 {
@@ -608,7 +604,6 @@ public class WorldBehaviour : MonoBehaviour
                         }
                     }
                 }
-
 
                 // coin straight coin (vertical ou horizontal) -> DoubleCorner
                 bool doubleCornerOK = false;
@@ -641,6 +636,8 @@ public class WorldBehaviour : MonoBehaviour
         }
     }
 
+    /*Initialise les paramètre de la salle
+     */
     public void setRoomSize(int p_nbRoom, int w, int l, int nbSol)
     {
         nbRoom = p_nbRoom;
@@ -657,28 +654,18 @@ public class WorldBehaviour : MonoBehaviour
         print("direction: " + direction);
         int temp = playerRoom + direction;
 
-        /* activer le gameobject de la salle souhaitée
-         * placer le joueur sur le portal
-         * désactiver la salle ou il était
-         */
         if (temp != playerRoom)
         {
             playerRoom = temp;
             allRoomsGameObject[playerRoom].SetActive(true);
-            //GameObject.FindWithTag("Player").transform.position = new Vector3(coordPortalsBeginEnd[playerRoom][0].x * 36, 50 * (playerRoom + 1), coordPortalsBeginEnd[playerRoom][0].y * -36);
-
             GameObject.FindWithTag("Player").transform.position = portalBeginEndGameObject[playerRoom][0].transform.position + new Vector3(0, 4, 0);
-
             allRoomsGameObject[playerRoom - direction].SetActive(false);
         }
-
-
-        
     }
 
 
-    /* Fonction d'afficahge d'un tableau a deux dimension sous forme de 
-     * List<List<int>>
+    /* Fonction d'afficahge d'un tableau a deux dimension 
+     * sous forme de List<List<int>>
      */ 
     void printTable(List<List<int>> table)
     {
@@ -692,20 +679,3 @@ public class WorldBehaviour : MonoBehaviour
         print(affichage);
     }
 }
-
-
-
-
-//room = new List<List<int>> {
-//    new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-//    new List<int> { 0, 1, 1, 1, 1, 1, 1, 1, 0 },
-//    new List<int> { 0, 1, 0, 0, 0, 0, 0, 1, 0 },
-//    new List<int> { 0, 1, 0, 1, 1, 1, 0, 1, 0 },
-//    new List<int> { 0, 1, 0, 1, 0, 1, 0, 1, 0 },
-//    new List<int> { 0, 1, 1, 1, 0, 1, 0, 1, 0 },
-//    new List<int> { 0, 0, 0, 0, 0, 1, 0, 1, 0 },
-//    new List<int> { 0, 1, 1, 1, 1, 1, 0, 1, 0 },
-//    new List<int> { 0, 1, 0, 0, 0, 0, 0, 1, 0 },
-//    new List<int> { 0, 1, 1, 1, 1, 4, 1, 1, 0 },
-//    new List<int> { 0, 0, 0, 0, 1, 1, 1, 0, 0 }
-//};

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class PortalBehaviour : MonoBehaviour 
 {
-    public bool lastPortal;
+    public bool lastPortal = false; //Si c'est le dernier portal, on ne TP pas
     public int direction;
     public WorldBehaviour wolrdBehaviour;
     public bool usable; //Seul les portals de début sont à false, il faut sortir du portail pour l'activer
