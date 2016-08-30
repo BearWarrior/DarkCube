@@ -5,6 +5,7 @@ public class SimpleAgent : MonoBehaviour
 {
     public GameObject target;
     NavMeshAgent agent;
+    public float dist = 1;
 
 	// Use this for initialization
 	void Start ()
@@ -21,15 +22,17 @@ public class SimpleAgent : MonoBehaviour
 
         //destination
 
-        if (Vector3.Distance(agentPos, playerPos) > 20)
+        if (Vector3.Distance(agentPos, playerPos) > dist)
         {
             agent.Resume();
             agent.SetDestination(target.transform.position);
+            agent.enabled = true;
         }
         else
         {
             agent.Stop();
-            this.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+            agent.enabled = false;
+            agent.transform.LookAt(target.transform);
         }
 
         Debug.Log(Vector3.Distance(agentPos, playerPos));

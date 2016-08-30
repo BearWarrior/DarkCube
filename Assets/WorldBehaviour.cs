@@ -607,7 +607,7 @@ public class WorldBehaviour : MonoBehaviour
 
                 // coin straight coin (vertical ou horizontal) -> DoubleCorner
                 bool doubleCornerOK = false;
-                if (room[wid][leng] == 1) //case actuel = straight 
+                if (room[wid][leng] == 1 && decors[wid][leng] != 1) //case actuel = straight 
                 {
                     if (wid - 1 >= 0 && room[wid - 1][leng] == 4 && decors[wid - 1][leng] != 1) // haut = angleInt  et ni début ni fin
                     {
