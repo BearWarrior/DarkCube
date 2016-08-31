@@ -79,13 +79,13 @@ public class SortDeZone : Attaque
                 switch(taille)
                 {
                     case EnumScript.TailleSortDeZone.Petit:
-                        goZone.GetComponent<CapsuleCollider>().radius = 10;
+                        goZone.GetComponent<CapsuleCollider>().radius = 2;
                         break;
                     case EnumScript.TailleSortDeZone.Moyen:
-                        goZone.GetComponent<CapsuleCollider>().radius = 15;
+                        goZone.GetComponent<CapsuleCollider>().radius = 3;
                         break;
                     case EnumScript.TailleSortDeZone.Grand:
-                        goZone.GetComponent<CapsuleCollider>().radius = 20;
+                        goZone.GetComponent<CapsuleCollider>().radius = 4;
                         break;
                 }
                 goZone.GetComponent<CapsuleCollider>().height = 25;
@@ -114,13 +114,13 @@ public class SortDeZone : Attaque
                 switch (taille)
                 {
                     case EnumScript.TailleSortDeZone.Petit:
-                        goZone.GetComponent<BoxCollider>().size = new Vector3(30, 10, 8);
+                        goZone.GetComponent<BoxCollider>().size = new Vector3(30 / 5, 10 / 5, 8 / 5);
                         break;
                     case EnumScript.TailleSortDeZone.Moyen:
-                        goZone.GetComponent<BoxCollider>().size = new Vector3(46, 10, 8);
+                        goZone.GetComponent<BoxCollider>().size = new Vector3(46 / 5, 10 / 5, 8 / 5);
                         break;
                     case EnumScript.TailleSortDeZone.Grand:
-                        goZone.GetComponent<BoxCollider>().size = new Vector3(62, 10, 8);
+                        goZone.GetComponent<BoxCollider>().size = new Vector3(62 / 5, 10 / 5, 8 / 5);
                         break;
                 }
                 goZone.GetComponent<BoxCollider>().isTrigger = true;

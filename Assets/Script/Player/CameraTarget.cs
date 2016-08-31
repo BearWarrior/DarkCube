@@ -7,6 +7,9 @@ public class CameraTarget : MonoBehaviour
     private GameObject origine;
     public GameObject cameraLookAt;
 
+    public float zoomMax;
+    public float zoomMin;
+
     public bool inMenu;
 
     public float vitesseZoom;
@@ -35,15 +38,15 @@ public class CameraTarget : MonoBehaviour
     public void Zoom(float sens)
     {
         //Zoom arriere
-        if (Vector3.Distance(this.transform.position, player.transform.position) < 25 && sens < 0)
+        if (Vector3.Distance(this.transform.position, player.transform.position) < zoomMin && sens < 0)
             transform.position = Vector3.LerpUnclamped(this.transform.position, player.transform.position, Time.deltaTime * vitesseZoom * sens);
         //Zoom avant
-        if (Vector3.Distance(this.transform.position, player.transform.position) > 7.5 && sens > 0)
+        if (Vector3.Distance(this.transform.position, player.transform.position) > zoomMax && sens > 0)
             transform.position = Vector3.LerpUnclamped(this.transform.position, player.transform.position, Time.deltaTime * vitesseZoom * sens);
 
-        if (Vector3.Distance(origine.transform.position, player.transform.position) < 25 && sens < 0)
+        if (Vector3.Distance(origine.transform.position, player.transform.position) < zoomMin && sens < 0)
             origine.transform.position = Vector3.LerpUnclamped(origine.transform.position, player.transform.position, Time.deltaTime * vitesseZoom * sens);
-        if (Vector3.Distance(origine.transform.position, player.transform.position) > 7.5 && sens > 0)
+        if (Vector3.Distance(origine.transform.position, player.transform.position) > zoomMax && sens > 0)
             origine.transform.position = Vector3.LerpUnclamped(origine.transform.position, player.transform.position, Time.deltaTime * vitesseZoom * sens);
     }
 

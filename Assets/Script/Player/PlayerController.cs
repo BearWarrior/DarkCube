@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
     public float vitesseMarche;
     public float vitesseSprint;
     public float vitesseRotation;
+    public float impulsionSaut;
 
     private float gravtity;
     private float actualGravity;
@@ -315,7 +316,7 @@ public class PlayerController : MonoBehaviour
 
                 //Gestion du saut
                 if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
-                    GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity + new Vector3(0, 12, 0);
+                    GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity + new Vector3(0, impulsionSaut, 0);
             //}
         }
     }

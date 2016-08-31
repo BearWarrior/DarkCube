@@ -103,9 +103,9 @@ public class Player : Character
                     listAttaque[cubeFace - 1].Attaquer();
                 
         //Transparency
-        if (Vector3.Distance(transform.position, Camera.main.transform.position) < 7 && !isTransparent)
+        if (Vector3.Distance(transform.position, Camera.main.transform.position) < 2 && !isTransparent)
             setTransparecy(true);
-        if (Vector3.Distance(transform.position, Camera.main.transform.position) > 7 && isTransparent)
+        if (Vector3.Distance(transform.position, Camera.main.transform.position) > 2 && isTransparent)
             setTransparecy(false);
 
         //cooldowns

@@ -26,8 +26,10 @@ public class PortalBehaviour : MonoBehaviour
         if (other.tag == "Player")
         {
             if(!lastPortal)
-                if(usable)
-                    wolrdBehaviour.changeRoom(direction);
+                if (usable)
+                {
+                    wolrdBehaviour.changeRoom(direction); //changement de salle
+                }
             usable = false;
         }
     }
