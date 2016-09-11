@@ -10,7 +10,6 @@ public struct structSortDeZone
     public float degats;
     public float cooldown;
     public float duree;
-    public EnumScript.TailleSortDeZone taille;
     public string partSysStr;
 }
 
@@ -38,7 +37,6 @@ public class CaracZones : MonoBehaviour
         sort.degats = 10;
         sort.cooldown = 1;
         sort.duree = 10;
-        sort.taille = EnumScript.TailleSortDeZone.Moyen;
         sort.partSysStr = "fire_ground/Brasier";
         BRASIER.Add(sort);
         tabSort.Add(BRASIER);
@@ -50,7 +48,6 @@ public class CaracZones : MonoBehaviour
         sort.degats = 10;
         sort.cooldown = 1;
         sort.duree = 10;
-        sort.taille = EnumScript.TailleSortDeZone.Moyen;
         sort.partSysStr = "none";
         PLUIE_DE_FLECHE.Add(sort);
         tabSort.Add(PLUIE_DE_FLECHE);
@@ -62,7 +59,6 @@ public class CaracZones : MonoBehaviour
         sort.degats = 10;
         sort.cooldown = 1;
         sort.duree = 10;
-        sort.taille = EnumScript.TailleSortDeZone.Moyen;
         sort.partSysStr = "none";
         PLUIE_DE_GLACE.Add(sort);
         tabSort.Add(PLUIE_DE_GLACE);
@@ -74,7 +70,6 @@ public class CaracZones : MonoBehaviour
         sort.degats = 10;
         sort.cooldown = 1;
         sort.duree = 10;
-        sort.taille = EnumScript.TailleSortDeZone.Moyen;
         sort.partSysStr = "fire_ground/Fire";
         PIEGE_DE_PIQUE.Add(sort);
         tabSort.Add(PIEGE_DE_PIQUE);
