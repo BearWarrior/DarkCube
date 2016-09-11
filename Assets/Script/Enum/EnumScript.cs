@@ -11,5 +11,4 @@ public class EnumScript
     public enum PatternSortDeJet { Unique, Rafale, SimultaneLigne, SimultaneTriangle, SimultaneCarre };
 
     public enum GabaritSortDeZone { Cercle, Ligne, Cone};
-    public enum TailleSortDeZone { Petit, Moyen, Grand };
 }

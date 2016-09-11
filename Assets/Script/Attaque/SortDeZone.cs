@@ -5,7 +5,6 @@ using System.Collections.Generic;
 public class SortDeZone : Attaque
 {
     public float portee;
-    public EnumScript.TailleSortDeZone taille;
     public float largeur;
     public float duree;
 
@@ -22,7 +21,6 @@ public class SortDeZone : Attaque
     {
         type = 2;
         portee = 80;
-        taille = EnumScript.TailleSortDeZone.Moyen;
         largeur = 4;
         duree = 2;
         cooldown = 1;
@@ -38,7 +36,6 @@ public class SortDeZone : Attaque
     {
         type = 2;
         portee = copy.portee;
-        taille = copy.taille;
         largeur = copy.largeur;
         duree = copy.duree;
         cooldown = copy.cooldown;
@@ -51,11 +48,10 @@ public class SortDeZone : Attaque
     }
 
     //paramétré
-    public SortDeZone(EnumScript.TailleSortDeZone p_rayon, float p_largeur, float p_portee, float p_duree, float p_cooldown, float p_degats, EnumScript.Element p_element, EnumScript.GabaritSortDeZone p_gabarit, string p_nomSort, string p_nomZone, string p_partSysStr)
+    public SortDeZone(float p_largeur, float p_portee, float p_duree, float p_cooldown, float p_degats, EnumScript.Element p_element, EnumScript.GabaritSortDeZone p_gabarit, string p_nomSort, string p_nomZone, string p_partSysStr)
     {
         type = 2;
         portee = p_portee;
-        taille = p_rayon;
         largeur = p_largeur;
         duree = p_duree;
         cooldown = p_cooldown;
@@ -76,7 +72,8 @@ public class SortDeZone : Attaque
             {
                 GameObject goZone = new GameObject();
                 goZone.AddComponent<CapsuleCollider>();
-                switch(taille)
+                //TODO CHANGER CA
+                /*switch(taille)
                 {
                     case EnumScript.TailleSortDeZone.Petit:
                         goZone.GetComponent<CapsuleCollider>().radius = 2;
@@ -87,7 +84,10 @@ public class SortDeZone : Attaque
                     case EnumScript.TailleSortDeZone.Grand:
                         goZone.GetComponent<CapsuleCollider>().radius = 4;
                         break;
-                }
+                }*/
+                goZone.GetComponent<CapsuleCollider>().radius = 3;
+
+
                 goZone.GetComponent<CapsuleCollider>().height = 25;
                 goZone.GetComponent<CapsuleCollider>().isTrigger = true;
                 goZone.transform.position = GameObject.FindWithTag("Projector").transform.position;
@@ -111,7 +111,8 @@ public class SortDeZone : Attaque
             {
                 GameObject goZone = new GameObject();
                 goZone.AddComponent<BoxCollider>();
-                switch (taille)
+                //TO DO CHANGER CA
+                /*switch (taille)
                 {
                     case EnumScript.TailleSortDeZone.Petit:
                         goZone.GetComponent<BoxCollider>().size = new Vector3(30 / 5, 10 / 5, 8 / 5);
@@ -122,7 +123,10 @@ public class SortDeZone : Attaque
                     case EnumScript.TailleSortDeZone.Grand:
                         goZone.GetComponent<BoxCollider>().size = new Vector3(62 / 5, 10 / 5, 8 / 5);
                         break;
-                }
+                }*/
+                goZone.GetComponent<BoxCollider>().size = new Vector3(46 / 5, 10 / 5, 8 / 5);
+
+
                 goZone.GetComponent<BoxCollider>().isTrigger = true;
                 goZone.transform.position = GameObject.FindWithTag("Projector").transform.position + new Vector3(0, 1, 0);
                 goZone.transform.eulerAngles = GameObject.FindWithTag("Player").transform.eulerAngles;

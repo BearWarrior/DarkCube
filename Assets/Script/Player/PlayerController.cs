@@ -10,9 +10,6 @@ public class PlayerController : MonoBehaviour
     public float vitesseRotation;
     public float impulsionSaut;
 
-    private float gravtity;
-    private float actualGravity;
-
     private float HorizontalAxis;
     private float lastHorizontalAxis;
     private float lastlastHorizontalAxis;
@@ -51,8 +48,6 @@ public class PlayerController : MonoBehaviour
         VerticalAxis = 0;
         lastVerticalAxis = 0;
         lastlastVerticalAxis = 0;
-
-        gravtity = 10;
 
         tilt = Quaternion.Euler(new Vector3(0, 0, -5));
 
@@ -182,24 +177,29 @@ public class PlayerController : MonoBehaviour
                     projectorAtMouse = true;
                     texture = Resources.Load("SortDeZone/Gabarit/LightProjectorCircle") as Material;
                     projector.GetComponent<Projector>().material = texture;
-                    switch (sort.taille)
-                    {
-                        case EnumScript.TailleSortDeZone.Petit:
-                            projector.GetComponent<Projector>().orthographicSize = 10;
-                            break;
-                        case EnumScript.TailleSortDeZone.Moyen:
-                            projector.GetComponent<Projector>().orthographicSize = 15;
-                            break;
-                        case EnumScript.TailleSortDeZone.Grand:
-                            projector.GetComponent<Projector>().orthographicSize = 20;
-                            break;
-                    }
+                    //CHANGER CA
+                    //switch (sort.taille)
+                    //{
+                    //    case EnumScript.TailleSortDeZone.Petit:
+                    //        projector.GetComponent<Projector>().orthographicSize = 10;
+                    //        break;
+                    //    case EnumScript.TailleSortDeZone.Moyen:
+                    //        projector.GetComponent<Projector>().orthographicSize = 15;
+                    //        break;
+                    //    case EnumScript.TailleSortDeZone.Grand:
+                    //        projector.GetComponent<Projector>().orthographicSize = 20;
+                    //        break;
+                    //}
+                    projector.GetComponent<Projector>().orthographicSize = 3;
+
+
                     projector.GetComponent<Projector>().aspectRatio = 1;
                     break;
                 case EnumScript.GabaritSortDeZone.Ligne:
                     texture = Resources.Load("SortDeZone/Gabarit/LightProjectorRectangle") as Material;
                     projector.GetComponent<Projector>().material = texture;
-                    switch (sort.taille)
+                    //CHANGER CA
+                    /*switch (sort.taille)
                     {
                         case EnumScript.TailleSortDeZone.Petit:
                             projector.GetComponent<Projector>().orthographicSize = 4;
@@ -213,14 +213,17 @@ public class PlayerController : MonoBehaviour
                             projector.GetComponent<Projector>().orthographicSize = 4;
                             projector.GetComponent<Projector>().aspectRatio = 8f;
                             break;
-                    }
+                    }*/
+                    projector.GetComponent<Projector>().orthographicSize = 4/2;
+                    projector.GetComponent<Projector>().aspectRatio = 6f/2;
                     
                     projectorAtMouse = true;
                     break;
                 case EnumScript.GabaritSortDeZone.Cone:
                     projector.transform.SetParent(player.transform);
                     float taille = 0;
-                    switch (sort.taille)
+                    //CHANGER CA
+                    /*switch (sort.taille)
                     {
                         case EnumScript.TailleSortDeZone.Petit:
                             taille = 15;
@@ -231,7 +234,8 @@ public class PlayerController : MonoBehaviour
                         case EnumScript.TailleSortDeZone.Grand:
                             taille = 29;
                             break;
-                    }
+                    }*/
+                    taille = 22/5;
                     projector.transform.localPosition = new Vector3(0, 0, .5f + taille);
                     projector.transform.localEulerAngles = new Vector3(90, 0, 0);
 

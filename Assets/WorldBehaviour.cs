@@ -25,6 +25,7 @@ public class WorldBehaviour : MonoBehaviour
 
     private List<List<List<int>>> allRooms = new List<List<List<int>>>(); // Stock toutes les salles sous forme d'un tableau à deux dimensions ou les 1 sont des murs et les 4 des sols
     private List<List<List<int>>> allRoomDetails = new List<List<List<int>>>(); // Stock le détail de chacune des salles en fonction des tuiles placées (1-straight 2-Corridor ...)
+    private List<List<List<int>>> allRoomsDecors = new List<List<List<int>>>(); // Stock le détail des decors chacune des salles  (1-pillier 2-Corner)
     private List<List<List<GameObject>>> allRoomsTilesGameObjects = new List<List<List<GameObject>>>(); //Stock toutes les tuiles de toutes les salles (GameObject)
     private List<GameObject> allRoomsGameObject = new List<GameObject>(); // Stockes toutes les salle (pour les désactiver par la suite)
     private List<List<Coord>> coordPortalsBeginEnd = new List<List<Coord>>(); // Stocke les coordonnée x y de tous les portals de toutes les salles (util pour la décoration)
@@ -79,6 +80,8 @@ public class WorldBehaviour : MonoBehaviour
         //Placement et redimensionnement
         gameObjectRoom.transform.position = posRoom;
         gameObjectRoom.transform.localScale = scaleRoom;
+
+        GetComponent<EnemyBehaviour>().PlaceEnemys(gameObjectRoom, allRoomsTilesGameObjects[allRoomsTilesGameObjects.Count - 1], room, allRoomsDecors[allRoomsDecors.Count - 1]);
     }
 
     List<List<int>> CreateRoom(int width, int length, int nbSolWanted)
@@ -94,8 +97,6 @@ public class WorldBehaviour : MonoBehaviour
                 temp.Add(0);
             room.Add(temp);
         }
-
-        List<Coord> path = new List<Coord>();
 
         //On place le début sur 3 tuiles en bas ainsi qu'un sol en face de la tuile début milieu
         int rand = Random.Range(2, length - 3);
@@ -566,6 +567,8 @@ public class WorldBehaviour : MonoBehaviour
 
 
     /* room -> roomDetail (un numéro par type de tuile)
+     * 1 -> pilliers
+     * 2 - > corner
      */ 
     void decorateRoom(List<List<int>> room, Vector3 offsetRoom, GameObject gameObjectRoom)
     {
@@ -585,8 +588,15 @@ public class WorldBehaviour : MonoBehaviour
                 decorsLine.Add(0);
             decors.Add(decorsLine);
         }
-        decors[coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][0].y][coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][0].x] = 1; //posDebut
-        decors[coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][1].y][coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][1].x] = 1; //posFin
+        decors[coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][0].y][coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][0].x] = 3; //posDebut
+        decors[coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][0].y][coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][0].x + 1] = 3; 
+        decors[coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][0].y][coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][0].x - 1] = 3; 
+        decors[coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][0].y + 1][coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][0].x] = 3; 
+        decors[coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][0].y + 1][coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][0].x - 1] = 3; 
+        decors[coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][0].y + 1][coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][0].x + 1] = 3; 
+        decors[coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][0].y - 1][coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][0].x ] = 3; 
+
+        decors[coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][1].y][coordPortalsBeginEnd[coordPortalsBeginEnd.Count - 1][1].x] = 4; //posFin
 
         for (int wid = 0; wid < width; wid++)
         {
@@ -602,7 +612,7 @@ public class WorldBehaviour : MonoBehaviour
                             if (room[wid - 1][leng + 1] == 7) // haut droite  = sol
                             {
                                 //y a t'il des pilliers autour ?
-                                if (wid + 1 <= width - 1 && decors[wid - 1][leng] != 1 && decors[wid + 1][leng] != 1 && decors[wid][leng - 1] != 1 && decors[wid][leng + 1] != 1)
+                                if (wid + 1 <= width - 1 && decors[wid - 1][leng] == 0 && decors[wid + 1][leng] == 0 && decors[wid][leng - 1] == 0 && decors[wid][leng + 1] == 0)
                                 {
                                     GameObject pillar = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/Pillar"), new Vector3(TAILLE_TUILE * leng + TAILLE_TUILE / 2, 0, -TAILLE_TUILE * wid + TAILLE_TUILE / 2) + offsetRoom, Quaternion.Euler(0, 0, 0));
                                     pillar.transform.SetParent(gameObjectRoom.transform);
@@ -616,33 +626,39 @@ public class WorldBehaviour : MonoBehaviour
 
                 // coin straight coin (vertical ou horizontal) -> DoubleCorner
                 bool doubleCornerOK = false;
-                if (room[wid][leng] == 1 && decors[wid][leng] != 1) //case actuel = straight 
+                if (room[wid][leng] == 1 && decors[wid][leng] == 0) //case actuel = straight 
                 {
-                    if (wid - 1 >= 0 && room[wid - 1][leng] == 4 && decors[wid - 1][leng] != 1) // haut = angleInt  et ni début ni fin
+                    if (wid - 1 >= 0 && room[wid - 1][leng] == 4 && decors[wid - 1][leng] == 0) // haut = angleInt  et ni début ni fin
                     {
-                        if (wid + 1 <= width - 1 && room[wid + 1][leng] == 4 && decors[wid + 1][leng] != 1)  // bas  = angleInt  et ni début ni fin
+                        if (wid + 1 <= width - 1 && room[wid + 1][leng] == 4 && decors[wid + 1][leng] == 0)  // bas  = angleInt  et ni début ni fin
                         {
                             doubleCornerOK = true;
+
+                            decors[wid][leng] = 2;
+                            decors[wid + 1][leng] = 2;
+                            decors[wid - 1][leng] = 2;
                         }
                     }
-                    else if (leng - 1 >= 0 && room[wid][leng - 1] == 4 && decors[wid][leng - 1] != 1) // droite = angleInt  et ni début ni fin
+                    else if (leng - 1 >= 0 && room[wid][leng - 1] == 4 && decors[wid][leng - 1] == 0) // droite = angleInt  et ni début ni fin
                     {
-                        if (leng + 1 <= length - 1 && room[wid][leng + 1] == 4 && decors[wid][leng + 1] != 1)  // gauche  = angleInt  et ni début ni fin
+                        if (leng + 1 <= length - 1 && room[wid][leng + 1] == 4 && decors[wid][leng + 1] == 0)  // gauche  = angleInt  et ni début ni fin
                         {
                             doubleCornerOK = true;
+
+                            decors[wid][leng] = 2;
+                            decors[wid][leng + 1] = 2;
+                            decors[wid][leng - 1] = 2;
                         }
                     }
                 }
                 if (doubleCornerOK)
                 {
-                    float tuileGOeulerY = allRoomsTilesGameObjects[allRoomsTilesGameObjects.Count - 1][wid][leng].transform.eulerAngles.y;
-                    decors[wid][leng] = 1;
-
                     GameObject doubleCorner = (GameObject)Instantiate(Resources.Load("WhiteRoom/Prefab/DoubleCorner"), new Vector3(TAILLE_TUILE * leng, 0, -TAILLE_TUILE * wid) + offsetRoom, allRoomsTilesGameObjects[allRoomsTilesGameObjects.Count - 1][wid][leng].transform.rotation);
                     doubleCorner.transform.SetParent(gameObjectRoom.transform);
                 }
             }
         }
+        allRoomsDecors.Add(decors);
     }
 
     /*Initialise les paramètre de la salle

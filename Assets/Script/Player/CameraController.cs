@@ -51,8 +51,7 @@ public class CameraController : MonoBehaviour
             this.transform.LookAt(cameraLookAtPlayer.transform);
         else
         {
-            if(cameraLookAtMenuTR != null)
-                this.transform.LookAt(cameraLookAtMenuTR);
+            this.transform.LookAt(cameraLookAtMenuTR);
         }
 	}
 }

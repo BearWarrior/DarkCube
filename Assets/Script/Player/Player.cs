@@ -32,22 +32,22 @@ public class Player : Character
 
         //listAttaqueInventaire.Add(new SortDeZone());
 
-        listAttaqueInventaire.Add(new SortDeZone(EnumScript.TailleSortDeZone.Petit, 4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cercle, "ppp", "ppp", "none"));
-        listAttaqueInventaire.Add(new SortDeZone(EnumScript.TailleSortDeZone.Moyen, 4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cercle, "ppp", "ppp", "none"));
-        listAttaqueInventaire.Add(new SortDeZone(EnumScript.TailleSortDeZone.Grand, 4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cercle, "ppp", "ppp", "none"));
-        listAttaqueInventaire.Add(new SortDeZone(EnumScript.TailleSortDeZone.Petit, 4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Ligne, "ppp", "ppp", "fire_ground/BrasierLineS"));
-        listAttaqueInventaire.Add(new SortDeZone(EnumScript.TailleSortDeZone.Moyen, 4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Ligne, "ppp", "ppp", "none"));
-        listAttaqueInventaire.Add(new SortDeZone(EnumScript.TailleSortDeZone.Grand, 4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Ligne, "ppp", "ppp", "none"));
-        listAttaqueInventaire.Add(new SortDeZone(EnumScript.TailleSortDeZone.Petit, 4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cone, "ppp", "ppp", "none"));
-        listAttaqueInventaire.Add(new SortDeZone(EnumScript.TailleSortDeZone.Moyen, 4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cone, "ppp", "ppp", "none"));
-        listAttaqueInventaire.Add(new SortDeZone(EnumScript.TailleSortDeZone.Grand, 4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cone, "ppp", "ppp", "none"));
+        listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cercle, "ppp", "ppp", "none"));
+        listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cercle, "ppp", "ppp", "none"));
+        listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cercle, "ppp", "ppp", "none"));
+        listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Ligne, "ppp", "ppp", "fire_ground/BrasierLineS"));
+        listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Ligne, "ppp", "ppp", "none"));
+        listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Ligne, "ppp", "ppp", "none"));
+        listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cone, "ppp", "ppp", "none"));
+        listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cone, "ppp", "ppp", "none"));
+        listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cone, "ppp", "ppp", "none"));
 
 
-        listAttaqueInventaire.Add(new SortDeJet(1, 45, true, 0.05f, 10, EnumScript.Element.Metal, "Canon", "canon", EnumScript.PatternSortDeJet.Rafale));
-        listAttaqueInventaire.Add(new SortDeJet(1, 60, false, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme", EnumScript.PatternSortDeJet.SimultaneLigne));
-        listAttaqueInventaire.Add(new SortDeJet(3, 70, false, 2, 10, EnumScript.Element.Eau, "Shuriken", "ShuShu", EnumScript.PatternSortDeJet.SimultaneTriangle));
-        listAttaqueInventaire.Add(new SortDeJet(4, 45, false, 2, 10, EnumScript.Element.Metal, "Canon", "4ligne", EnumScript.PatternSortDeJet.SimultaneLigne));
-        listAttaqueInventaire.Add(new SortDeJet(4, 45, false, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme-rafale", EnumScript.PatternSortDeJet.Rafale));
+        listAttaqueInventaire.Add(new SortDeJet(1, 45, 0.05f, 10, EnumScript.Element.Metal, "Canon", "canon", EnumScript.PatternSortDeJet.Rafale));
+        listAttaqueInventaire.Add(new SortDeJet(1, 60, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme", EnumScript.PatternSortDeJet.SimultaneLigne));
+        listAttaqueInventaire.Add(new SortDeJet(3, 70, 2, 10, EnumScript.Element.Eau, "Shuriken", "ShuShu", EnumScript.PatternSortDeJet.SimultaneTriangle));
+        listAttaqueInventaire.Add(new SortDeJet(4, 45, 2, 10, EnumScript.Element.Metal, "Canon", "4ligne", EnumScript.PatternSortDeJet.SimultaneLigne));
+        listAttaqueInventaire.Add(new SortDeJet(4, 45, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme-rafale", EnumScript.PatternSortDeJet.Rafale));
 
         equipeAttaqueAt(1, 0);
         equipeAttaqueAt(2, 1);
@@ -114,8 +114,8 @@ public class Player : Character
                 listAttaque[i].reload();
 
         //Get back to menu
-        if (Input.GetKey(KeyCode.F12))
-            Application.LoadLevel("Menu");
+        //if (Input.GetKey(KeyCode.F12))
+        //    Application.LoadLevel("Menu");
     }
 
     public void cubeFaceChanged(int face)

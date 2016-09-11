@@ -7,7 +7,6 @@ public class SortDeJet : Attaque
     public int nbProjectile;
     public float vitesseProj;
     public float rayonEffet;
-    public bool gravite;
     public string nomProj;
     public bool stuck;
     public EnumScript.PatternSortDeJet patternEnvoi;
@@ -15,17 +14,13 @@ public class SortDeJet : Attaque
     public List<GameObject> listProjCreated;
     public GameObject proj;
 
-    private int nbProjActuel;
-
     public delegate void Del();
     Del fctDelegate;
 
     public SortDeJet()
     {
         type = 1;
-        nbProjActuel = 0;
         nbProjectile = 0;
-        gravite = false;
         vitesseProj = 0;
         cooldown = 1;
         degats = 0;
@@ -38,9 +33,7 @@ public class SortDeJet : Attaque
     public SortDeJet(SortDeJet copy)
     {
         type = 1;
-        nbProjActuel = 0;
         nbProjectile = copy.nbProjectile;
-        gravite = copy.gravite;
         vitesseProj = copy.vitesseProj;
         cooldown = copy.cooldown;
         degats = copy.degats;
@@ -50,12 +43,10 @@ public class SortDeJet : Attaque
         patternEnvoi = copy.patternEnvoi;
     }
 
-    public SortDeJet(int p_nbProj, float p_vitesse, bool p_grav, float p_cd, float p_degats, EnumScript.Element p_element, string p_nomProj, string p_nomSort, EnumScript.PatternSortDeJet p_pat)
+    public SortDeJet(int p_nbProj, float p_vitesse, float p_cd, float p_degats, EnumScript.Element p_element, string p_nomProj, string p_nomSort, EnumScript.PatternSortDeJet p_pat)
     {
         type = 1;
-        nbProjActuel = 0;
         nbProjectile = p_nbProj;
-        gravite = p_grav;
         vitesseProj = p_vitesse;
         cooldown = p_cd;
         degats = p_degats;
@@ -168,34 +159,17 @@ public class SortDeJet : Attaque
 
         whole.transform.eulerAngles = new Vector3(0, GameObject.FindWithTag("Player").transform.eulerAngles.y, 0);
 
-        if (gravite)
+        
+        
+        foreach (GameObject go in listProjCreated)
         {
-            
-            float rot = Camera.main.transform.localEulerAngles.x;
-            if (rot > 270)
-                rot -= 360;
-
-            rot = (rot - 17) * -1;
-
-            foreach (GameObject go in listProjCreated)
-            {
-                go.transform.parent = null;
-                go.GetComponent<Rigidbody>().velocity = GameObject.FindWithTag("Player").transform.TransformDirection(new Vector3(0, rot, vitesseProj * 1.5f));
-                go.GetComponent<Rigidbody>().useGravity = true;
-            }
+            Debug.Log("direction : " + direction);
+            Debug.Log("vitesseProj : " + vitesseProj);
+            go.transform.parent = null;
+            go.GetComponent<Rigidbody>().velocity = 75 * direction * Time.deltaTime * vitesseProj;
+            go.GetComponent<Rigidbody>().useGravity = false;
         }
-        else
-        {
-            foreach (GameObject go in listProjCreated)
-            {
-                Debug.Log("direction : " + direction);
-                Debug.Log("vitesseProj : " + vitesseProj);
-                go.transform.parent = null;
-                go.GetComponent<Rigidbody>().velocity = 75 * direction * Time.deltaTime * vitesseProj;
-                go.GetComponent<Rigidbody>().useGravity = false;
-                
-            }
-        }
+        
 
         if (stuck)
         {

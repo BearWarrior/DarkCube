@@ -13,11 +13,11 @@ public class PlayerCaracteristics : MonoBehaviour
         DontDestroyOnLoad(this);
         listAttaqueEquiped = new Attaque[6];
         listAttaqueInventaire = new List<Attaque>();
-        listAttaqueInventaire.Add(new SortDeJet(1, 45, true, 0.05f, 10, EnumScript.Element.Metal, "Canon", "canon", EnumScript.PatternSortDeJet.Rafale));
-        listAttaqueInventaire.Add(new SortDeJet(1, 60, false, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme", EnumScript.PatternSortDeJet.SimultaneLigne));
-        listAttaqueInventaire.Add(new SortDeJet(3, 70, false, 2, 10, EnumScript.Element.Eau, "Shuriken", "ShuShu", EnumScript.PatternSortDeJet.SimultaneTriangle));
-        listAttaqueInventaire.Add(new SortDeJet(4, 45, false, 2, 10, EnumScript.Element.Metal, "Canon", "4ligne", EnumScript.PatternSortDeJet.SimultaneLigne));
-        listAttaqueInventaire.Add(new SortDeJet(4, 45, false, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme-rafale", EnumScript.PatternSortDeJet.Rafale));
+        listAttaqueInventaire.Add(new SortDeJet(1, 45, 0.05f, 10, EnumScript.Element.Metal, "Canon", "canon", EnumScript.PatternSortDeJet.Rafale));
+        listAttaqueInventaire.Add(new SortDeJet(1, 60, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme", EnumScript.PatternSortDeJet.SimultaneLigne));
+        listAttaqueInventaire.Add(new SortDeJet(3, 70, 2, 10, EnumScript.Element.Eau, "Shuriken", "ShuShu", EnumScript.PatternSortDeJet.SimultaneTriangle));
+        listAttaqueInventaire.Add(new SortDeJet(4, 45, 2, 10, EnumScript.Element.Metal, "Canon", "4ligne", EnumScript.PatternSortDeJet.SimultaneLigne));
+        listAttaqueInventaire.Add(new SortDeJet(4, 45, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme-rafale", EnumScript.PatternSortDeJet.Rafale));
     }
 	
 	// Update is called once per frame
