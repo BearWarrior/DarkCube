@@ -345,7 +345,9 @@ public class PlayerController : MonoBehaviour
 
     public void OnCollisionStay(Collision other)
     {
-        isGrounded = true;
+        float angleWithGround = Vector3.Angle(other.contacts[0].normal, Vector3.up);
+        if(angleWithGround < 75)
+            isGrounded = true;
     }
 
     public void OnCollisionExit(Collision other)
