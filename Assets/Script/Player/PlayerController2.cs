@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController2 : MonoBehaviour
 {
     public float vitesseMarche;
     public float vitesseSprint;
@@ -275,8 +275,8 @@ public class PlayerController : MonoBehaviour
 
                 GetComponent<Rigidbody>().velocity = movement;
 
-                tilt = Quaternion.Euler(new Vector3(Input.GetAxis("Vertical") * (Convert.ToInt32(running) * 5 + 5), 0, Input.GetAxis("Horizontal") * -(Convert.ToInt32(running) * 5 + 5)));
-                GameObject.FindWithTag("Tiltable").transform.localRotation = Quaternion.Slerp(GameObject.FindWithTag("Tiltable").transform.localRotation, tilt, Time.deltaTime * 10);
+                //tilt = Quaternion.Euler(new Vector3(Input.GetAxis("Vertical") * (Convert.ToInt32(running) * 5 + 5), 0, Input.GetAxis("Horizontal") * -(Convert.ToInt32(running) * 5 + 5)));
+                //GameObject.FindWithTag("Tiltable").transform.localRotation = Quaternion.Slerp(GameObject.FindWithTag("Tiltable").transform.localRotation, tilt, Time.deltaTime * 10);
 
                 //Si clic gauche ou clic droit enfoncé -> controle caméra -> souris disparait + la caméra rotate le joueur
                 if (aiming)
