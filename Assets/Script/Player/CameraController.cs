@@ -27,7 +27,7 @@ public class CameraController : MonoBehaviour
 
     }
 
-    void Update()
+    /*void Update()
     {
         RaycastHit hit;
         Ray ray = new Ray(player.transform.position, (target.transform.position - player.transform.position));
@@ -39,15 +39,31 @@ public class CameraController : MonoBehaviour
         //Si il y a un obstable entre la target et le point a regarder, on place la caméra sur le point de contact et on la décale par rapport a sa normale
         if (Physics.Raycast(ray, out hit, Vector3.Distance(player.transform.position, target.transform.position), layerValue))
             this.transform.position = hit.point + new Vector3(0.1f * hit.normal.x, 0.1f * hit.normal.y, 0.1f * hit.normal.z);
-    }
-
+    }*/
+    
 	// Update is called once per frame
 	void FixedUpdate () 
     {
         //Camera sur la cible et regarde le joueur
         transform.position = target.transform.position;
 
-        if(!playerInMenu)
+
+
+        RaycastHit hit;
+        Ray ray = new Ray(player.transform.position, (target.transform.position - player.transform.position));
+        LayerMask layerPlayer = LayerMask.GetMask("Player");
+        LayerMask layerProj = LayerMask.GetMask("Projectile");
+
+        int layerValue = ~(layerPlayer.value | layerProj.value);
+
+        //Si il y a un obstable entre la target et le point a regarder, on place la caméra sur le point de contact et on la décale par rapport a sa normale
+        if (Physics.Raycast(ray, out hit, Vector3.Distance(player.transform.position, target.transform.position), layerValue))
+            this.transform.position = hit.point + new Vector3(0.1f * hit.normal.x, 0.1f * hit.normal.y, 0.1f * hit.normal.z);
+
+
+
+
+        if (!playerInMenu)
             this.transform.LookAt(cameraLookAtPlayer.transform);
         else
         {
