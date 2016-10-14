@@ -34,13 +34,78 @@ public class PlayerController2 : MonoBehaviour
 
     private Quaternion tilt;
 
-   // PhotonView view; //permet de jouer son joueur et pas celui des autres
+    // PhotonView view; //permet de jouer son joueur et pas celui des autres
 
     private SortDeZone sortDeZone;
 
     // Use this for initialization
     void Awake()
     {
+        //Creating the cube full of cubes
+        int nbCubeSide = 6;
+        float sideLength = 0.60000f;
+        float scale = 0.07f;
+        float distPerCube = sideLength / nbCubeSide;
+        GameObject cubes = new GameObject("cubesDuplicates");
+        cubes.transform.SetParent(gameObject.transform.parent);
+        GameObject posCubes = new GameObject("posCubesDuplicates");
+        posCubes.transform.SetParent(gameObject.transform);
+
+        List<List<GameObject>> horizFaces = new List<List<GameObject>>();
+        for (int i = 0; i < 6; i++)
+            horizFaces.Add(new List<GameObject>());
+
+        for (int width = 0; width < nbCubeSide; width++)
+        {
+            for (int length = 0; length < nbCubeSide; length++)
+            {
+                for (int height = 0; height < nbCubeSide; height++)
+                {
+                    if ((width < nbCubeSide / 3 || width >= 2 * nbCubeSide / 3) || (height < nbCubeSide / 3 || height >= 2 * nbCubeSide / 3))
+                    {
+                        if ((width < nbCubeSide / 3 || width >= 2 * nbCubeSide / 3) || (length < nbCubeSide / 3 || length >= 2 * nbCubeSide / 3))
+                        {
+                            if ((height < nbCubeSide / 3 || height >= 2 * nbCubeSide / 3) || (length < nbCubeSide / 3 || length >= 2 * nbCubeSide / 3))
+                            {
+                                GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                                cube.transform.localScale = new Vector3(1, 1, 1) * scale;
+                                cube.transform.position = new Vector3(distPerCube * width - sideLength / 2 + distPerCube/2, distPerCube * length - sideLength / 2 + distPerCube / 2, distPerCube * height - sideLength / 2 + distPerCube / 2);
+                                cube.transform.SetParent(cubes.transform);
+                                Destroy(cube.GetComponent<BoxCollider>());
+                                
+                                GameObject posCube = new GameObject();
+                                posCube.transform.position = new Vector3(distPerCube * width - sideLength/ 2 + distPerCube / 2, distPerCube * length - sideLength / 2 + distPerCube / 2, distPerCube * height - sideLength / 2 + distPerCube / 2);
+                                posCube.transform.SetParent(posCubes.transform);
+
+                                horizFaces[length].Add(posCube); //face pointant en haut
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        cubes.transform.localPosition = new Vector3(0, 0, 0);
+        posCubes.transform.localPosition = new Vector3(0, 0, 0);
+        posCubes.tag = "Armature";
+
+        //Debug par décalage
+        //for (int i = 0; i < sideFaces.Count; i++)d
+        //{
+        //    for (int j = 0; j < sideFaces[i].Count; j++)
+        //    {
+        //        sideFaces[i][j].transform.position += new Vector3(0, i + 1, 0);
+        //    }
+        //}
+
+        SortChooser sortChooser = gameObject.AddComponent<SortChooser>();
+        sortChooser.setListCubes(horizFaces);
+
+        PlayerCubeFlock flock = gameObject.AddComponent<PlayerCubeFlock>();
+        flock.init(cubes, posCubes);
+
+
+
         HorizontalAxis = 0;
         lastHorizontalAxis = 0;
         lastlastHorizontalAxis = 0;
@@ -65,7 +130,7 @@ public class PlayerController2 : MonoBehaviour
 
     void Update()
     {
-        if(gabaritUsed) //Joueur a un sort de zone dans la main -> affichage du gabarit correspondant
+        if (gabaritUsed) //Joueur a un sort de zone dans la main -> affichage du gabarit correspondant
         {
             if (projectorAtMouse) // Gabarit sur la souris
             {
@@ -96,7 +161,7 @@ public class PlayerController2 : MonoBehaviour
                         projector.transform.position = new Vector3(hit.point.x, 20f, hit.point.z);
                         projector.transform.eulerAngles = new Vector3(90, player.transform.eulerAngles.y, 0);
                         projector.SetActive(true);
-                    }                  
+                    }
                 }
             }
             else // Gabarit devant le joueur
@@ -114,26 +179,26 @@ public class PlayerController2 : MonoBehaviour
         {
             //if (view == null || view.isMine) //permet de jouer son joueur et pas celui des autres
             //{
-                //SPRINT
-                if (Input.GetKeyDown(KeyCode.LeftShift))
-                    if (running)
-                        running = false;
-                    else
-                        if (player.GetComponent<Player>().getEndurance() > 0)
-                            running = true;
-
-                if (running && player.GetComponent<Player>().getEndurance() == 0)
-                    running = false;
-
-                if (HorizontalAxis == 0 && VerticalAxis == 0)
-                    running = false;
-
+            //SPRINT
+            if (Input.GetKeyDown(KeyCode.LeftShift))
                 if (running)
-                    player.GetComponent<Player>().downEndurance();
+                    running = false;
+                else
+                    if (player.GetComponent<Player>().getEndurance() > 0)
+                    running = true;
+
+            if (running && player.GetComponent<Player>().getEndurance() == 0)
+                running = false;
+
+            if (HorizontalAxis == 0 && VerticalAxis == 0)
+                running = false;
+
+            if (running)
+                player.GetComponent<Player>().downEndurance();
             //}
         }
 
-        if(usingZoneCone) //Le joueur utilsie un sort de zone qui part de lui.
+        if (usingZoneCone) //Le joueur utilsie un sort de zone qui part de lui.
         {
             /*List<GameObject> listEnemy = GameObject.FindWithTag("World").GetComponent<EnemyBehaviour>().listEnemy;
             foreach(GameObject enemy in listEnemy)
@@ -148,7 +213,7 @@ public class PlayerController2 : MonoBehaviour
                 }
             }*/
 
-            if(timerZoneConeAct > timerZoneConeMax) //fini
+            if (timerZoneConeAct > timerZoneConeMax) //fini
                 usingZoneCone = false;
             else
                 timerZoneConeAct += Time.deltaTime;
@@ -214,9 +279,9 @@ public class PlayerController2 : MonoBehaviour
                             projector.GetComponent<Projector>().aspectRatio = 8f;
                             break;
                     }*/
-                    projector.GetComponent<Projector>().orthographicSize = 4/2;
-                    projector.GetComponent<Projector>().aspectRatio = 6f/2;
-                    
+                    projector.GetComponent<Projector>().orthographicSize = 4 / 2;
+                    projector.GetComponent<Projector>().aspectRatio = 6f / 2;
+
                     projectorAtMouse = true;
                     break;
                 case EnumScript.GabaritSortDeZone.Cone:
@@ -235,7 +300,7 @@ public class PlayerController2 : MonoBehaviour
                             taille = 29;
                             break;
                     }*/
-                    taille = 22/5;
+                    taille = 22 / 5;
                     projector.transform.localPosition = new Vector3(0, 0, .5f + taille);
                     projector.transform.localEulerAngles = new Vector3(90, 0, 0);
 
@@ -259,68 +324,70 @@ public class PlayerController2 : MonoBehaviour
         {
             //if (view == null || view.isMine) //permet de jouer son joueur et pas celui des autres
             //{
-                //Moyenne entre les 3 derniers input pour eviter la saccade lors du chagement direction
-                lastlastHorizontalAxis = lastHorizontalAxis;
-                lastHorizontalAxis = HorizontalAxis;
-                HorizontalAxis = Input.GetAxis("Horizontal");
-                lastlastVerticalAxis = lastVerticalAxis;
-                lastVerticalAxis = VerticalAxis;
-                VerticalAxis = Input.GetAxis("Vertical");
-                float mvtH = (HorizontalAxis + lastHorizontalAxis + lastlastHorizontalAxis) / 3;
-                float mvtV = (VerticalAxis + lastVerticalAxis + lastlastVerticalAxis) / 3;
+            //Moyenne entre les 3 derniers input pour eviter la saccade lors du chagement direction
+            lastlastHorizontalAxis = lastHorizontalAxis;
+            lastHorizontalAxis = HorizontalAxis;
+            HorizontalAxis = Input.GetAxis("Horizontal");
+            lastlastVerticalAxis = lastVerticalAxis;
+            lastVerticalAxis = VerticalAxis;
+            VerticalAxis = Input.GetAxis("Vertical");
+            float mvtH = (HorizontalAxis + lastHorizontalAxis + lastlastHorizontalAxis) / 3;
+            float mvtV = (VerticalAxis + lastVerticalAxis + lastlastVerticalAxis) / 3;
 
-                //Deplacement droite gauche avant arriere
-                Vector3 movement = new Vector3((Convert.ToInt32(running) * vitesseSprint + vitesseMarche) * Time.deltaTime * mvtH, GetComponent<Rigidbody>().velocity.y, (Convert.ToInt32(running) * vitesseSprint + vitesseMarche) * Time.deltaTime * mvtV);
-                movement = transform.TransformDirection(movement);
+            //Deplacement droite gauche avant arriere
+            Vector3 movement = new Vector3((Convert.ToInt32(running) * vitesseSprint + vitesseMarche) * Time.deltaTime * mvtH, GetComponent<Rigidbody>().velocity.y, (Convert.ToInt32(running) * vitesseSprint + vitesseMarche) * Time.deltaTime * mvtV);
+            movement = transform.TransformDirection(movement);
 
-                GetComponent<Rigidbody>().velocity = movement;
+            GetComponent<Rigidbody>().velocity = movement;
 
-                //tilt = Quaternion.Euler(new Vector3(Input.GetAxis("Vertical") * (Convert.ToInt32(running) * 5 + 5), 0, Input.GetAxis("Horizontal") * -(Convert.ToInt32(running) * 5 + 5)));
-                //GameObject.FindWithTag("Tiltable").transform.localRotation = Quaternion.Slerp(GameObject.FindWithTag("Tiltable").transform.localRotation, tilt, Time.deltaTime * 10);
+            //tilt = Quaternion.Euler(new Vector3(Input.GetAxis("Vertical") * (Convert.ToInt32(running) * 5 + 5), 0, Input.GetAxis("Horizontal") * -(Convert.ToInt32(running) * 5 + 5)));
+            //GameObject.FindWithTag("Tiltable").transform.localRotation = Quaternion.Slerp(GameObject.FindWithTag("Tiltable").transform.localRotation, tilt, Time.deltaTime * 10);
 
-                //Si clic gauche ou clic droit enfoncé -> controle caméra -> souris disparait + la caméra rotate le joueur
-                if (aiming)
-                {
-                    Cursor.lockState = CursorLockMode.Locked;
-                    Cursor.visible = false;
-                    transform.Rotate(0, vitesseRotation * Time.deltaTime * Input.GetAxis("Mouse X"), 0);
-                    GameObject.FindWithTag("CameraTarget").GetComponent<CameraTarget>().moveTarget();
-                }
-                else
-                {
-                    Cursor.visible = true;
-                    Cursor.lockState = CursorLockMode.None;
-                }
+            GetComponent<PlayerCubeFlock>().direction = new Vector3(mvtH, 0, mvtV);
 
-                //Si clic droit down on passe en mode visée et si on l'était pas, on rejoint l'origine avec la caméra
-                if (Input.GetMouseButtonDown(1) && !aiming)
-                {
-                    aiming = true;
-                    GameObject.FindWithTag("CameraTarget").GetComponent<CameraTarget>().joinOrigine(true);
-                }
+            //Si clic gauche ou clic droit enfoncé -> controle caméra -> souris disparait + la caméra rotate le joueur
+            if (aiming)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+                transform.Rotate(0, vitesseRotation * Time.deltaTime * Input.GetAxis("Mouse X"), 0);
+                GameObject.FindWithTag("CameraTarget").GetComponent<CameraTarget>().moveTarget();
+            }
+            else
+            {
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+            }
 
-                //On quitte le mode visée
-                if (Input.GetKey(KeyCode.Escape))
-                    aiming = false;
+            //Si clic droit down on passe en mode visée et si on l'était pas, on rejoint l'origine avec la caméra
+            if (Input.GetMouseButtonDown(1) && !aiming)
+            {
+                aiming = true;
+                GameObject.FindWithTag("CameraTarget").GetComponent<CameraTarget>().joinOrigine(true);
+            }
 
-                //Si clic gauche enfoncé et pas en mode visée -> Caméra rotation autour jouuer
-                if (Input.GetMouseButton(0) && !isAiming())
-                {
-                    GameObject.FindWithTag("CameraTarget").GetComponent<CameraTarget>().freeCameraMove();
-                    GameObject.FindWithTag("CameraTarget").GetComponent<CameraTarget>().joinOrigine(false);
-                }
+            //On quitte le mode visée
+            if (Input.GetKey(KeyCode.Escape))
+                aiming = false;
 
-                //Si clic molette -> camera revient smoothly derriere le joueur
-                if (Input.GetMouseButtonDown(2))
-                    GameObject.FindWithTag("CameraTarget").GetComponent<CameraTarget>().joinOrigine(true);
+            //Si clic gauche enfoncé et pas en mode visée -> Caméra rotation autour jouuer
+            if (Input.GetMouseButton(0) && !isAiming())
+            {
+                GameObject.FindWithTag("CameraTarget").GetComponent<CameraTarget>().freeCameraMove();
+                GameObject.FindWithTag("CameraTarget").GetComponent<CameraTarget>().joinOrigine(false);
+            }
 
-                //Zoom mouse ScrollWheel
-                if (Input.GetAxis("Mouse ScrollWheel") != 0)
-                    GameObject.FindWithTag("CameraTarget").GetComponent<CameraTarget>().Zoom(Input.GetAxis("Mouse ScrollWheel"));
+            //Si clic molette -> camera revient smoothly derriere le joueur
+            if (Input.GetMouseButtonDown(2))
+                GameObject.FindWithTag("CameraTarget").GetComponent<CameraTarget>().joinOrigine(true);
 
-                //Gestion du saut
-                if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
-                    GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity + new Vector3(0, impulsionSaut, 0);
+            //Zoom mouse ScrollWheel
+            if (Input.GetAxis("Mouse ScrollWheel") != 0)
+                GameObject.FindWithTag("CameraTarget").GetComponent<CameraTarget>().Zoom(Input.GetAxis("Mouse ScrollWheel"));
+
+            //Gestion du saut
+            if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
+                GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity + new Vector3(0, impulsionSaut, 0);
             //}
         }
     }
@@ -346,7 +413,7 @@ public class PlayerController2 : MonoBehaviour
     public void OnCollisionStay(Collision other)
     {
         float angleWithGround = Vector3.Angle(other.contacts[0].normal, Vector3.up);
-        if(angleWithGround < 75)
+        if (angleWithGround < 75)
             isGrounded = true;
     }
 
