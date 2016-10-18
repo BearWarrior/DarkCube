@@ -101,11 +101,11 @@ public class Player : Character
             if (Input.GetMouseButtonDown(0) && GetComponent<PlayerController>().isAiming())
                 if (listAttaque[cubeFace - 1] != null)
                     listAttaque[cubeFace - 1].Attaquer();
-                
+
         //Transparency
-        if (Vector3.Distance(transform.position, Camera.main.transform.position) < 2 && !isTransparent)
+        if (Vector3.Distance(transform.position, Camera.main.transform.position) < 1.5f && !isTransparent)
             setTransparecy(true);
-        if (Vector3.Distance(transform.position, Camera.main.transform.position) > 2 && isTransparent)
+        else if (Vector3.Distance(transform.position, Camera.main.transform.position) > 1.5f && isTransparent)
             setTransparecy(false);
 
         //cooldowns
@@ -141,28 +141,25 @@ public class Player : Character
     {
         if (set)
         {
-            if (!isTransparent)
+            oldShaderFoot.Clear();
+            foreach (GameObject foot in feet)
+            oldShaderFoot.Add(foot.GetComponent<Renderer>().material.shader);
+            oldShaderSphere = armature.GetComponent<Renderer>().material.shader;
+            oldShaderArmature = armature.GetComponent<Renderer>().material.shader;
+
+            foreach(GameObject foot in feet)
             {
-                oldShaderFoot.Clear();
-                foreach (GameObject foot in feet)
-                oldShaderFoot.Add(foot.GetComponent<Renderer>().material.shader);
-                oldShaderSphere = armature.GetComponent<Renderer>().material.shader;
-                oldShaderArmature = armature.GetComponent<Renderer>().material.shader;
-
-                foreach(GameObject foot in feet)
-                {
-                    foot.GetComponent<Renderer>().material.shader = Shader.Find("Transparent/Diffuse");
-                    foot.GetComponent<Renderer>().material.color = new Color(foot.GetComponent<Renderer>().material.color.r, foot.GetComponent<Renderer>().material.color.g, foot.GetComponent<Renderer>().material.color.b, alpha);
-                }
-                armature.GetComponent<Renderer>().material.shader = Shader.Find("Transparent/Diffuse");
-                armature.GetComponent<Renderer>().material.color = new Color(armature.GetComponent<Renderer>().material.color.r, armature.GetComponent<Renderer>().material.color.g, armature.GetComponent<Renderer>().material.color.b, alpha);
-                sphere.GetComponent<Renderer>().material.shader = Shader.Find("Transparent/Diffuse");
-                sphere.GetComponent<Renderer>().material.color = new Color(sphere.GetComponent<Renderer>().material.color.r, sphere.GetComponent<Renderer>().material.color.g, sphere.GetComponent<Renderer>().material.color.b, alpha);
-
-                masque.GetComponent<Renderer>().material.color = new Color(masque.GetComponent<Renderer>().material.color.r, masque.GetComponent<Renderer>().material.color.g, masque.GetComponent<Renderer>().material.color.b, 0.1f);
-
-                isTransparent = true;
+                foot.GetComponent<Renderer>().material.shader = Shader.Find("Transparent/Diffuse");
+                foot.GetComponent<Renderer>().material.color = new Color(foot.GetComponent<Renderer>().material.color.r, foot.GetComponent<Renderer>().material.color.g, foot.GetComponent<Renderer>().material.color.b, alpha);
             }
+            armature.GetComponent<Renderer>().material.shader = Shader.Find("Transparent/Diffuse");
+            armature.GetComponent<Renderer>().material.color = new Color(armature.GetComponent<Renderer>().material.color.r, armature.GetComponent<Renderer>().material.color.g, armature.GetComponent<Renderer>().material.color.b, alpha);
+            sphere.GetComponent<Renderer>().material.shader = Shader.Find("Transparent/Diffuse");
+            sphere.GetComponent<Renderer>().material.color = new Color(sphere.GetComponent<Renderer>().material.color.r, sphere.GetComponent<Renderer>().material.color.g, sphere.GetComponent<Renderer>().material.color.b, alpha);
+
+            masque.GetComponent<Renderer>().material.color = new Color(masque.GetComponent<Renderer>().material.color.r, masque.GetComponent<Renderer>().material.color.g, masque.GetComponent<Renderer>().material.color.b, 0.1f);
+
+            isTransparent = true;
         }
         else
         {
@@ -170,9 +167,11 @@ public class Player : Character
             for(int i = 0; i < 4; i++)
                 feet[i].GetComponent<Renderer>().material.shader = oldShaderFoot[i];
             sphere.GetComponent<Renderer>().material.shader = oldShaderSphere;
-            isTransparent = false;
+            
 
             masque.GetComponent<Renderer>().material.color = new Color(masque.GetComponent<Renderer>().material.color.r, masque.GetComponent<Renderer>().material.color.g, masque.GetComponent<Renderer>().material.color.b, 1f);
+
+            isTransparent = false;
         }
        
     }
@@ -182,20 +181,4 @@ public class Player : Character
     {
         return cubeFace;
     }
-
-
-    
-
-    
-
-
-
-
-    //TODO vérifier tout ça
-    
-
-   
-
-   
-
 }
