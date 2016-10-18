@@ -50,10 +50,21 @@ public class PlayerController2 : MonoBehaviour
         cubes.transform.SetParent(gameObject.transform.parent);
         GameObject posCubes = new GameObject("posCubesDuplicates");
         posCubes.transform.SetParent(gameObject.transform);
+        List<GameObject> posCubesVert = new List<GameObject>();
+        for(int i = 0; i < 6; i++)
+        {
+            GameObject faceVert = new GameObject("faceVert" + i);
+            faceVert.transform.SetParent(posCubes.transform);
+            posCubesVert.Add(faceVert);
+        }
 
         List<List<GameObject>> horizFaces = new List<List<GameObject>>();
+        List<List<GameObject>> vertFaces = new List<List<GameObject>>();
         for (int i = 0; i < 6; i++)
+        {
             horizFaces.Add(new List<GameObject>());
+            vertFaces.Add(new List<GameObject>());
+        }
 
         for (int width = 0; width < nbCubeSide; width++)
         {
@@ -75,9 +86,11 @@ public class PlayerController2 : MonoBehaviour
                                 
                                 GameObject posCube = new GameObject();
                                 posCube.transform.position = new Vector3(distPerCube * width - sideLength/ 2 + distPerCube / 2, distPerCube * length - sideLength / 2 + distPerCube / 2, distPerCube * height - sideLength / 2 + distPerCube / 2);
-                                posCube.transform.SetParent(posCubes.transform);
+                                //posCube.transform.SetParent(posCubes.transform);
+                                posCube.transform.SetParent(posCubesVert[width].transform);
 
-                                horizFaces[length].Add(posCube); //face pointant en haut
+                                horizFaces[length].Add(posCube); //face pointant en haut/bas
+                                vertFaces[width].Add(posCube); //face pointant a droite/gauche
                             }
                         }
                     }
@@ -99,7 +112,7 @@ public class PlayerController2 : MonoBehaviour
         //}
 
         SortChooser sortChooser = gameObject.AddComponent<SortChooser>();
-        sortChooser.setListCubes(horizFaces);
+        sortChooser.setListCubes(horizFaces, posCubesVert);
 
         PlayerCubeFlock flock = gameObject.AddComponent<PlayerCubeFlock>();
         flock.init(cubes, posCubes);
