@@ -15,9 +15,8 @@ public class SortChooser : MonoBehaviour
     private Quaternion f6;
     private Quaternion fdefault;
 
-    private Quaternion angleToGo;
-
-    public bool rotationning;
+    public bool changingFaceV;
+    public bool changingFaceH;
 
     public List<List<GameObject>> horizFaces = new List<List<GameObject>>();
     public List<GameObject> vertFaces = new List<GameObject>();
@@ -28,7 +27,8 @@ public class SortChooser : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        rotationning = false;
+        changingFaceV = false;
+        changingFaceH = false;
 
         cubeFace = 1;
         armature = GameObject.FindWithTag("Armature");
@@ -41,123 +41,114 @@ public class SortChooser : MonoBehaviour
         f6 = Quaternion.Euler(new Vector3(-90, 0, 0));
         fdefault = Quaternion.Euler(new Vector3(0, 0, 0));
 
-        angleToGo = f1;
     }
-
-    //private void GoToFace(Quaternion f)
-    //{
-    //    if (rotationning)
-    //    {
-    //        armature.transform.localRotation = Quaternion.Slerp(armature.transform.localRotation, f, Time.deltaTime * 10);
-
-    //        if (Quaternion.Angle(armature.transform.localRotation, f) < 1)
-    //        {
-    //            armature.transform.localRotation = f;
-    //            rotationning = false;
-    //        }
-    //    }
-    //}
 
     public void Update()
     {
-        //GoToFace(angleToGo);
-
         int oldCubeFace = cubeFace;
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            cubeFace = 1;
-            rotationning = true;
-            angleToGo = fdefault;
-            StopAllCoroutines();
-
-            if(oldCubeFace >= 5)
-                StartCoroutine(coroutineRotationVH(f1, fdefault));
-            else
-                StartCoroutine(coroutineRotationHV(f1, fdefault));
+            if (rotHFinished && rotVFinished)
+            {
+                StopAllCoroutines();
+                if (oldCubeFace >= 5)
+                    StartCoroutine(coroutineRotationVH(f1, fdefault, 1));
+                else
+                    StartCoroutine(coroutineRotationHV(f1, fdefault, 1));
+            }
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            cubeFace = 2;
-            rotationning = true;
-            angleToGo = fdefault;
-            StopAllCoroutines();
-
-            if (oldCubeFace >= 5)
-                StartCoroutine(coroutineRotationVH(f2, fdefault));
-            else
-                StartCoroutine(coroutineRotationHV(f2, fdefault));
+            if (rotHFinished && rotVFinished)
+            {
+                StopAllCoroutines();
+                if (oldCubeFace >= 5)
+                    StartCoroutine(coroutineRotationVH(f2, fdefault, 2));
+                else
+                    StartCoroutine(coroutineRotationHV(f2, fdefault, 2));
+            }
         }
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            cubeFace = 3;
-            rotationning = true;
-            angleToGo = fdefault;
-            StopAllCoroutines();
-
-            if (oldCubeFace >= 5)
-                StartCoroutine(coroutineRotationVH(f3, fdefault));
-            else
-                StartCoroutine(coroutineRotationHV(f3, fdefault));
+            if (rotHFinished && rotVFinished)
+            {
+                StopAllCoroutines();
+                if (oldCubeFace >= 5)
+                    StartCoroutine(coroutineRotationVH(f3, fdefault, 3));
+                else
+                    StartCoroutine(coroutineRotationHV(f3, fdefault, 3));
+            }
         }
         if (Input.GetKeyDown(KeyCode.Alpha4))
         {
-            cubeFace = 4;
-            rotationning = true;
-            angleToGo = fdefault;
-            StopAllCoroutines();
-
-            if (oldCubeFace >= 5)
-                StartCoroutine(coroutineRotationVH(f4, fdefault));
-            else
-                StartCoroutine(coroutineRotationHV(f4, fdefault));
+            if (rotHFinished && rotVFinished)
+            {
+                StopAllCoroutines();
+                if (oldCubeFace >= 5)
+                    StartCoroutine(coroutineRotationVH(f4, fdefault, 4));
+                else
+                    StartCoroutine(coroutineRotationHV(f4, fdefault, 4));
+            }
         }
         if (Input.GetKeyDown(KeyCode.Alpha5))
         {
-            cubeFace = 5;
-            rotationning = true;
-            angleToGo = f5;
-
-            if (oldCubeFace >= 5)
-                StartCoroutine(coroutineRotationVH(f1, f5));
-            else
-                StartCoroutine(coroutineRotationHV(f1, f5));
+            if (rotHFinished && rotVFinished)
+            {
+                StopAllCoroutines();
+                if (oldCubeFace >= 5)
+                    StartCoroutine(coroutineRotationVH(f1, f5, 5));
+                else
+                    StartCoroutine(coroutineRotationHV(f1, f5, 5));
+            }
         }
         if (Input.GetKeyDown(KeyCode.Alpha6))
         {
-            cubeFace = 6;
-            rotationning = true;
-            angleToGo = f6;
-
-            if (oldCubeFace >= 5)
-                StartCoroutine(coroutineRotationVH(f1, f6));
-            else
-                StartCoroutine(coroutineRotationHV(f1, f6));
+            if (rotHFinished && rotVFinished)
+            {
+                StopAllCoroutines();
+                if (oldCubeFace >= 5)
+                    StartCoroutine(coroutineRotationVH(f1, f6, 6));
+                else
+                    StartCoroutine(coroutineRotationHV(f1, f6, 6));
+            }
         }
-
-
         /*if (oldCubeFace != cubeFace)
             GetComponent<Player>().cubeFaceChanged(cubeFace);*/
     }
 
-    public IEnumerator coroutineRotationHV(Quaternion fH, Quaternion fV)
+    public IEnumerator coroutineRotationHV(Quaternion fH, Quaternion fV, int newCubeFace)
     {
+        changingFaceV = true;
+        changingFaceH = true;
+
         rotHFinished = false;
         rotVFinished = false;
         StartCoroutine(coroutineRotationHorizAll(fH));
         while (rotHFinished == false)
             yield return new WaitForEndOfFrame();
         StartCoroutine(coroutineRotationVertAll(fV));
+
+        while (rotVFinished == false)
+            yield return new WaitForEndOfFrame();
+        cubeFace = newCubeFace;
     }
 
-    public IEnumerator coroutineRotationVH(Quaternion fH, Quaternion fV)
+    public IEnumerator coroutineRotationVH(Quaternion fH, Quaternion fV, int newCubeFace)
     {
+        changingFaceV = true;
+        changingFaceH = true;
+
         rotHFinished = false;
         rotVFinished = false;
         StartCoroutine(coroutineRotationVertAll(fV));
         while (rotVFinished == false)
             yield return new WaitForEndOfFrame();
         StartCoroutine(coroutineRotationHorizAll(fH));
+
+        while (rotHFinished == false)
+            yield return new WaitForEndOfFrame();
+        cubeFace = newCubeFace;
     }
 
     public IEnumerator coroutineRotationHorizAll(Quaternion f)
@@ -165,13 +156,17 @@ public class SortChooser : MonoBehaviour
         float angle = (f.eulerAngles.y - horizFaces[0][0].transform.localEulerAngles.y);
         if (angle != 0)
         {
-
-        }
             for (int i = 0; i < 6; i++)
-        {
-            StartCoroutine(coroutineRotationHoriz(f, i));
-            yield return new WaitForSeconds(0.05f);
+            {
+                StartCoroutine(coroutineRotationHoriz(f, i));
+                yield return new WaitForSeconds(0.05f);
+            }
         }
+        else
+        {
+            rotHFinished = true;
+        }
+
     }
     public IEnumerator coroutineRotationHoriz(Quaternion f, int numFace)
     {
@@ -205,7 +200,7 @@ public class SortChooser : MonoBehaviour
             for (int i = 0; i < horizFaces[numFace].Count; i++)
                 horizFaces[numFace][i].transform.RotateAround(center, horizFaces[numFace][i].transform.up, angle);
         }
-        if(numFace == 5)
+        if (numFace == 5)
         {
             //Permet de lancer le deuxieme
             rotHFinished = true;
@@ -214,25 +209,40 @@ public class SortChooser : MonoBehaviour
 
     public IEnumerator coroutineRotationVertAll(Quaternion f)
     {
-        for (int i = 0; i < 6; i++)
+        if (Quaternion.Angle(armature.transform.GetChild(0).transform.localRotation, f) > 1)
         {
-            StartCoroutine(coroutineRotationVert(f, i));
-            yield return new WaitForSeconds(0.05f);
+            for (int i = 0; i < 6 - 1; i++)
+            {
+                StartCoroutine(coroutineRotationVert(f, i));
+                yield return new WaitForSeconds(0.05f);
+            }
+            StartCoroutine(coroutineRotationVert(f, 5));
+        }
+        else
+        {
+            rotVFinished = true;
         }
     }
 
     public IEnumerator coroutineRotationVert(Quaternion f, int numFace)
     {
+        float angle = Quaternion.Angle(armature.transform.GetChild(numFace).transform.localRotation, f);
+        float vitesse = Mathf.Abs(angle) / 15;
+
+        float rotTime = 0.15f;
+        float startTime = Time.time;
+
+        Quaternion begin = armature.transform.GetChild(numFace).transform.localRotation;
+
         while (Quaternion.Angle(armature.transform.GetChild(numFace).transform.localRotation, f) > 1)
         {
-            armature.transform.GetChild(numFace).transform.localRotation = Quaternion.Slerp(armature.transform.GetChild(numFace).transform.localRotation, f, Time.deltaTime * 10);
-
-            if (Quaternion.Angle(armature.transform.GetChild(numFace).transform.localRotation, f) < 1)
-            {
-                armature.transform.GetChild(numFace).transform.localRotation = f;
-            }
-
+            float frac = (Time.time - startTime) / rotTime;
+            armature.transform.GetChild(numFace).transform.localRotation = Quaternion.Lerp(begin, f, frac);
             yield return new WaitForEndOfFrame();
+        }
+        if (Quaternion.Angle(armature.transform.GetChild(numFace).transform.localRotation, f) < 1)
+        {
+            armature.transform.GetChild(numFace).transform.localRotation = f;
         }
         if (numFace == 5)
         {
@@ -255,15 +265,5 @@ public class SortChooser : MonoBehaviour
     {
         horizFaces = horiz;
         vertFaces = vert;
-    }
-
-    public bool isRotationning()
-    {
-        return rotationning;
-    }
-
-    public Quaternion getRotation()
-    {
-        return angleToGo;
     }
 }
