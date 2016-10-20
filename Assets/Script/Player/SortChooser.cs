@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class SortChooser : MonoBehaviour
 {
     public int cubeFace;
-    private GameObject armature;
+    private GameObject posAllCubes;
 
     private Quaternion f1;
     private Quaternion f2;
@@ -31,7 +31,7 @@ public class SortChooser : MonoBehaviour
         changingFaceH = false;
 
         cubeFace = 1;
-        armature = GameObject.FindWithTag("Armature");
+        posAllCubes = GameObject.FindWithTag("Armature");
 
         f1 = Quaternion.Euler(new Vector3(0, 0, 0));
         f2 = Quaternion.Euler(new Vector3(0, 90, 0));
@@ -208,7 +208,7 @@ public class SortChooser : MonoBehaviour
 
     public IEnumerator coroutineRotationVertAll(Quaternion f)
     {
-        if (Quaternion.Angle(armature.transform.GetChild(0).transform.localRotation, f) > 1)
+        if (Quaternion.Angle(posAllCubes.transform.GetChild(0).transform.localRotation, f) > 1)
         {
             for (int i = 0; i < 6 - 1; i++)
             {
@@ -225,23 +225,23 @@ public class SortChooser : MonoBehaviour
 
     public IEnumerator coroutineRotationVert(Quaternion f, int numFace)
     {
-        float angle = Quaternion.Angle(armature.transform.GetChild(numFace).transform.localRotation, f);
+        float angle = Quaternion.Angle(posAllCubes.transform.GetChild(numFace).transform.localRotation, f);
         float vitesse = Mathf.Abs(angle) / 15;
 
         float rotTime = 0.15f;
         float startTime = Time.time;
 
-        Quaternion begin = armature.transform.GetChild(numFace).transform.localRotation;
+        Quaternion begin = posAllCubes.transform.GetChild(numFace).transform.localRotation;
 
-        while (Quaternion.Angle(armature.transform.GetChild(numFace).transform.localRotation, f) > 1)
+        while (Quaternion.Angle(posAllCubes.transform.GetChild(numFace).transform.localRotation, f) > 1)
         {
             float frac = (Time.time - startTime) / rotTime;
-            armature.transform.GetChild(numFace).transform.localRotation = Quaternion.Lerp(begin, f, frac);
+            posAllCubes.transform.GetChild(numFace).transform.localRotation = Quaternion.Lerp(begin, f, frac);
             yield return new WaitForEndOfFrame();
         }
-        if (Quaternion.Angle(armature.transform.GetChild(numFace).transform.localRotation, f) < 1)
+        if (Quaternion.Angle(posAllCubes.transform.GetChild(numFace).transform.localRotation, f) < 1)
         {
-            armature.transform.GetChild(numFace).transform.localRotation = f;
+            posAllCubes.transform.GetChild(numFace).transform.localRotation = f;
         }
         if (numFace == 5)
         {
@@ -260,9 +260,9 @@ public class SortChooser : MonoBehaviour
         return center;
     }
 
-    public void setListCubes(List<List<GameObject>> horiz, List<GameObject> vert)
+    public void setListCubes(List<List<GameObject>> horiz, GameObject posAC)
     {
         horizFaces = horiz;
-        vertFaces = vert;
+        posAllCubes = posAC;
     }
 }

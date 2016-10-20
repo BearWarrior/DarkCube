@@ -56,7 +56,7 @@ public class Player : Character
         PDVactuel = 10;
         armureMax = 10;
         armureActuel = 10;
-        enduranceMax = 3;   
+        enduranceMax = 3;
         enduranceActuel = 3;
 
         regenEndurance = false;
@@ -122,44 +122,41 @@ public class Player : Character
             if (listAttaque[cubeFace - 1] != null)
             {
                 if (listAttaque[cubeFace - 1].type == 2) //Sort de Zone
-                    GetComponent<PlayerController>().setGabarit(true, (SortDeZone)listAttaque[cubeFace -1]);
+                    GetComponent<PlayerController>().setGabarit(true, (SortDeZone)listAttaque[cubeFace - 1]);
                 else if (listAttaque[cubeFace - 1].type == 1) // Sort de jet
                     GetComponent<PlayerController>().setGabarit(false, null);
             }
         }
     }
 
- 
-
- 
 
     public void setTransparecy(bool set)
     {
         if (set)
         {
-            oldShaderSphere = armature.GetComponent<Renderer>().material.shader;
-            oldShaderArmature = armature.GetComponent<Renderer>().material.shader;
+            oldShaderSphere = armature.transform.GetChild(0).GetComponent<Renderer>().material.shader;
+            oldShaderArmature = armature.transform.GetChild(0).GetComponent<Renderer>().material.shader;
 
-            armature.GetComponent<Renderer>().material.shader = Shader.Find("Transparent/Diffuse");
-            armature.GetComponent<Renderer>().material.color = new Color(armature.GetComponent<Renderer>().material.color.r, armature.GetComponent<Renderer>().material.color.g, armature.GetComponent<Renderer>().material.color.b, alpha);
+            for(int i = 0; i < armature.transform.childCount; i++)
+            {
+                armature.transform.GetChild(i).GetComponent<Renderer>().material.shader = Shader.Find("Transparent/Diffuse");
+                armature.transform.GetChild(i).GetComponent<Renderer>().material.color = new Color(armature.transform.GetChild(i).GetComponent<Renderer>().material.color.r, armature.transform.GetChild(i).GetComponent<Renderer>().material.color.g, armature.transform.GetChild(i).GetComponent<Renderer>().material.color.b, alpha);
+            }
+            
             sphere.GetComponent<Renderer>().material.shader = Shader.Find("Transparent/Diffuse");
             sphere.GetComponent<Renderer>().material.color = new Color(sphere.GetComponent<Renderer>().material.color.r, sphere.GetComponent<Renderer>().material.color.g, sphere.GetComponent<Renderer>().material.color.b, alpha);
-
 
             isTransparent = true;
         }
         else
         {
-            armature.GetComponent<Renderer>().material.shader = oldShaderArmature;
-
+            for (int i = 0; i < armature.transform.childCount; i++)
+                armature.transform.GetChild(i).GetComponent<Renderer>().material.shader = oldShaderArmature;
             sphere.GetComponent<Renderer>().material.shader = oldShaderSphere;
-            
 
             isTransparent = false;
         }
-       
     }
-
 
     public int getCubeFace()
     {
