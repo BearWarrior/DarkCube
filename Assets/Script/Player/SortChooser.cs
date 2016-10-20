@@ -40,13 +40,12 @@ public class SortChooser : MonoBehaviour
         f5 = Quaternion.Euler(new Vector3(90, 0, 0));
         f6 = Quaternion.Euler(new Vector3(-90, 0, 0));
         fdefault = Quaternion.Euler(new Vector3(0, 0, 0));
-
     }
 
     public void Update()
     {
         int oldCubeFace = cubeFace;
-
+ 
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             if (rotHFinished && rotVFinished)

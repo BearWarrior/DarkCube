@@ -65,7 +65,7 @@ public class PlayerController2 : MonoBehaviour
             horizFaces.Add(new List<GameObject>());
             vertFaces.Add(new List<GameObject>());
         }
-
+        int cpt = 0;
         for (int width = 0; width < nbCubeSide; width++)
         {
             for (int length = 0; length < nbCubeSide; length++)
@@ -79,18 +79,20 @@ public class PlayerController2 : MonoBehaviour
                             if ((height < nbCubeSide / 3 || height >= 2 * nbCubeSide / 3) || (length < nbCubeSide / 3 || length >= 2 * nbCubeSide / 3))
                             {
                                 GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                                cube.name = "Cube" + cpt;
                                 cube.transform.localScale = new Vector3(1, 1, 1) * scale;
                                 cube.transform.position = new Vector3(distPerCube * width - sideLength / 2 + distPerCube/2, distPerCube * length - sideLength / 2 + distPerCube / 2, distPerCube * height - sideLength / 2 + distPerCube / 2);
                                 cube.transform.SetParent(cubes.transform);
                                 Destroy(cube.GetComponent<BoxCollider>());
                                 
-                                GameObject posCube = new GameObject();
+                                GameObject posCube = new GameObject("posCube" + cpt);
                                 posCube.transform.position = new Vector3(distPerCube * width - sideLength/ 2 + distPerCube / 2, distPerCube * length - sideLength / 2 + distPerCube / 2, distPerCube * height - sideLength / 2 + distPerCube / 2);
                                 //posCube.transform.SetParent(posCubes.transform);
                                 posCube.transform.SetParent(posCubesVert[width].transform);
 
                                 horizFaces[length].Add(posCube); //face pointant en haut/bas
                                 vertFaces[width].Add(posCube); //face pointant a droite/gauche
+                                cpt++;
                             }
                         }
                     }
@@ -98,18 +100,24 @@ public class PlayerController2 : MonoBehaviour
             }
         }
 
+        GameObject core = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        core.name = "Core";
+        core.transform.localScale = new Vector3(1, 1, 1) * scale * 2;
+        core.transform.position = new Vector3(0, 0, 0);
+        core.transform.SetParent(cubes.transform);
+        Destroy(core.GetComponent<SphereCollider>());
+
+        GameObject posCore = new GameObject("posCore");
+        posCore.transform.position = new Vector3(0, 0, 0);
+        posCore.transform.SetParent(posCubes.transform);
+
+
+
         cubes.transform.localPosition = new Vector3(0, 0, 0);
         posCubes.transform.localPosition = new Vector3(0, 0, 0);
         posCubes.tag = "Armature";
 
-        //Debug par décalage
-        //for (int i = 0; i < sideFaces.Count; i++)d
-        //{
-        //    for (int j = 0; j < sideFaces[i].Count; j++)
-        //    {
-        //        sideFaces[i][j].transform.position += new Vector3(0, i + 1, 0);
-        //    }
-        //}
+        this.GetComponent<Player>().sphere = core;
 
         SortChooser sortChooser = gameObject.AddComponent<SortChooser>();
         sortChooser.setListCubes(horizFaces, posCubesVert);
