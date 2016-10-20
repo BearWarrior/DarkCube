@@ -36,13 +36,10 @@ public class PlayerCubeFlock : MonoBehaviour
         directionPoint.transform.localPosition = 1f*direction;
 
         float distMax = 0;
-        
-        for (int i = 0; i < nbCube; i++)
+        int i = 0;
+        for (i = 0; i < nbCube; i++)
         {
             distance[i] = Mathf.Sqrt(Vector3.Distance(directionPoint.transform.position, cubes.transform.GetChild(i).transform.position));
-            //distance[i] = Vector3.Distance(new Vector3(sphere.transform.position.x, 0 , 0), new Vector3(cubes2.transform.GetChild(i).transform.position.x, 0, 0));
-            //distance[i] += Vector3.Distance(new Vector3(0, sphere.transform.position.y, 0), new Vector3(0, cubes2.transform.GetChild(i).transform.position.y, 0));
-            //distance[i] += Vector3.Distance(new Vector3(0, 0, sphere.transform.position.z), new Vector3(0, 0, cubes2.transform.GetChild(i).transform.position.z));
 
             distMax = (distance[i] > distMax) ? distance[i] : distMax;
         }
@@ -50,23 +47,30 @@ public class PlayerCubeFlock : MonoBehaviour
 
         float max = 01000;
         string sortie = "";
-        for (int i = 0; i < nbCube; i++)
+
+        i = 0;
+        for (int cptFace = 0; cptFace < posToGo.transform.childCount; cptFace++)
         {
-            if (1 - distance[i] / distMax < 0)
-                vitesses[i] = 0.1f;
-            else
-                vitesses[i] = 1 - distance[i] / distMax;
+            for (int j = 0; j < posToGo.transform.GetChild(cptFace).childCount; j++)
+            {
+
+                if (1 - distance[i] / distMax < 0)
+                    vitesses[i] = 0.1f;
+                else
+                    vitesses[i] = 1 - distance[i] / distMax;
 
 
-            if (distance[i] / distMax < max)
-                max = distance[i] / distMax;
+                if (distance[i] / distMax < max)
+                    max = distance[i] / distMax;
 
-            cubes.transform.GetChild(i).transform.position = Vector3.Lerp(cubes.transform.GetChild(i).transform.position, posToGo.transform.GetChild(i).transform.position, 1.4f-((distance[i]/distMax)));
-            sortie += (distance[i] / distMax)* (distance[i] / distMax) + "\n";
-            cubes.transform.GetChild(i).transform.rotation = Quaternion.Lerp(cubes.transform.GetChild(i).transform.rotation, posToGo.transform.GetChild(i).transform.rotation, 1.4f - ((distance[i] / distMax)));
+                cubes.transform.GetChild(i).transform.position = Vector3.Lerp(cubes.transform.GetChild(i).transform.position, posToGo.transform.GetChild(cptFace).GetChild(j).transform.position, 1.4f - ((distance[i] / distMax)));
+                sortie += (distance[i] / distMax) * (distance[i] / distMax) + "\n";
+                cubes.transform.GetChild(i).transform.rotation = Quaternion.Lerp(cubes.transform.GetChild(i).transform.rotation, posToGo.transform.GetChild(cptFace).GetChild(j).transform.rotation, 1.4f - ((distance[i] / distMax)));
+
+
+                i++;
+            }
         }
-
-        //print(sortie);
 	}
 
     public void init(GameObject p_cubes, GameObject p_posCubes)
