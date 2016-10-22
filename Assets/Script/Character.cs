@@ -132,7 +132,7 @@ public class Character : MonoBehaviour
         }
     }
 
-    public List<Attaque> getListAttaqueInventaire()
+    public virtual List<Attaque> getListAttaqueInventaire()
     {
         return listAttaqueInventaire;
     }

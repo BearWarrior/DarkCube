@@ -5,6 +5,7 @@ public class CameraController : MonoBehaviour
 {
     private GameObject player;
     private GameObject target;
+    private GameObject targetStatic;
 
     public bool playerInMenu;
 
@@ -19,7 +20,10 @@ public class CameraController : MonoBehaviour
         if (player == null)
             player = GameObject.FindWithTag("Player");
         if (target == null)
+        {
             target = GameObject.FindWithTag("CameraTarget");
+            targetStatic = target;
+        }
         if (cameraLookAtPlayer == null)
             cameraLookAtPlayer = GameObject.FindWithTag("CameraLookAt");
 
@@ -70,4 +74,14 @@ public class CameraController : MonoBehaviour
             this.transform.LookAt(cameraLookAtMenuTR);
         }
 	}
+
+    public void changeTarget(GameObject newTarg)
+    {
+        target = newTarg;
+    }
+
+    public void resetTarget()
+    {
+        target = targetStatic;
+    }
 }

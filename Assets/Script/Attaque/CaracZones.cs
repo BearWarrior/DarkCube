@@ -11,6 +11,7 @@ public struct structSortDeZone
     public float cooldown;
     public float duree;
     public string partSysStr;
+    public EnumScript.GabaritSortDeZone gabarit;
 }
 
 
@@ -38,6 +39,7 @@ public class CaracZones : MonoBehaviour
         sort.cooldown = 1;
         sort.duree = 10;
         sort.partSysStr = "fire_ground/Brasier";
+        sort.gabarit = EnumScript.GabaritSortDeZone.Ligne;
         BRASIER.Add(sort);
         tabSort.Add(BRASIER);
 
@@ -49,6 +51,7 @@ public class CaracZones : MonoBehaviour
         sort.cooldown = 1;
         sort.duree = 10;
         sort.partSysStr = "none";
+        sort.gabarit = EnumScript.GabaritSortDeZone.Cercle;
         PLUIE_DE_FLECHE.Add(sort);
         tabSort.Add(PLUIE_DE_FLECHE);
 
@@ -60,6 +63,7 @@ public class CaracZones : MonoBehaviour
         sort.cooldown = 1;
         sort.duree = 10;
         sort.partSysStr = "none";
+        sort.gabarit = EnumScript.GabaritSortDeZone.Cercle;
         PLUIE_DE_GLACE.Add(sort);
         tabSort.Add(PLUIE_DE_GLACE);
 
@@ -71,6 +75,7 @@ public class CaracZones : MonoBehaviour
         sort.cooldown = 1;
         sort.duree = 10;
         sort.partSysStr = "fire_ground/Fire";
+        sort.gabarit = EnumScript.GabaritSortDeZone.Ligne;
         PIEGE_DE_PIQUE.Add(sort);
         tabSort.Add(PIEGE_DE_PIQUE);
 

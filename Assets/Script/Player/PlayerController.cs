@@ -441,7 +441,7 @@ public class PlayerController : MonoBehaviour
     {
         if (!b) //incontrollable
         {
-            GameObject.FindWithTag("Tiltable").transform.localRotation = new Quaternion(0, 0, 0, 0);
+            //GameObject.FindWithTag("Tiltable").transform.localRotation = new Quaternion(0, 0, 0, 0);
             GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
         }
         controllable = b;

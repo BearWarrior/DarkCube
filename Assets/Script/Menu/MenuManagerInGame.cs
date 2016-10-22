@@ -10,6 +10,8 @@ public class MenuManagerInGame : MonoBehaviour
 {
     public GameObject accessMenu;
     [Space(15)]
+    public GameObject player;
+    [Space(15)]
 
     public Sprite buttonNotPressed;
     public Sprite buttonPressed;
@@ -149,25 +151,33 @@ public class MenuManagerInGame : MonoBehaviour
         editorElementChanged();
 
         //On remplit le dropview de Gabarit des sorts de zone et le dropview des taille des sort de zone
-        foreach (EnumScript.GabaritSortDeZone elem in EnumScript.GabaritSortDeZone.GetValues(typeof(EnumScript.GabaritSortDeZone)))
+        /*foreach (EnumScript.GabaritSortDeZone elem in EnumScript.GabaritSortDeZone.GetValues(typeof(EnumScript.GabaritSortDeZone)))
             editorZoneGabarit.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(elem.ToString()));
-        editorZoneGabarit.GetComponent<Dropdown>().captionText = editorZoneGabarit.GetComponent<Dropdown>().captionText;
+        editorZoneGabarit.GetComponent<Dropdown>().captionText = editorZoneGabarit.GetComponent<Dropdown>().captionText;*/
 
 
         //editor
-        editorGabaritChanged();
+        //editorGabaritChanged();
         majPattern();
 
-        //chooser
-        fillClassChooserTable();
+        //chooser- fait dans Init
+        /*fillClassChooserTable();
         majCaracSortClicked();
-        setSelectedFace(selectedFace);
+        setSelectedFace(selectedFace);*/
     }
 
     // Update is called once per frame
     void Update()
     {
         if (lerpingCanvas) lerpCanvas();
+    }
+
+    public void Init(GameObject p)
+    {
+        player = p;
+        fillClassChooserTable();
+        majCaracSortClicked();
+        setSelectedFace(selectedFace);
     }
 
 
@@ -319,6 +329,7 @@ public class MenuManagerInGame : MonoBehaviour
         sortDeZoneEnConstruction.setElement((EnumScript.Element)editorZoneElement.GetComponent<Dropdown>().value);
         string nomSort = GetComponent<CaracZones>().getZoneFromElement((EnumScript.Element)editorZoneElement.GetComponent<Dropdown>().value)[editorZoneSort.GetComponent<Dropdown>().value].nomZone;
         sortDeZoneEnConstruction.setNomSort(nomSort);
+        editorZoneChanged();
 
         majCaracSortEnConstr();
     }
@@ -337,8 +348,12 @@ public class MenuManagerInGame : MonoBehaviour
     {
         string nomZone = GetComponent<CaracZones>().getZoneFromElement((EnumScript.Element)editorZoneElement.GetComponent<Dropdown>().value)[editorZoneSort.GetComponent<Dropdown>().value].nomZone;
         string partSys = GetComponent<CaracZones>().getZoneFromElement((EnumScript.Element)editorZoneElement.GetComponent<Dropdown>().value)[editorZoneSort.GetComponent<Dropdown>().value].partSysStr;
+        EnumScript.GabaritSortDeZone gabarit = GetComponent<CaracZones>().getZoneFromElement((EnumScript.Element)editorZoneElement.GetComponent<Dropdown>().value)[editorZoneSort.GetComponent<Dropdown>().value].gabarit;
+        print(GetComponent<CaracZones>().getZoneFromElement((EnumScript.Element)editorZoneElement.GetComponent<Dropdown>().value)[editorZoneSort.GetComponent<Dropdown>().value].gabarit.ToString());
+
         sortDeZoneEnConstruction.nomZone = nomZone;
         sortDeZoneEnConstruction.particleSystemStr = partSys;
+        sortDeZoneEnConstruction.gabarit = gabarit;
 
         //Mise a jour des carac + affichage
         majCaracSortEnConstr();
@@ -376,10 +391,10 @@ public class MenuManagerInGame : MonoBehaviour
 
     }
 
-    public void editorGabaritChanged()
+    /*public void editorGabaritChanged()
     {
         sortDeZoneEnConstruction.gabarit = (EnumScript.GabaritSortDeZone)editorZoneGabarit.GetComponent<Dropdown>().value;
-    }
+    }*/
     
 
     public void supprimerClassDel()
@@ -435,7 +450,7 @@ public class MenuManagerInGame : MonoBehaviour
             else
                 sortDeJetEnConstruction.setNomSort("_defaut_");
             
-            GameObject.Find("Player").GetComponent<Player>().addAttaqueToInventaire(sortDeJetEnConstruction);
+            player.GetComponent<Player>().addAttaqueToInventaire(sortDeJetEnConstruction);
         }
         else if (selectedType == 2) //Zone
         {
@@ -446,7 +461,7 @@ public class MenuManagerInGame : MonoBehaviour
 
             string partSys = GetComponent<CaracZones>().getZoneFromElement((EnumScript.Element)editorZoneElement.GetComponent<Dropdown>().value)[editorZoneSort.GetComponent<Dropdown>().value].partSysStr;
             sortDeZoneEnConstruction.particleSystemStr = partSys;
-            switch ((EnumScript.GabaritSortDeZone) editorZoneGabarit.GetComponent<Dropdown>().value)
+            /*switch ((EnumScript.GabaritSortDeZone) editorZoneGabarit.GetComponent<Dropdown>().value)
             {
                 case EnumScript.GabaritSortDeZone.Cercle:
                     sortDeZoneEnConstruction.particleSystemStr += "Circle";
@@ -457,7 +472,7 @@ public class MenuManagerInGame : MonoBehaviour
                 case EnumScript.GabaritSortDeZone.Cone:
                     sortDeZoneEnConstruction.particleSystemStr += "Cone";
                     break;
-            }
+            }*/
            
             string nomZone = GetComponent<CaracZones>().getZoneFromElement((EnumScript.Element)editorZoneElement.GetComponent<Dropdown>().value)[editorZoneSort.GetComponent<Dropdown>().value].nomZone;
             sortDeZoneEnConstruction.nomZone = nomZone;
@@ -468,7 +483,7 @@ public class MenuManagerInGame : MonoBehaviour
             Debug.Log(sortDeZoneEnConstruction.particleSystemStr);
 
 
-            GameObject.Find("Player").GetComponent<Player>().addAttaqueToInventaire(sortDeZoneEnConstruction);
+            player.GetComponent<Player>().addAttaqueToInventaire(sortDeZoneEnConstruction);
         }
 
         resetClassChooser();
@@ -499,7 +514,7 @@ public class MenuManagerInGame : MonoBehaviour
     {
         if (selectedSort >= 0) //Sort inventaire
         {
-            GameObject.Find("Player").GetComponent<Player>().equipeAttaqueAt(selectedFace, selectedSort); //On le met dans les sorts équipé pour la face
+            player.GetComponent<Player>().equipeAttaqueAt(selectedFace, selectedSort); //On le met dans les sorts équipé pour la face
             for (int nbButton = 0; nbButton < chooserScrollListSortEq.transform.GetChild(0).GetChild(0).childCount; nbButton++) //On supprime le/les sort équipé de la list
                 Destroy(chooserScrollListSortEq.transform.GetChild(0).GetChild(0).GetChild(nbButton).gameObject);
             GameObject button = Instantiate(buttonTemplate) as GameObject; //On met le nouveau
@@ -507,7 +522,7 @@ public class MenuManagerInGame : MonoBehaviour
             button.transform.localPosition = new Vector3(0, 0, 0);
             button.transform.localRotation = Quaternion.Euler(0, 0, 0);
             button.transform.localScale = new Vector3(1, 1, 1);
-            button.transform.GetChild(0).GetComponent<Text>().text = GameObject.Find("Player").GetComponent<Player>().getListAttaqueInventaire()[selectedSort].getNomSort();
+            button.transform.GetChild(0).GetComponent<Text>().text = player.GetComponent<Player>().getListAttaqueInventaire()[selectedSort].getNomSort();
             button.GetComponent<Button>().onClick.RemoveAllListeners();
             //-1 -> sort équipé
             button.GetComponent<Button>().onClick.AddListener(() => buttonClicked(-1));
@@ -516,7 +531,7 @@ public class MenuManagerInGame : MonoBehaviour
         {
             if (selectedSort == -1) //Sort équipé
             {
-                GameObject.Find("Player").GetComponent<Player>().desequipeAttaque(selectedFace);
+                player.GetComponent<Player>().desequipeAttaque(selectedFace);
                 Destroy(chooserScrollListSortEq.transform.GetChild(0).GetChild(0).GetChild(0).gameObject);
                 selectedSort = 0;
             }
@@ -534,7 +549,7 @@ public class MenuManagerInGame : MonoBehaviour
 
         editorZoneNomSort.GetComponent<InputField>().text = "";
         editorZoneElement.GetComponent<Dropdown>().value = 0; editorZoneElement.GetComponent<Dropdown>().captionText = editorZoneElement.GetComponent<Dropdown>().captionText;
-        editorZoneGabarit.GetComponent<Dropdown>().value = 0; editorZoneGabarit.GetComponent<Dropdown>().captionText = editorZoneGabarit.GetComponent<Dropdown>().captionText;
+        //editorZoneGabarit.GetComponent<Dropdown>().value = 0; editorZoneGabarit.GetComponent<Dropdown>().captionText = editorZoneGabarit.GetComponent<Dropdown>().captionText;
         editorZoneSort.GetComponent<Dropdown>().value = 0; editorZoneSort.GetComponent<Dropdown>().captionText = editorZoneSort.GetComponent<Dropdown>().captionText;
 
         majCaracSortEnConstr();
@@ -571,6 +586,7 @@ public class MenuManagerInGame : MonoBehaviour
         //On affiche les nouvelles caractéristiques
         editorZoneCoolDown.GetComponent<Text>().text = sortDeZoneEnConstruction.getCooldown().ToString();
         editorZoneDegats.GetComponent<Text>().text = sortDeZoneEnConstruction.getDegats().ToString();
+        editorZoneGabarit.GetComponent<Text>().text = sortDeZoneEnConstruction.gabarit.ToString();
     }
 
 
@@ -579,13 +595,13 @@ public class MenuManagerInGame : MonoBehaviour
     {
         if (selectedSort >= 0) //Sort de l'inventaire
         {
-            int type = GameObject.FindWithTag("Player").GetComponent<Player>().getListAttaqueInventaire()[selectedSort].type;
+            int type = player.GetComponent<Player>().getListAttaqueInventaire()[selectedSort].type;
             if (type == 1) // sort de jet
             {
                 chooserPanelProj.SetActive(true);
                 chooserPanelZone.SetActive(false);
 
-                SortDeJet sortChoisi = (SortDeJet)GameObject.FindWithTag("Player").GetComponent<Player>().getListAttaqueInventaire()[selectedSort];
+                SortDeJet sortChoisi = (SortDeJet)player.GetComponent<Player>().getListAttaqueInventaire()[selectedSort];
                 chooserProjNomSort.GetComponent<Text>().text = sortChoisi.getNomSort();
                 chooserProjElement.GetComponent<Text>().text = sortChoisi.getElement().ToString();
                 chooserProjProjectile.GetComponent<Text>().text = sortChoisi.nomProj;
@@ -600,7 +616,7 @@ public class MenuManagerInGame : MonoBehaviour
                 chooserPanelProj.SetActive(false);
                 chooserPanelZone.SetActive(true);
 
-                SortDeZone sortChoisi = (SortDeZone)GameObject.FindWithTag("Player").GetComponent<Player>().getListAttaqueInventaire()[selectedSort];
+                SortDeZone sortChoisi = (SortDeZone)player.GetComponent<Player>().getListAttaqueInventaire()[selectedSort];
                 chooserZoneNomSort.GetComponent<Text>().text = sortChoisi.getNomSort();
                 chooserZoneElement.GetComponent<Text>().text = sortChoisi.getElement().ToString();
                 chooserZoneGabarit.GetComponent<Text>().text = sortChoisi.gabarit.ToString();
@@ -611,13 +627,13 @@ public class MenuManagerInGame : MonoBehaviour
         }
         else //Sort équipé
         {
-            int type = GameObject.FindWithTag("Player").GetComponent<Player>().getAttaqueEquipOnFace(selectedFace).type;
+            int type = player.GetComponent<Player>().getAttaqueEquipOnFace(selectedFace).type;
             if (type == 1) // sort de jet
             {
                 chooserPanelProj.SetActive(true);
                 chooserPanelZone.SetActive(false);
 
-                SortDeJet sortChoisi = (SortDeJet)GameObject.FindWithTag("Player").GetComponent<Player>().getAttaqueEquipOnFace(selectedFace);
+                SortDeJet sortChoisi = (SortDeJet)player.GetComponent<Player>().getAttaqueEquipOnFace(selectedFace);
                 chooserProjNomSort.GetComponent<Text>().text = sortChoisi.getNomSort();
                 chooserProjElement.GetComponent<Text>().text = sortChoisi.getElement().ToString();
                 chooserProjProjectile.GetComponent<Text>().text = sortChoisi.nomProj;
@@ -632,7 +648,7 @@ public class MenuManagerInGame : MonoBehaviour
                 chooserPanelProj.SetActive(false);
                 chooserPanelZone.SetActive(true);
 
-                SortDeZone sortChoisi = (SortDeZone)GameObject.FindWithTag("Player").GetComponent<Player>().getAttaqueEquipOnFace(selectedFace);
+                SortDeZone sortChoisi = (SortDeZone)player.GetComponent<Player>().getAttaqueEquipOnFace(selectedFace);
                 chooserZoneNomSort.GetComponent<Text>().text = sortChoisi.getNomSort();
                 chooserZoneElement.GetComponent<Text>().text = sortChoisi.getElement().ToString();
                 chooserZoneGabarit.GetComponent<Text>().text = sortChoisi.gabarit.ToString();
@@ -646,14 +662,14 @@ public class MenuManagerInGame : MonoBehaviour
     public void fillClassChooserTable()
     {
         GameObject button;
-        for (int nbButton = 0; nbButton < GameObject.Find("Player").GetComponent<Player>().getListAttaqueInventaire().Count; nbButton++)
+        for (int nbButton = 0; nbButton < player.GetComponent<Player>().getListAttaqueInventaire().Count; nbButton++)
         {
             button = Instantiate(buttonTemplate) as GameObject;
             button.transform.SetParent(chooserScrollListSortInv.transform.GetChild(0).GetChild(0));
             button.transform.localPosition = new Vector3(0, -1 * nbButton * button.GetComponent<RectTransform>().rect.height, 0);
             button.transform.localRotation = Quaternion.Euler(0, 0, 0);
             button.transform.localScale = new Vector3(1, 1, 1);
-            button.transform.GetChild(0).GetComponent<Text>().text = GameObject.Find("Player").GetComponent<Player>().getListAttaqueInventaire()[nbButton].getNomSort();
+            button.transform.GetChild(0).GetComponent<Text>().text = player.GetComponent<Player>().getListAttaqueInventaire()[nbButton].getNomSort();
 
             button.GetComponent<Button>().onClick.RemoveAllListeners();
             //Ne pas enlever : permet au bouton de marcher
@@ -663,18 +679,18 @@ public class MenuManagerInGame : MonoBehaviour
 
         }
         //On adapte la taille du content pour que les boutons prennent la bonne taille
-        float hauteurFinal = 10 + 10 + GameObject.Find("Player").GetComponent<Player>().getListAttaqueInventaire().Count * buttonHeight + 10 * (GameObject.Find("Player").GetComponent<Player>().getListAttaqueInventaire().Count - 1);
+        float hauteurFinal = 10 + 10 + player.GetComponent<Player>().getListAttaqueInventaire().Count * buttonHeight + 10 * (player.GetComponent<Player>().getListAttaqueInventaire().Count - 1);
         //chooserScrollListSortInv.GetComponent<RectTransform>().sizeDelta = new Vector2(chooserScrollListSortInv.GetComponent<RectTransform>().sizeDelta.x, hauteurFinal);
         chooserScrollListSortInv.transform.GetChild(0).GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(chooserScrollListSortInv.transform.GetChild(0).GetChild(0).GetComponent<RectTransform>().sizeDelta.x, hauteurFinal);
         //Ajout du bouton du sort équipé
-        if (GameObject.Find("Player").GetComponent<Player>().getAttaqueEquipOnFace(selectedFace) != null)
+        if (player.GetComponent<Player>().getAttaqueEquipOnFace(selectedFace) != null)
         {
             button = Instantiate(buttonTemplate) as GameObject;
             button.transform.SetParent(chooserScrollListSortEq.transform.GetChild(0).GetChild(0));
             button.transform.localPosition = new Vector3(0, 0, 0);
             button.transform.localRotation = Quaternion.Euler(0, 0, 0);
             button.transform.localScale = new Vector3(1, 1, 1);
-            button.transform.GetChild(0).GetComponent<Text>().text = GameObject.Find("Player").GetComponent<Player>().getAttaqueEquipOnFace(selectedFace).getNomSort();
+            button.transform.GetChild(0).GetComponent<Text>().text = player.GetComponent<Player>().getAttaqueEquipOnFace(selectedFace).getNomSort();
             button.GetComponent<Button>().onClick.RemoveAllListeners();
             //-1 -> sort équipé
             button.GetComponent<Button>().onClick.AddListener(() => buttonClicked(-1));

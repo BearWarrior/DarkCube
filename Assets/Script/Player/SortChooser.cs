@@ -31,7 +31,8 @@ public class SortChooser : MonoBehaviour
         changingFaceH = false;
 
         cubeFace = 1;
-        posAllCubes = GameObject.FindWithTag("Armature");
+        //posAllCubes = GameObject.FindWithTag("Armature");
+        posAllCubes = this.transform.GetChild(5).gameObject;
 
         f1 = Quaternion.Euler(new Vector3(0, 0, 0));
         f2 = Quaternion.Euler(new Vector3(0, 90, 0));
