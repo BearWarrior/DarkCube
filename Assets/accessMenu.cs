@@ -7,6 +7,7 @@ public class accessMenu : MonoBehaviour
 
     public GameObject menu;
     public GameObject menuActif;
+    public GameObject posCamera;
     private GameObject lookAt;
     private GameObject player;
 
@@ -31,7 +32,8 @@ public class accessMenu : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            lookAt.transform.position = other.transform.GetChild(3).position;
+            //lookAt.transform.position = other.transform.GetChild(3).position;
+            lookAt.transform.position = GameObject.FindWithTag("CameraLookAt").transform.position;
             player = other.gameObject;
         }
     }
@@ -63,6 +65,8 @@ public class accessMenu : MonoBehaviour
 
                     //On affiche le menu
                     menu.SetActive(true);
+
+                    menu.transform.GetComponentInChildren<MenuManagerInGame>(false).Init(player);
                 }
             }
             else
@@ -92,7 +96,9 @@ public class accessMenu : MonoBehaviour
                 //Camera
                 lookAt.transform.position = Vector3.Lerp(lookAt.transform.position, menuActif.transform.position, .05f);
                 Camera.main.GetComponent<CameraController>().cameraLookAtMenuTR = lookAt.transform.position;
-            }          
+
+                Camera.main.GetComponent<CameraController>().changeTarget(posCamera);
+            }        
         }
     }
 
@@ -110,6 +116,7 @@ public class accessMenu : MonoBehaviour
 
             //On change le point de vue de la caméra
             Camera.main.GetComponent<CameraController>().playerInMenu = false;
+            Camera.main.GetComponent<CameraController>().resetTarget();
 
             //On remet le crossHair
             Camera.main.GetComponent<Crosshair>().display = true;

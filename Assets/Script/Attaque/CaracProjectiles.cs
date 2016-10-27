@@ -9,7 +9,6 @@ public struct structSortJet
     public float degats;
     public float cooldown;
     public float vitesse;
-    public bool stuck;
     public EnumScript.Element element;
 }
 
@@ -24,6 +23,8 @@ public class CaracProjectiles : MonoBehaviour
     public List<structSortJet> SHURIKEN;
     public List<structSortJet> ARROW;
 
+    public List<structSortJet> LIGHTNINGBALL;
+
     public void Start()
     {
         tabSort = new List<List<structSortJet>>();
@@ -36,15 +37,7 @@ public class CaracProjectiles : MonoBehaviour
         sort.element = EnumScript.Element.Aucun;
         sort.degats = 10;
         sort.cooldown = 1;
-        sort.stuck = false;
         sort.vitesse = 30;
-        CANON.Add(sort);
-        sort.nomProj = "Canon";
-        sort.element = EnumScript.Element.Metal;
-        sort.degats = 20;
-        sort.cooldown = 1.5f;
-        sort.vitesse = 20;
-        sort.stuck = false;
         CANON.Add(sort);
         tabSort.Add(CANON);
 
@@ -55,14 +48,12 @@ public class CaracProjectiles : MonoBehaviour
         sort.degats = 30;
         sort.cooldown = 3;
         sort.vitesse = 60;
-        sort.stuck = true;
         PRISME.Add(sort);
         sort.nomProj = "Prisme";
         sort.element = EnumScript.Element.Eau;
         sort.degats = 30;
         sort.cooldown = 3;
         sort.vitesse = 60;
-        sort.stuck = true;
         PRISME.Add(sort);
         tabSort.Add(PRISME);
 
@@ -73,21 +64,12 @@ public class CaracProjectiles : MonoBehaviour
         sort.degats = 10;
         sort.cooldown = 0.5f;
         sort.vitesse = 80;
-        sort.stuck = true;
-        SHURIKEN.Add(sort);
-        sort.nomProj = "Shuriken";
-        sort.element = EnumScript.Element.Metal;
-        sort.degats = 15;
-        sort.cooldown = 1;
-        sort.vitesse = 40;
-        sort.stuck = true;
         SHURIKEN.Add(sort);
         sort.nomProj = "Shuriken";
         sort.element = EnumScript.Element.Eau;
         sort.degats = 5;
         sort.cooldown = 0.75f;
         sort.vitesse = 40;
-        sort.stuck = true;
         SHURIKEN.Add(sort);
         tabSort.Add(SHURIKEN);
 
@@ -98,16 +80,30 @@ public class CaracProjectiles : MonoBehaviour
         sort.degats = 10;
         sort.cooldown = 0.5f;
         sort.vitesse = 80;
-        sort.stuck = true;
         ARROW.Add(sort);
         sort.nomProj = "Fleche";
         sort.element = EnumScript.Element.Feu;
         sort.degats = 10;
         sort.cooldown = 0.5f;
         sort.vitesse = 80;
-        sort.stuck = true;
         ARROW.Add(sort);
         tabSort.Add(ARROW);
+
+        //LIGHTNINGBALL
+        LIGHTNINGBALL = new List<structSortJet>();
+        sort.nomProj = "LightningBall";
+        sort.element = EnumScript.Element.Aucun;
+        sort.degats = 10;
+        sort.cooldown = 0.5f;
+        sort.vitesse = 1;
+        LIGHTNINGBALL.Add(sort);
+        sort.nomProj = "LightningBall";
+        sort.element = EnumScript.Element.Elec;
+        sort.degats = 10;
+        sort.cooldown = 0.5f;
+        sort.vitesse = 1;
+        LIGHTNINGBALL.Add(sort);
+        tabSort.Add(LIGHTNINGBALL);
     }
 
 
