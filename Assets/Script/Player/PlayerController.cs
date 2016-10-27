@@ -31,8 +31,6 @@ public class PlayerController : MonoBehaviour
     private bool gabaritUsed;
     private bool controllable;
     private bool projectorAtMouse; //true : projector au niveau de la souris   false : projector devant le joueur position fixe
-
-    private Quaternion tilt;
     
     private SortDeZone sortDeZone;
 
@@ -76,6 +74,7 @@ public class PlayerController : MonoBehaviour
                             if ((height < nbCubeSide / 3 || height >= 2 * nbCubeSide / 3) || (length < nbCubeSide / 3 || length >= 2 * nbCubeSide / 3))
                             {
                                 GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                                //GameObject cube = (GameObject) Instantiate(Resources.Load("Particle/prefabs/others/miniCubeV2"), new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0));
                                 cube.name = "Cube" + cpt;
                                 cube.transform.localScale = new Vector3(1, 1, 1) * scale;
                                 cube.transform.position = new Vector3(distPerCube * width - sideLength / 2 + distPerCube / 2, distPerCube * length - sideLength / 2 + distPerCube / 2, distPerCube * height - sideLength / 2 + distPerCube / 2);
@@ -96,7 +95,8 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        GameObject core = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //GameObject core = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        GameObject core = (GameObject)Instantiate(Resources.Load("Particle/prefabs/others/core"), new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0));
         core.name = "Core";
         core.transform.localScale = new Vector3(1, 1, 1) * scale * 2;
         core.transform.position = new Vector3(0, 0, 0);
@@ -128,8 +128,6 @@ public class PlayerController : MonoBehaviour
         VerticalAxis = 0;
         lastVerticalAxis = 0;
         lastlastVerticalAxis = 0;
-
-        tilt = Quaternion.Euler(new Vector3(0, 0, -5));
 
         player = GameObject.FindWithTag("Player");
         

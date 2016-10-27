@@ -24,24 +24,14 @@ public class Player : Character
 
         listAttaqueInventaire = new List<Attaque>();
 
-        //listAttaqueInventaire.Add(new SortDeZone());
-        /*listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cercle, "ppp", "ppp", "none"));
-        listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cercle, "ppp", "ppp", "none"));
-        listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cercle, "ppp", "ppp", "none"));
-        listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Ligne, "ppp", "ppp", "fire_ground/BrasierLineS"));
-        listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Ligne, "ppp", "ppp", "none"));
-        listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Ligne, "ppp", "ppp", "none"));
-        listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cone, "ppp", "ppp", "none"));
-        listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cone, "ppp", "ppp", "none"));
-        listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cone, "ppp", "ppp", "none"));*/
-
-
-        listAttaqueInventaire.Add(new SortDeJet(1, 45, 0.05f, 10, EnumScript.Element.Metal, "Canon", "canon"));
-        listAttaqueInventaire.Add(new SortDeJet(1, 60, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme"));
-        listAttaqueInventaire.Add(new SortDeJet(3, 70, 2, 10, EnumScript.Element.Eau, "Shuriken", "ShuShu"));
-        listAttaqueInventaire.Add(new SortDeJet(4, 45, 2, 10, EnumScript.Element.Metal, "Canon", "4ligne"));
-        listAttaqueInventaire.Add(new SortDeJet(4, 45, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme-rafale"));
-        listAttaqueInventaire.Add(new SortDeJet(4, 45, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme-rafale"));
+        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Elec, "LightningBall", "perso1"));
+        listAttaqueInventaire.Add(new SortDeJet(10, 0.05f, 10, EnumScript.Element.Elec, "LightningBall", "perso1"));
+        listAttaqueInventaire.Add(new SortDeJet(1, 0.05f, 10, EnumScript.Element.Elec, "LightningBall", "perso1"));
+        listAttaqueInventaire.Add(new SortDeJet(60, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme"));
+        listAttaqueInventaire.Add(new SortDeJet(70, 2, 10, EnumScript.Element.Eau, "Shuriken", "ShuShu"));
+        listAttaqueInventaire.Add(new SortDeJet(45, 2, 10, EnumScript.Element.Aucun, "Canon", "4ligne"));
+        listAttaqueInventaire.Add(new SortDeJet(45, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme-rafale"));
+        listAttaqueInventaire.Add(new SortDeJet(45, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme-rafale"));
 
         equipeAttaqueAt(1, 0);
         equipeAttaqueAt(2, 1);
@@ -135,22 +125,22 @@ public class Player : Character
             oldShaderSphere = armature.transform.GetChild(0).GetComponent<Renderer>().material.shader;
             oldShaderArmature = armature.transform.GetChild(0).GetComponent<Renderer>().material.shader;
 
-            for(int i = 0; i < armature.transform.childCount; i++)
+            for(int i = 0; i < armature.transform.childCount-1; i++) //-1 because of the core
             {
                 armature.transform.GetChild(i).GetComponent<Renderer>().material.shader = Shader.Find("Transparent/Diffuse");
                 armature.transform.GetChild(i).GetComponent<Renderer>().material.color = new Color(armature.transform.GetChild(i).GetComponent<Renderer>().material.color.r, armature.transform.GetChild(i).GetComponent<Renderer>().material.color.g, armature.transform.GetChild(i).GetComponent<Renderer>().material.color.b, alpha);
             }
             
-            sphere.GetComponent<Renderer>().material.shader = Shader.Find("Transparent/Diffuse");
-            sphere.GetComponent<Renderer>().material.color = new Color(sphere.GetComponent<Renderer>().material.color.r, sphere.GetComponent<Renderer>().material.color.g, sphere.GetComponent<Renderer>().material.color.b, alpha);
+            //sphere.GetComponent<Renderer>().material.shader = Shader.Find("Transparent/Diffuse");
+            //sphere.GetComponent<Renderer>().material.color = new Color(sphere.GetComponent<Renderer>().material.color.r, sphere.GetComponent<Renderer>().material.color.g, sphere.GetComponent<Renderer>().material.color.b, alpha);
 
             isTransparent = true;
         }
         else
         {
-            for (int i = 0; i < armature.transform.childCount; i++)
+            for (int i = 0; i < armature.transform.childCount -1 ; i++)//-1 because of the core
                 armature.transform.GetChild(i).GetComponent<Renderer>().material.shader = oldShaderArmature;
-            sphere.GetComponent<Renderer>().material.shader = oldShaderSphere;
+            //sphere.GetComponent<Renderer>().material.shader = oldShaderSphere;
 
             isTransparent = false;
         }

@@ -349,7 +349,6 @@ public class MenuManagerInGame : MonoBehaviour
         string nomZone = GetComponent<CaracZones>().getZoneFromElement((EnumScript.Element)editorZoneElement.GetComponent<Dropdown>().value)[editorZoneSort.GetComponent<Dropdown>().value].nomZone;
         string partSys = GetComponent<CaracZones>().getZoneFromElement((EnumScript.Element)editorZoneElement.GetComponent<Dropdown>().value)[editorZoneSort.GetComponent<Dropdown>().value].partSysStr;
         EnumScript.GabaritSortDeZone gabarit = GetComponent<CaracZones>().getZoneFromElement((EnumScript.Element)editorZoneElement.GetComponent<Dropdown>().value)[editorZoneSort.GetComponent<Dropdown>().value].gabarit;
-        print(GetComponent<CaracZones>().getZoneFromElement((EnumScript.Element)editorZoneElement.GetComponent<Dropdown>().value)[editorZoneSort.GetComponent<Dropdown>().value].gabarit.ToString());
 
         sortDeZoneEnConstruction.nomZone = nomZone;
         sortDeZoneEnConstruction.particleSystemStr = partSys;
@@ -411,7 +410,7 @@ public class MenuManagerInGame : MonoBehaviour
             {
                 if (popUpYesNoResult)
                 {
-                    GameObject.Find("PlayerCaracteristics").GetComponent<PlayerCaracteristics>().supprimerAttaqueInventaireAt(selectedSort, true);
+                    player.GetComponent<Player>().supprimerAttaqueInventaireAt(selectedSort, true);
                 }
 
                 popUpYesNo.GetComponent<Canvas>().enabled = false;
@@ -424,7 +423,7 @@ public class MenuManagerInGame : MonoBehaviour
             else
             {
                 //Si le sort a supprimer est équipé sur une des faces
-                if (!GameObject.Find("PlayerCaracteristics").GetComponent<PlayerCaracteristics>().supprimerAttaqueInventaireAt(selectedSort, false))
+                if (!player.GetComponent<Player>().supprimerAttaqueInventaireAt(selectedSort, false))
                 {
                     popUpYesNo.GetComponent<Canvas>().enabled = true;
                     popUpYesNo.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = "L'attaque que vous voulez supprimer est affectée à une face, voulez vous vraiment supprimer cette attaque ?";
@@ -569,10 +568,10 @@ public class MenuManagerInGame : MonoBehaviour
         //On récupère la structure du sort depuis l'element et le nom
         structSortJet structureDuSortJ = GetComponent<CaracProjectiles>().getStructFromNameAndElement(sortDeJetEnConstruction.nomProj, sortDeJetEnConstruction.getElement());
         //On modifie le sort en conséquent
-        sortDeJetEnConstruction.nbProjectile = editorProjNbProj.GetComponent<Dropdown>().value + 1;
+        //sortDeJetEnConstruction.nbProjectile = editorProjNbProj.GetComponent<Dropdown>().value + 1;
         sortDeJetEnConstruction.vitesseProj = structureDuSortJ.vitesse;
         sortDeJetEnConstruction.setCooldown(structureDuSortJ.cooldown);
-        sortDeJetEnConstruction.setDegats(structureDuSortJ.degats / sortDeJetEnConstruction.nbProjectile);
+        //sortDeJetEnConstruction.setDegats(structureDuSortJ.degats / sortDeJetEnConstruction.nbProjectile);
         //On affiche les nouvelles caractéristiques
         editorProjVitesse.GetComponent<Text>().text = sortDeJetEnConstruction.vitesseProj.ToString();
         editorProjCoolDown.GetComponent<Text>().text = sortDeJetEnConstruction.getCooldown().ToString();
@@ -605,7 +604,7 @@ public class MenuManagerInGame : MonoBehaviour
                 chooserProjNomSort.GetComponent<Text>().text = sortChoisi.getNomSort();
                 chooserProjElement.GetComponent<Text>().text = sortChoisi.getElement().ToString();
                 chooserProjProjectile.GetComponent<Text>().text = sortChoisi.nomProj;
-                chooserProjNbProj.GetComponent<Text>().text = sortChoisi.nbProjectile.ToString();
+                //chooserProjNbProj.GetComponent<Text>().text = sortChoisi.nbProjectile.ToString();
                 //chooserProjPattern.GetComponent<Text>().text = sortChoisi.patternEnvoi.ToString();
                 chooserProjVitesse.GetComponent<Text>().text = sortChoisi.vitesseProj.ToString();
                 chooserProjCoolDown.GetComponent<Text>().text = sortChoisi.getCooldown().ToString();
@@ -637,7 +636,7 @@ public class MenuManagerInGame : MonoBehaviour
                 chooserProjNomSort.GetComponent<Text>().text = sortChoisi.getNomSort();
                 chooserProjElement.GetComponent<Text>().text = sortChoisi.getElement().ToString();
                 chooserProjProjectile.GetComponent<Text>().text = sortChoisi.nomProj;
-                chooserProjNbProj.GetComponent<Text>().text = sortChoisi.nbProjectile.ToString();
+                //chooserProjNbProj.GetComponent<Text>().text = sortChoisi.nbProjectile.ToString();
                 //chooserProjPattern.GetComponent<Text>().text = sortChoisi.patternEnvoi.ToString();
                 chooserProjVitesse.GetComponent<Text>().text = sortChoisi.vitesseProj.ToString();
                 chooserProjCoolDown.GetComponent<Text>().text = sortChoisi.getCooldown().ToString();

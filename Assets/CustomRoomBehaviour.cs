@@ -12,12 +12,11 @@ public class CustomRoomBehaviour : MonoBehaviour
     // Use this for initialization
     void Start ()
     {
-        GameObject p = (GameObject) Instantiate(player, new Vector3(0, 1, 0), new Quaternion(0, 0, 0, 0));
+        Instantiate(player, new Vector3(0, 1, 0), new Quaternion(0, 0, 0, 0));
         Instantiate(cam);
         GameObject proj = Instantiate(projector);
 
         GameObject.FindWithTag("Player").GetComponent<PlayerController>().projector = proj;
-        
     }
 	
 	// Update is called once per frame

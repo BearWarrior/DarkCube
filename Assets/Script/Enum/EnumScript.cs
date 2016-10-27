@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class EnumScript 
 {
     public enum TypeSort { Projectile, Zone };
-    public enum Element { Aucun, Eau, Metal, Feu/*, Air, Bois, Feu*/};
+    public enum Element { Aucun, Eau, Feu, Elec};
 	public enum EffetPhysique{ pousser, attirer, bondir };
 	public enum DispersionProjectile{ cone, droit, obus, rafale };
     public enum PatternSortDeJet { Unique, Rafale, SimultaneLigne, SimultaneTriangle, SimultaneCarre };

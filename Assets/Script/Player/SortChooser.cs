@@ -113,8 +113,6 @@ public class SortChooser : MonoBehaviour
                     StartCoroutine(coroutineRotationHV(f1, f6, 6));
             }
         }
-        if (oldCubeFace != cubeFace)
-            GetComponent<Player>().cubeFaceChanged(cubeFace);
     }
 
     public IEnumerator coroutineRotationHV(Quaternion fH, Quaternion fV, int newCubeFace)
@@ -132,6 +130,7 @@ public class SortChooser : MonoBehaviour
         while (rotVFinished == false)
             yield return new WaitForEndOfFrame();
         cubeFace = newCubeFace;
+        GetComponent<Player>().cubeFaceChanged(cubeFace);
     }
 
     public IEnumerator coroutineRotationVH(Quaternion fH, Quaternion fV, int newCubeFace)
@@ -149,6 +148,7 @@ public class SortChooser : MonoBehaviour
         while (rotHFinished == false)
             yield return new WaitForEndOfFrame();
         cubeFace = newCubeFace;
+        GetComponent<Player>().cubeFaceChanged(cubeFace);
     }
 
     public IEnumerator coroutineRotationHorizAll(Quaternion f)
@@ -226,9 +226,6 @@ public class SortChooser : MonoBehaviour
 
     public IEnumerator coroutineRotationVert(Quaternion f, int numFace)
     {
-        float angle = Quaternion.Angle(posAllCubes.transform.GetChild(numFace).transform.localRotation, f);
-        float vitesse = Mathf.Abs(angle) / 15;
-
         float rotTime = 0.15f;
         float startTime = Time.time;
 

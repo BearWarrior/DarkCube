@@ -23,7 +23,6 @@ public class CaracZones : MonoBehaviour
     public List<structSortDeZone> BRASIER;
     public List<structSortDeZone> PLUIE_DE_FLECHE;
     public List<structSortDeZone> PLUIE_DE_GLACE;
-    public List<structSortDeZone> PIEGE_DE_PIQUE;
 
     public void Start()
     {
@@ -65,20 +64,15 @@ public class CaracZones : MonoBehaviour
         sort.partSysStr = "none";
         sort.gabarit = EnumScript.GabaritSortDeZone.Cercle;
         PLUIE_DE_GLACE.Add(sort);
-        tabSort.Add(PLUIE_DE_GLACE);
-
-        //PIEGE PIQUE
-        PIEGE_DE_PIQUE = new List<structSortDeZone>();
-        sort.nomZone = "Piège de pique";
-        sort.element = EnumScript.Element.Metal;
+        sort.nomZone = "Pluie de glace";
+        sort.element = EnumScript.Element.Elec;
         sort.degats = 10;
         sort.cooldown = 1;
         sort.duree = 10;
-        sort.partSysStr = "fire_ground/Fire";
-        sort.gabarit = EnumScript.GabaritSortDeZone.Ligne;
-        PIEGE_DE_PIQUE.Add(sort);
-        tabSort.Add(PIEGE_DE_PIQUE);
-
+        sort.partSysStr = "none";
+        sort.gabarit = EnumScript.GabaritSortDeZone.Cercle;
+        PLUIE_DE_GLACE.Add(sort);
+        tabSort.Add(PLUIE_DE_GLACE);
     }
 
 
