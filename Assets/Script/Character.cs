@@ -20,16 +20,16 @@ public class Character : MonoBehaviour
 
 
     // Use this for initialization
-    void Start ()
+    /*void Start ()
     {
 	
-	}
+	}*/
 	
 	// Update is called once per frame
-	void Update ()
+	/*void Update ()
     {
 	
-	}
+	}*/
 
     public float getEndurance()
     {
@@ -132,7 +132,7 @@ public class Character : MonoBehaviour
         }
     }
 
-    public List<Attaque> getListAttaqueInventaire()
+    public virtual List<Attaque> getListAttaqueInventaire()
     {
         return listAttaqueInventaire;
     }

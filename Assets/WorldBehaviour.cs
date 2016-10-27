@@ -62,7 +62,7 @@ public class WorldBehaviour : MonoBehaviour
         for (int i = 1; i < nbRoom; i++)
             allRoomsGameObject[i].SetActive(false);
 
-        miniMap = GameObject.FindWithTag("MiniMap").GetComponent<MiniMap>();
+        //miniMap = GameObject.FindWithTag("MiniMap").GetComponent<MiniMap>();
 
         getCenterCurrentRoom(playerRoom);
     }
@@ -747,10 +747,10 @@ public class WorldBehaviour : MonoBehaviour
         //print ("length : " + lengthMax + "  width : " + widthMax + "  centerX : " + centerLengthFinal + "  centerY : " + centerWidthFinal);
 
 
-        Vector3 centre = new Vector3(centerLengthFinal*TAILLE_TUILE,0,  -centerWidthFinal*TAILLE_TUILE);
-        float size = Mathf.Max(lengthMax, widthMax);
+        //Vector3 centre = new Vector3(centerLengthFinal*TAILLE_TUILE,0,  -centerWidthFinal*TAILLE_TUILE);
+        //float size = Mathf.Max(lengthMax, widthMax);
 
-        miniMap.ChangePositionAndSize(centre, size);
+        //miniMap.ChangePositionAndSize(centre, size);
     }
 
 

@@ -35,6 +35,7 @@ public class PlayerCubeFlock : MonoBehaviour
     {
         directionPoint.transform.localPosition = 1f*direction;
 
+        //Calcul de la distance entre le cube et la sphere de direction
         float distMax = 0;
         int i = 0;
         for (i = 0; i < nbCube; i++)
@@ -48,12 +49,12 @@ public class PlayerCubeFlock : MonoBehaviour
         float max = 01000;
         string sortie = "";
 
+        //déplacement des cubes
         i = 0;
         for (int cptFace = 0; cptFace < posToGo.transform.childCount; cptFace++)
         {
             for (int j = 0; j < posToGo.transform.GetChild(cptFace).childCount; j++)
             {
-
                 if (1 - distance[i] / distMax < 0)
                     vitesses[i] = 0.1f;
                 else
@@ -67,11 +68,15 @@ public class PlayerCubeFlock : MonoBehaviour
                 sortie += (distance[i] / distMax) * (distance[i] / distMax) + "\n";
                 cubes.transform.GetChild(i).transform.rotation = Quaternion.Lerp(cubes.transform.GetChild(i).transform.rotation, posToGo.transform.GetChild(cptFace).GetChild(j).transform.rotation, 1.4f - ((distance[i] / distMax)));
 
-
                 i++;
             }
         }
-	}
+        
+        //Déplacement du core
+        cubes.transform.GetChild(cubes.transform.childCount-1).transform.position = Vector3.Lerp(cubes.transform.GetChild(cubes.transform.childCount - 1).transform.position, posToGo.transform.GetChild(6).transform.position, 1.4f - ((distance[i] / distMax)));
+        sortie += (distance[i] / distMax) * (distance[i] / distMax) + "\n";
+        cubes.transform.GetChild(cubes.transform.childCount - 1).transform.rotation = Quaternion.Lerp(cubes.transform.GetChild(cubes.transform.childCount - 1).transform.rotation, posToGo.transform.GetChild(6).transform.rotation, 1.4f - ((distance[i] / distMax)));
+    }
 
     public void init(GameObject p_cubes, GameObject p_posCubes)
     {
