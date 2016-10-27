@@ -15,6 +15,7 @@ using Random = UnityEngine.Random;
 public enum RandomMoveCoordinates
 {
   None,
+  Z,
   XY,
   XZ,
   YZ,
@@ -254,14 +255,16 @@ public class ProjectileCollisionBehaviour : MonoBehaviour
       coord2 = randomDirection3 * Mathf.Sin(timeDegree + (randomDirection1 * Mathf.PI / 2) * time + Mathf.Sin(delta)) * randomRadiusY;
     }
 
+    if (RandomMoveCoordinates == RandomMoveCoordinates.Z)
+        smootRandomPos = new Vector3(0, 0, coord1);
     if (RandomMoveCoordinates==RandomMoveCoordinates.XY)
-      smootRandomPos = new Vector3(coord1, coord2, 0);
+        smootRandomPos = new Vector3(coord1, coord2, 0);
     if (RandomMoveCoordinates==RandomMoveCoordinates.XZ)
-      smootRandomPos = new Vector3(coord1, 0, coord2);
+        smootRandomPos = new Vector3(coord1, 0, coord2);
     if (RandomMoveCoordinates==RandomMoveCoordinates.YZ)
-      smootRandomPos = new Vector3(0, coord1, coord2);
+        smootRandomPos = new Vector3(0, coord1, coord2);
     if (RandomMoveCoordinates==RandomMoveCoordinates.XYZ)
-      smootRandomPos = new Vector3(coord1, coord2, (coord1 + coord2) / 2 * randomDirection1);
+        smootRandomPos = new Vector3(coord1, coord2, (coord1 + coord2) / 2 * randomDirection1);
   }
 }
 
