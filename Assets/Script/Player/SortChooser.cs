@@ -113,8 +113,8 @@ public class SortChooser : MonoBehaviour
                     StartCoroutine(coroutineRotationHV(f1, f6, 6));
             }
         }
-        /*if (oldCubeFace != cubeFace)
-            GetComponent<Player>().cubeFaceChanged(cubeFace);*/
+        if (oldCubeFace != cubeFace)
+            GetComponent<Player>().cubeFaceChanged(cubeFace);
     }
 
     public IEnumerator coroutineRotationHV(Quaternion fH, Quaternion fV, int newCubeFace)

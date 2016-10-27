@@ -13,8 +13,7 @@ public class Player : Character
     private bool isTransparent = false;
     private float alpha = 0.15f;
 
-    int cubeFace;
-
+    private int cubeFace;
 
     // Use this for initialization
     void Start()
@@ -26,7 +25,6 @@ public class Player : Character
         listAttaqueInventaire = new List<Attaque>();
 
         //listAttaqueInventaire.Add(new SortDeZone());
-
         /*listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cercle, "ppp", "ppp", "none"));
         listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cercle, "ppp", "ppp", "none"));
         listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cercle, "ppp", "ppp", "none"));
@@ -38,12 +36,12 @@ public class Player : Character
         listAttaqueInventaire.Add(new SortDeZone(4, 80, 1, 1, 1, EnumScript.Element.Aucun, EnumScript.GabaritSortDeZone.Cone, "ppp", "ppp", "none"));*/
 
 
-        listAttaqueInventaire.Add(new SortDeJet(1, 45, 0.05f, 10, EnumScript.Element.Metal, "Canon", "canon", EnumScript.PatternSortDeJet.Rafale));
-        listAttaqueInventaire.Add(new SortDeJet(1, 60, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme", EnumScript.PatternSortDeJet.SimultaneLigne));
-        listAttaqueInventaire.Add(new SortDeJet(3, 70, 2, 10, EnumScript.Element.Eau, "Shuriken", "ShuShu", EnumScript.PatternSortDeJet.SimultaneTriangle));
-        listAttaqueInventaire.Add(new SortDeJet(4, 45, 2, 10, EnumScript.Element.Metal, "Canon", "4ligne", EnumScript.PatternSortDeJet.SimultaneLigne));
-        listAttaqueInventaire.Add(new SortDeJet(4, 45, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme-rafale", EnumScript.PatternSortDeJet.Rafale));
-        listAttaqueInventaire.Add(new SortDeJet(4, 45, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme-rafale", EnumScript.PatternSortDeJet.Rafale));
+        listAttaqueInventaire.Add(new SortDeJet(1, 45, 0.05f, 10, EnumScript.Element.Metal, "Canon", "canon"));
+        listAttaqueInventaire.Add(new SortDeJet(1, 60, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme"));
+        listAttaqueInventaire.Add(new SortDeJet(3, 70, 2, 10, EnumScript.Element.Eau, "Shuriken", "ShuShu"));
+        listAttaqueInventaire.Add(new SortDeJet(4, 45, 2, 10, EnumScript.Element.Metal, "Canon", "4ligne"));
+        listAttaqueInventaire.Add(new SortDeJet(4, 45, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme-rafale"));
+        listAttaqueInventaire.Add(new SortDeJet(4, 45, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme-rafale"));
 
         equipeAttaqueAt(1, 0);
         equipeAttaqueAt(2, 1);
@@ -129,7 +127,7 @@ public class Player : Character
         }
     }
 
-
+    //if the player is too close of the camera
     public void setTransparecy(bool set)
     {
         if (set)

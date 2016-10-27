@@ -101,10 +101,10 @@ public class MenuManagerInGame : MonoBehaviour
 
 
 
-    private List<List<string>> listPatternsSortJet = new List<List<string>>{new List<string> { "Unique"}, //1proj
-                                                                     new List<string> { "Rafale", "Simultané ligne" }, //2proj
-                                                                     new List<string> { "Rafale", "Simultané ligne", "Simultané triangle" }, //3proj
-                                                                     new List<string> { "Rafale", "Simultané ligne", "Simultané carré" }}; //4proj
+    //private List<List<string>> listPatternsSortJet = new List<List<string>>{new List<string> { "Unique"}, //1proj
+    //                                                                 new List<string> { "Rafale", "Simultané ligne" }, //2proj
+    //                                                                 new List<string> { "Rafale", "Simultané ligne", "Simultané triangle" }, //3proj
+    //                                                                 new List<string> { "Rafale", "Simultané ligne", "Simultané carré" }}; //4proj
 
     private float doubleClickStart = -1;
 
@@ -158,12 +158,12 @@ public class MenuManagerInGame : MonoBehaviour
 
         //editor
         //editorGabaritChanged();
-        majPattern();
+        //majPattern();
 
         //chooser- fait dans Init
-        /*fillClassChooserTable();
-        majCaracSortClicked();
-        setSelectedFace(selectedFace);*/
+        //fillClassChooserTable();
+        //majCaracSortClicked();
+        //setSelectedFace(selectedFace);
     }
 
     // Update is called once per frame
@@ -359,7 +359,7 @@ public class MenuManagerInGame : MonoBehaviour
         majCaracSortEnConstr();
     }
 
-    public void editorPatternChanged()
+    /*public void editorPatternChanged()
     {
         switch (listPatternsSortJet[editorProjNbProj.GetComponent<Dropdown>().value][editorProjPattern.GetComponent<Dropdown>().value])
         {
@@ -379,7 +379,7 @@ public class MenuManagerInGame : MonoBehaviour
                 sortDeJetEnConstruction.patternEnvoi = EnumScript.PatternSortDeJet.SimultaneCarre;
                 break;
         }
-    }
+    }*/
 
     public void editorRayonChanged() //TODO
     {
@@ -606,7 +606,7 @@ public class MenuManagerInGame : MonoBehaviour
                 chooserProjElement.GetComponent<Text>().text = sortChoisi.getElement().ToString();
                 chooserProjProjectile.GetComponent<Text>().text = sortChoisi.nomProj;
                 chooserProjNbProj.GetComponent<Text>().text = sortChoisi.nbProjectile.ToString();
-                chooserProjPattern.GetComponent<Text>().text = sortChoisi.patternEnvoi.ToString();
+                //chooserProjPattern.GetComponent<Text>().text = sortChoisi.patternEnvoi.ToString();
                 chooserProjVitesse.GetComponent<Text>().text = sortChoisi.vitesseProj.ToString();
                 chooserProjCoolDown.GetComponent<Text>().text = sortChoisi.getCooldown().ToString();
                 chooserProjDegats.GetComponent<Text>().text = sortChoisi.getDegats().ToString();
@@ -638,7 +638,7 @@ public class MenuManagerInGame : MonoBehaviour
                 chooserProjElement.GetComponent<Text>().text = sortChoisi.getElement().ToString();
                 chooserProjProjectile.GetComponent<Text>().text = sortChoisi.nomProj;
                 chooserProjNbProj.GetComponent<Text>().text = sortChoisi.nbProjectile.ToString();
-                chooserProjPattern.GetComponent<Text>().text = sortChoisi.patternEnvoi.ToString();
+                //chooserProjPattern.GetComponent<Text>().text = sortChoisi.patternEnvoi.ToString();
                 chooserProjVitesse.GetComponent<Text>().text = sortChoisi.vitesseProj.ToString();
                 chooserProjCoolDown.GetComponent<Text>().text = sortChoisi.getCooldown().ToString();
                 chooserProjDegats.GetComponent<Text>().text = sortChoisi.getDegats().ToString();
@@ -700,19 +700,19 @@ public class MenuManagerInGame : MonoBehaviour
         chooserScrollListSortEq.transform.GetChild(0).GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(chooserScrollListSortEq.transform.GetChild(0).GetChild(0).GetComponent<RectTransform>().sizeDelta.x, hauteurFinale);
     }
 
-    public void majPattern()
-    {
-        //edit.GetComponent<Dropdown>().enabled = true;
-        editorProjPattern.GetComponent<Dropdown>().options.Clear();
-        foreach (string pat in listPatternsSortJet[editorProjNbProj.GetComponent<Dropdown>().value]) //En fonction du nombre de projectile
-            editorProjPattern.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(pat));
+    //public void majPattern()
+    //{
+    //    //edit.GetComponent<Dropdown>().enabled = true;
+    //    editorProjPattern.GetComponent<Dropdown>().options.Clear();
+    //    foreach (string pat in listPatternsSortJet[editorProjNbProj.GetComponent<Dropdown>().value]) //En fonction du nombre de projectile
+    //        editorProjPattern.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(pat));
 
-        editorProjPattern.GetComponent<Dropdown>().captionText = editorProjPattern.GetComponent<Dropdown>().captionText;
+    //    editorProjPattern.GetComponent<Dropdown>().captionText = editorProjPattern.GetComponent<Dropdown>().captionText;
 
-        sortDeJetEnConstruction.nbProjectile = editorProjNbProj.GetComponent<Dropdown>().value;
+    //    sortDeJetEnConstruction.nbProjectile = editorProjNbProj.GetComponent<Dropdown>().value;
 
-        majCaracSortEnConstr();
-    }
+    //    majCaracSortEnConstr();
+    //}
 
     public void exitMenu()
     {

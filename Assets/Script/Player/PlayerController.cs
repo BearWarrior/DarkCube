@@ -190,8 +190,6 @@ public class PlayerController : MonoBehaviour
 
         if (controllable) //Joueur controllable (pas dans un menu)
         {
-            //if (view == null || view.isMine) //permet de jouer son joueur et pas celui des autres
-            //{
             //SPRINT
             if (Input.GetKeyDown(KeyCode.LeftShift))
             {
@@ -210,7 +208,6 @@ public class PlayerController : MonoBehaviour
 
             if (running)
                 player.GetComponent<Player>().downEndurance();
-            //}
         }
 
         if (usingZoneCone) //Le joueur utilsie un sort de zone qui part de lui.
@@ -337,8 +334,6 @@ public class PlayerController : MonoBehaviour
     {
         if (controllable)
         {
-            //if (view == null || view.isMine) //permet de jouer son joueur et pas celui des autres
-            //{
             //Moyenne entre les 3 derniers input pour eviter la saccade lors du chagement direction
             lastlastHorizontalAxis = lastHorizontalAxis;
             lastHorizontalAxis = HorizontalAxis;
@@ -354,9 +349,6 @@ public class PlayerController : MonoBehaviour
             movement = transform.TransformDirection(movement);
 
             GetComponent<Rigidbody>().velocity = movement;
-
-            //tilt = Quaternion.Euler(new Vector3(Input.GetAxis("Vertical") * (Convert.ToInt32(running) * 5 + 5), 0, Input.GetAxis("Horizontal") * -(Convert.ToInt32(running) * 5 + 5)));
-            //GameObject.FindWithTag("Tiltable").transform.localRotation = Quaternion.Slerp(GameObject.FindWithTag("Tiltable").transform.localRotation, tilt, Time.deltaTime * 10);
 
             GetComponent<PlayerCubeFlock>().direction = new Vector3(mvtH, 0, mvtV);
 
@@ -403,7 +395,6 @@ public class PlayerController : MonoBehaviour
             //Gestion du saut
             if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
                 GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity + new Vector3(0, impulsionSaut, 0);
-            //}
         }
     }
 
@@ -441,7 +432,6 @@ public class PlayerController : MonoBehaviour
     {
         if (!b) //incontrollable
         {
-            //GameObject.FindWithTag("Tiltable").transform.localRotation = new Quaternion(0, 0, 0, 0);
             GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
         }
         controllable = b;

@@ -8,8 +8,7 @@ public class SortDeJet : Attaque
     public float vitesseProj;
     public float rayonEffet;
     public string nomProj;
-    public bool stuck;
-    public EnumScript.PatternSortDeJet patternEnvoi;
+    //public EnumScript.PatternSortDeJet patternEnvoi;
 
     public List<GameObject> listProjCreated;
     public GameObject proj;
@@ -27,7 +26,7 @@ public class SortDeJet : Attaque
         nomProj = "none";
         element = EnumScript.Element.Eau;
         nomSort = "none";
-        patternEnvoi = EnumScript.PatternSortDeJet.Rafale;
+        //patternEnvoi = EnumScript.PatternSortDeJet.Rafale;
     }
 
     public SortDeJet(SortDeJet copy)
@@ -40,10 +39,10 @@ public class SortDeJet : Attaque
         nomProj = copy.nomProj;
         element = copy.element;
         nomSort = copy.nomSort;
-        patternEnvoi = copy.patternEnvoi;
+        //patternEnvoi = copy.patternEnvoi;
     }
 
-    public SortDeJet(int p_nbProj, float p_vitesse, float p_cd, float p_degats, EnumScript.Element p_element, string p_nomProj, string p_nomSort, EnumScript.PatternSortDeJet p_pat)
+    public SortDeJet(int p_nbProj, float p_vitesse, float p_cd, float p_degats, EnumScript.Element p_element, string p_nomProj, string p_nomSort/*, EnumScript.PatternSortDeJet p_pat*/)
     {
         type = 1;
         nbProjectile = p_nbProj;
@@ -53,7 +52,7 @@ public class SortDeJet : Attaque
         nomProj = p_nomProj;
         element = p_element;
         nomSort = p_nomSort;
-        patternEnvoi = p_pat;
+        //patternEnvoi = p_pat;
     }
 
     public override void Attaquer()
@@ -61,61 +60,62 @@ public class SortDeJet : Attaque
         if (canShoot)
         {
             //Si ce n'est pas une rafale
-            if (patternEnvoi != EnumScript.PatternSortDeJet.Rafale)
-            {
-                switch (nbProjectile)
-                {
-                    case 1:
-                        createProj(0, 0);
-                        break;
-                    case 2:
-                        createProj(0, -0.5f);
-                        createProj(0, 0.5f);
-                        break;
-                    case 3:
-                        switch (patternEnvoi)
-                        {
-                            case EnumScript.PatternSortDeJet.SimultaneLigne:
-                                createProj(0, -1);
-                                createProj(0, 0);
-                                createProj(0, 1);
-                                break;
-                            case EnumScript.PatternSortDeJet.SimultaneTriangle:
-                                createProj(1f, 0);
-                                createProj(-1f, -1f);
-                                createProj(-1f, 1f);
-                                break;
-                        }
-                        break;
-                    case 4:
-                        switch (patternEnvoi)
-                        {
-                            case EnumScript.PatternSortDeJet.SimultaneLigne:
-                                createProj(0, -1.5f);
-                                createProj(0, -.5f);
-                                createProj(0, .5f);
-                                createProj(0, 1.5f);
-                                break;
-                            case EnumScript.PatternSortDeJet.SimultaneCarre:
-                                createProj(0.5f, 0.5f);
-                                createProj(0.5f, -0.5f);
-                                createProj(-0.5f, 0.5f);
-                                createProj(-0.5f, -0.5f);
-                                break;
-                        }
-                        break;
-                }
+            //if (patternEnvoi != EnumScript.PatternSortDeJet.Rafale)
+            //{
+            //    switch (nbProjectile)
+            //    {
+            //        case 1:
+            //            createProj(0, 0);
+            //            break;
+            //        case 2:
+            //            createProj(0, -0.5f);
+            //            createProj(0, 0.5f);
+            //            break;
+            //        case 3:
+            //            switch (patternEnvoi)
+            //            {
+            //                case EnumScript.PatternSortDeJet.SimultaneLigne:
+            //                    createProj(0, -1);
+            //                    createProj(0, 0);
+            //                    createProj(0, 1);
+            //                    break;
+            //                case EnumScript.PatternSortDeJet.SimultaneTriangle:
+            //                    createProj(1f, 0);
+            //                    createProj(-1f, -1f);
+            //                    createProj(-1f, 1f);
+            //                    break;
+            //            }
+            //            break;
+            //        case 4:
+            //            switch (patternEnvoi)
+            //            {
+            //                case EnumScript.PatternSortDeJet.SimultaneLigne:
+            //                    createProj(0, -1.5f);
+            //                    createProj(0, -.5f);
+            //                    createProj(0, .5f);
+            //                    createProj(0, 1.5f);
+            //                    break;
+            //                case EnumScript.PatternSortDeJet.SimultaneCarre:
+            //                    createProj(0.5f, 0.5f);
+            //                    createProj(0.5f, -0.5f);
+            //                    createProj(-0.5f, 0.5f);
+            //                    createProj(-0.5f, -0.5f);
+            //                    break;
+            //            }
+            //            break;
+            //    }
 
-                //Une fois tous les projectiles créés, on les lance
-                launchProj();
-            }
-            else //C'est une rafale
-            {
-                //On crée un delegate pour décenbtraliser la tempo sur le script player qui viendra apeler la méthode shootRafale à intervals réguliers (Du au fait que ce script n'est pas MonoBehavior)
-                fctDelegate = shootRafale;
-                GameObject.FindWithTag("Player").GetComponent<Player>().launchProjRafale(nbProjectile, cooldown / (2.0f * nbProjectile), fctDelegate);
-            }
+            //    //Une fois tous les projectiles créés, on les lance
+            //    launchProj();
+            //}
+            //else //C'est une rafale
+            //{
+            //    //On crée un delegate pour décentraliser la tempo sur le script player qui viendra apeler la méthode shootRafale à intervals réguliers (Du au fait que ce script n'est pas MonoBehavior)
+            //    fctDelegate = shootRafale;
+            //    GameObject.FindWithTag("Player").GetComponent<Player>().launchProjRafale(nbProjectile, cooldown / (2.0f * nbProjectile), fctDelegate);
+            //}
 
+            launchProj();
             lastShot = Time.time;
             canShoot = false;
         }
@@ -171,22 +171,14 @@ public class SortDeJet : Attaque
         }
         
 
-        if (stuck)
-        {
-            foreach (GameObject go in listProjCreated)
-            {
-                go.GetComponent<ProjectileStuck>().setInitRotation(go.transform.eulerAngles);
-            }
-        }
-
         listProjCreated.Clear();
         GameObject.Destroy(whole.gameObject);
     }
 
     //Appelé depuis le script Player (Coroutine)
-    public void shootRafale()
-    {
-        createProj(0, 0);
-        launchProj();
-    }
+    //public void shootRafale()
+    //{
+    //    createProj(0, 0);
+    //    launchProj();
+    //}
 }
