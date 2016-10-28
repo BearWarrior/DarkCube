@@ -24,6 +24,9 @@ public class CaracProjectiles : MonoBehaviour
     public List<structSortJet> ARROW;
 
     public List<structSortJet> LIGHTNINGBALL;
+    public List<structSortJet> METEOR;
+    public List<structSortJet> WAVE;
+    public List<structSortJet> LASER;
 
     public void Start()
     {
@@ -92,18 +95,48 @@ public class CaracProjectiles : MonoBehaviour
         //LIGHTNINGBALL
         LIGHTNINGBALL = new List<structSortJet>();
         sort.nomProj = "LightningBall";
-        sort.element = EnumScript.Element.Aucun;
-        sort.degats = 10;
-        sort.cooldown = 0.5f;
-        sort.vitesse = 1;
-        LIGHTNINGBALL.Add(sort);
-        sort.nomProj = "LightningBall";
         sort.element = EnumScript.Element.Elec;
         sort.degats = 10;
         sort.cooldown = 0.5f;
-        sort.vitesse = 1;
+        sort.vitesse = 10;
         LIGHTNINGBALL.Add(sort);
         tabSort.Add(LIGHTNINGBALL);
+
+        //METEOR
+        METEOR = new List<structSortJet>();
+        sort.nomProj = "Meteor";
+        sort.element = EnumScript.Element.Feu;
+        sort.degats = 10;
+        sort.cooldown = 0.5f;
+        sort.vitesse = 10;
+        METEOR.Add(sort);
+        sort.nomProj = "Meteor";
+        sort.element = EnumScript.Element.Eau;
+        sort.degats = 10;
+        sort.cooldown = 0.5f;
+        sort.vitesse = 10;
+        METEOR.Add(sort);
+        tabSort.Add(METEOR);
+
+        //WAVE
+        WAVE = new List<structSortJet>();
+        sort.nomProj = "Wave";
+        sort.element = EnumScript.Element.Eau;
+        sort.degats = 10;
+        sort.cooldown = 0.5f;
+        sort.vitesse = 10;
+        WAVE.Add(sort);
+        tabSort.Add(WAVE);
+
+        //LASER
+        LASER = new List<structSortJet>();
+        sort.nomProj = "ShotLaser";
+        sort.element = EnumScript.Element.Elec;
+        sort.degats = 10;
+        sort.cooldown = 0.5f;
+        sort.vitesse = 10;
+        LASER.Add(sort);
+        tabSort.Add(LASER);
     }
 
 
