@@ -9,10 +9,12 @@ public class ParticleCollisionBehaviour : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
+        if (other.tag != "Player")
+        {
             core.SetActive(false);
             explosion.SetActive(true);
             Destroy(this.gameObject, timeBeforeDestroy);
             GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
-        
+        }
     }
 }

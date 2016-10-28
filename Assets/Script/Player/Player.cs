@@ -25,8 +25,11 @@ public class Player : Character
         listAttaqueInventaire = new List<Attaque>();
 
         listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Elec, "LightningBall", "perso1"));
-        listAttaqueInventaire.Add(new SortDeJet(11, 0.05f, 10, EnumScript.Element.Elec, "LightningBall", "perso1"));
-        listAttaqueInventaire.Add(new SortDeJet(1, 0.05f, 10, EnumScript.Element.Elec, "LightningBall", "perso1"));
+        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Feu, "Meteor", "perso1"));
+        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Eau, "Meteor", "perso1"));
+        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Eau, "Wave", "perso1"));
+        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Elec, "ShotLaser", "perso1"));
+
         listAttaqueInventaire.Add(new SortDeJet(60, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme"));
         listAttaqueInventaire.Add(new SortDeJet(70, 2, 10, EnumScript.Element.Eau, "Shuriken", "ShuShu"));
         listAttaqueInventaire.Add(new SortDeJet(45, 2, 10, EnumScript.Element.Aucun, "Canon", "4ligne"));
