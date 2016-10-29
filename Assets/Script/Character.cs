@@ -8,12 +8,12 @@ public class Character : MonoBehaviour
     protected float PDVactuel;
     protected float armureMax;
     protected float armureActuel;
-    protected float enduranceMax;
-    protected float enduranceActuel;
+    //protected float enduranceMax;
+    //protected float enduranceActuel;
 
-    protected float timeBeforeRunningMax;
-    protected float timeBeforeRunningAct;
-    protected bool regenEndurance;
+    //protected float timeBeforeRunningMax;
+    //protected float timeBeforeRunningAct;
+    //protected bool regenEndurance;
 
     protected Attaque[] listAttaque;
     protected List<Attaque> listAttaqueInventaire;
@@ -31,17 +31,7 @@ public class Character : MonoBehaviour
 	
 	}*/
 
-    public float getEndurance()
-    {
-        return enduranceActuel;
-    }
-
-    public void downEndurance()
-    {
-        regenEndurance = false;
-        enduranceActuel -= Time.deltaTime;
-        enduranceActuel = (enduranceActuel < 0) ? 0 : enduranceActuel;
-    }
+   
 
     //Coroutine de lancement de projectile en rafale (voir SortDeJet)
     public void launchProjRafale(int p_nbProj, float delay, SortDeJet.Del p_function)
