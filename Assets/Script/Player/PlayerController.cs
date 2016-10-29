@@ -27,12 +27,20 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded;
     private bool aiming;
     private bool running;
+    private bool dashUsed;
     private bool usingZoneCone;
     private bool gabaritUsed;
     private bool controllable;
     private bool projectorAtMouse; //true : projector au niveau de la souris   false : projector devant le joueur position fixe
     
     private SortDeZone sortDeZone;
+
+    protected float enduranceMax;
+    protected float enduranceActuel;
+
+    protected float timeBeforeRunningMax;
+    protected float timeBeforeRunningAct;
+    protected bool regenEndurance;
 
     // Use this for initialization
     void Awake()
@@ -135,12 +143,44 @@ public class PlayerController : MonoBehaviour
         controllable = true;
         gabaritUsed = false;
         usingZoneCone = false;
+        dashUsed = false;
+
+        enduranceMax = 0.2f;
+        enduranceActuel = enduranceMax;
+        regenEndurance = false;
+        timeBeforeRunningMax = 3;
+        timeBeforeRunningAct = 0;
 
         projector = GameObject.FindWithTag("Projector");
     }
 
+    public float getEndurance()
+    {
+        return enduranceActuel;
+    }
+
+    public void downEndurance()
+    {
+        regenEndurance = false;
+        enduranceActuel -= Time.deltaTime;
+        enduranceActuel = (enduranceActuel < 0) ? 0 : enduranceActuel;
+    }
+
     void Update()
     {
+        //RegenDash
+        if (!isRunning())
+            timeBeforeRunningAct += Time.deltaTime;
+        else
+            timeBeforeRunningAct = 0;
+        if (timeBeforeRunningAct > timeBeforeRunningMax)
+        {
+            dashUsed = false;
+            enduranceActuel = enduranceMax;
+            print("DASH ENABLE");
+        }
+
+
         if (gabaritUsed) //Joueur a un sort de zone dans la main -> affichage du gabarit correspondant
         {
             if (projectorAtMouse) // Gabarit sur la souris
@@ -189,23 +229,35 @@ public class PlayerController : MonoBehaviour
         if (controllable) //Joueur controllable (pas dans un menu)
         {
             //SPRINT
-            if (Input.GetKeyDown(KeyCode.LeftShift))
+            if (Input.GetKeyDown(KeyCode.LeftShift) && (HorizontalAxis != 0 || VerticalAxis != 0))
             {
                 if (running)
                     running = false;
                 else
-                    if (player.GetComponent<Player>().getEndurance() > 0)
+                    if (getEndurance() > 0)
                     running = true;
             }
 
-            if (running && player.GetComponent<Player>().getEndurance() == 0)
+            if (running && getEndurance() == 0)
                 running = false;
 
             if (HorizontalAxis == 0 && VerticalAxis == 0)
                 running = false;
 
             if (running)
-                player.GetComponent<Player>().downEndurance();
+                downEndurance();
+
+            //Instatiation du particle Dash
+            Vector3 dire = new Vector3(HorizontalAxis, 0, VerticalAxis);
+            float angle = Vector3.Angle(dire, Vector3.forward);
+            if (HorizontalAxis < 0)
+                angle *= -1;
+            if (running && !dashUsed)
+            {
+                GameObject dash = (GameObject) Instantiate(Resources.Load("Particle/Prefabs/Others/BlueDash"), this.transform.position, Quaternion.Euler(new Vector3(0, angle, 0) + this.transform.localEulerAngles));
+                Destroy(dash, 3);
+                dashUsed = true;
+            }
         }
 
         if (usingZoneCone) //Le joueur utilsie un sort de zone qui part de lui.

@@ -12,12 +12,12 @@ public class Enemy : Character
         PDVactuel = 10;
         armureMax = 10;
         armureActuel = 10;
-        enduranceMax = 3;
-        enduranceActuel = 3;
+        //enduranceMax = 3;
+        //enduranceActuel = 3;
 
-        regenEndurance = false;
-        timeBeforeRunningMax = 3;
-        timeBeforeRunningAct = 0;
+        //regenEndurance = false;
+        //timeBeforeRunningMax = 3;
+        //timeBeforeRunningAct = 0;
     }
 	
 	// Update is called once per frame
