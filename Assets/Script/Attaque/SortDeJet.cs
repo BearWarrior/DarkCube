@@ -57,10 +57,6 @@ public class SortDeJet : Attaque
 
     public void createProj(float offsetH, float offsetW)
     {
-        Debug.Log("SHOOT : " + "Projectiles/" + nomProj + element.ToString() + "Proj");
-        Debug.Log("Particle/prefabs/" + nomProj + element.ToString());
-
-        //proj = GameObject.Instantiate(Resources.Load("Projectiles/" + nomProj), GameObject.Find("SpawnProjectile").transform.position + new Vector3(offsetW, offsetH, 0), new Quaternion(0, 0, 0, 0)) as GameObject;
         proj = GameObject.Instantiate(Resources.Load("Particle/prefabs/SortsDeJet/" + nomProj + element.ToString()), GameObject.FindWithTag("SpawnProjectile").transform.position + new Vector3(offsetW, offsetH, 0), new Quaternion(0, 0, 0, 0)) as GameObject;
         proj.transform.parent = null;
 
@@ -79,10 +75,13 @@ public class SortDeJet : Attaque
 
         proj.transform.eulerAngles = new Vector3(0, GameObject.FindWithTag("Player").transform.eulerAngles.y, 0);
 
-        //proj.GetComponent<EffectSettings>().UseMoveVector = true;
-        //proj.AddComponent<Rigidbody>();
         proj.GetComponent<Rigidbody>().velocity = 75 * direction * Time.deltaTime * vitesseProj;
-        //proj.GetComponent<Rigidbody>().useGravity = false;
+        proj.transform.tag = "AttaquePlayer";
+
+        ProjectileData projData = proj.AddComponent<ProjectileData>();
+        projData.degats = degats;
+        projData.element = element;
+
     }
 
 

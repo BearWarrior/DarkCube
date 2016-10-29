@@ -95,7 +95,7 @@ public class Player : Character
 
         //Clic gauche 
         if (GetComponent<PlayerController>().getControllable())
-            if (Input.GetMouseButtonDown(0) && GetComponent<PlayerController>().isAiming())
+            if (Input.GetMouseButton(0) && GetComponent<PlayerController>().isAiming() && GetComponent<SortChooser>().playerCanShoot())
                 if (listAttaque[cubeFace - 1] != null)
                     listAttaque[cubeFace - 1].Attaquer();
 

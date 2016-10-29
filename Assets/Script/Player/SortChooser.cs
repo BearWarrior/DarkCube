@@ -24,6 +24,8 @@ public class SortChooser : MonoBehaviour
     public bool rotHFinished = true;
     public bool rotVFinished = true;
 
+    private bool canShoot = true;
+
     // Use this for initialization
     void Start()
     {
@@ -113,6 +115,8 @@ public class SortChooser : MonoBehaviour
                     StartCoroutine(coroutineRotationHV(f1, f6, 6));
             }
         }
+
+        canShoot = rotVFinished & rotHFinished;
     }
 
     public IEnumerator coroutineRotationHV(Quaternion fH, Quaternion fV, int newCubeFace)
@@ -256,6 +260,11 @@ public class SortChooser : MonoBehaviour
             center += l[cube].transform.position;
         center /= nbCube;
         return center;
+    }
+
+    public bool playerCanShoot()
+    {
+        return canShoot;
     }
 
     public void setListCubes(List<List<GameObject>> horiz, GameObject posAC)
