@@ -9,7 +9,7 @@ public class Enemy : Character
 	void Start ()
     {
         PDVmax = 10;
-        PDVactuel = 10;
+        PDVactuel = 30;
         armureMax = 10;
         armureActuel = 10;
         //enduranceMax = 3;
@@ -23,6 +23,21 @@ public class Enemy : Character
 	// Update is called once per frame
 	void Update ()
     {
-	
+	    
 	}
+
+    void OnTriggerEnter(Collider other)
+    {
+        if(other.tag == "AttaquePlayer")
+        {
+            doDamages(other.GetComponent<ProjectileData>().degats);
+        }
+    }
+
+    private void doDamages(float damage)
+    {
+        PDVactuel -= damage;
+        if(PDVactuel <= 0)
+            Destroy(this.gameObject);
+    }
 }

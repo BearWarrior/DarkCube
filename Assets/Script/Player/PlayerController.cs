@@ -177,7 +177,6 @@ public class PlayerController : MonoBehaviour
         {
             dashUsed = false;
             enduranceActuel = enduranceMax;
-            print("DASH ENABLE");
         }
 
 
