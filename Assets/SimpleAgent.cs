@@ -9,7 +9,7 @@ public class SimpleAgent : MonoBehaviour
 
     public  GameObject target;
     private Vector3 posDepart;
-    private bool playerDetected;
+    public bool playerDetected;
     private NavMeshAgent agent;
     
 
@@ -41,8 +41,10 @@ public class SimpleAgent : MonoBehaviour
                 RaycastHit hit;
                 Ray ray = new Ray(this.transform.position, (target.transform.position - this.transform.position));
                 if (Physics.Raycast(ray, out hit, Vector3.Distance(this.transform.position, target.transform.position)))
-                    if(hit.transform.root.tag == "Player")
-                        playerDetected = true;       
+                {
+                    if (hit.transform.tag == "Player")
+                        playerDetected = true;
+                }
             }
         }
         else

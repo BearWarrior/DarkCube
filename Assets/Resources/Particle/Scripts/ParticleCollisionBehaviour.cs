@@ -9,7 +9,7 @@ public class ParticleCollisionBehaviour : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.tag != "Player")
+        if (other.tag != "Player" && other.tag != "AttaquePlayer")
         {
             core.SetActive(false);
             explosion.SetActive(true);
