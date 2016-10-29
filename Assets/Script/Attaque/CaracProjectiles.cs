@@ -27,6 +27,7 @@ public class CaracProjectiles : MonoBehaviour
     public List<structSortJet> METEOR;
     public List<structSortJet> WAVE;
     public List<structSortJet> LASER;
+    public List<structSortJet> BOMB;
 
     public void Start()
     {
@@ -137,6 +138,32 @@ public class CaracProjectiles : MonoBehaviour
         sort.vitesse = 10;
         LASER.Add(sort);
         tabSort.Add(LASER);
+
+        //LASER
+        LASER = new List<structSortJet>();
+        sort.nomProj = "ShotLaser";
+        sort.element = EnumScript.Element.Elec;
+        sort.degats = 10;
+        sort.cooldown = 0.5f;
+        sort.vitesse = 10;
+        LASER.Add(sort);
+        tabSort.Add(LASER);
+
+        //BOMB
+        BOMB = new List<structSortJet>();
+        sort.nomProj = "Bomb";
+        sort.element = EnumScript.Element.Eau;
+        sort.degats = 10;
+        sort.cooldown = 0.5f;
+        sort.vitesse = 10;
+        BOMB.Add(sort);
+        sort.nomProj = "Bomb";
+        sort.element = EnumScript.Element.Elec;
+        sort.degats = 10;
+        sort.cooldown = 0.5f;
+        sort.vitesse = 10;
+        BOMB.Add(sort);
+        tabSort.Add(BOMB);
     }
 
 

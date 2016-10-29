@@ -24,11 +24,13 @@ public class Player : Character
 
         listAttaqueInventaire = new List<Attaque>();
 
-        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Elec, "LightningBall", "perso1"));
-        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Feu, "Meteor", "perso1"));
-        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Eau, "Meteor", "perso1"));
-        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Eau, "Wave", "perso1"));
-        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Elec, "ShotLaser", "perso1"));
+        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Elec, "LightningBall", "LightningBall"));
+        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Feu, "Meteor", "MeteorFeu"));
+        //listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Eau, "Meteor", "MeteorEau"));
+        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Eau, "Wave", "WaveEau"));
+        listAttaqueInventaire.Add(new SortDeJet(30, 0.5f, 10, EnumScript.Element.Elec, "ShotLaser", "ShotLaserElec"));
+        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Elec, "Bomb", "BombElec"));
+        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Eau, "Bomb", "BombEau"));
 
         listAttaqueInventaire.Add(new SortDeJet(60, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme"));
         listAttaqueInventaire.Add(new SortDeJet(70, 2, 10, EnumScript.Element.Eau, "Shuriken", "ShuShu"));
@@ -47,12 +49,14 @@ public class Player : Character
         PDVactuel = 10;
         armureMax = 10;
         armureActuel = 10;
-        enduranceMax = 0.25f;
-        enduranceActuel = 0.25f;
 
-        regenEndurance = false;
-        timeBeforeRunningMax = 3;
-        timeBeforeRunningAct = 0;
+
+        //enduranceMax = 0.2f;
+        //enduranceActuel = enduranceMax;
+
+        //regenEndurance = false;
+        //timeBeforeRunningMax = 3;
+        //timeBeforeRunningAct = 0;
 
         cubeFace = 1;
         if (listAttaque[cubeFace - 1] != null)
@@ -69,19 +73,25 @@ public class Player : Character
     void Update()
     {
         //ENDURANCE
-        if (!GetComponent<PlayerController>().isRunning())
-            timeBeforeRunningAct += Time.deltaTime;
-        else
-            timeBeforeRunningAct = 0;
-        if (timeBeforeRunningAct > timeBeforeRunningMax)
-            regenEndurance = true;
-        if (regenEndurance)
-        {
-            enduranceActuel += Time.deltaTime;
-            if (enduranceActuel > enduranceMax)
-                enduranceActuel = enduranceMax;
-            regenEndurance = false;
-        }
+        //if (!GetComponent<PlayerController>().isRunning())
+        //    timeBeforeRunningAct += Time.deltaTime;
+        //else
+        //    timeBeforeRunningAct = 0;
+        //if (timeBeforeRunningAct > timeBeforeRunningMax)
+        //    regenEndurance = true;
+        //if (regenEndurance)
+        //{
+        //    enduranceActuel += Time.deltaTime;
+        //    if (enduranceActuel > enduranceMax)
+        //        enduranceActuel = enduranceMax;
+        //    regenEndurance = false;
+        //}
+        //if (!GetComponent<PlayerController>().isRunning())
+        //    timeBeforeRunningAct += Time.deltaTime;
+        //else
+        //    timeBeforeRunningAct = 0;
+        //if (timeBeforeRunningAct > timeBeforeRunningMax)
+        //    enduranceActuel = enduranceMax;
 
         //Clic gauche 
         if (GetComponent<PlayerController>().getControllable())

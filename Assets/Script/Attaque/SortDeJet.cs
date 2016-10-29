@@ -82,7 +82,7 @@ public class SortDeJet : Attaque
         //proj.GetComponent<EffectSettings>().UseMoveVector = true;
         //proj.AddComponent<Rigidbody>();
         proj.GetComponent<Rigidbody>().velocity = 75 * direction * Time.deltaTime * vitesseProj;
-        proj.GetComponent<Rigidbody>().useGravity = false;
+        //proj.GetComponent<Rigidbody>().useGravity = false;
     }
 
 
