@@ -66,11 +66,11 @@ public class Character : MonoBehaviour
 
     public void addAttaqueToInventaire(Attaque atk)
     {
-        string nom = checkDoubleName(atk.getNomSort());
+        string nom = checkDoubleName(atk.getPseudoSort());
         while (nom != checkDoubleName(nom))
             nom = checkDoubleName(nom);
 
-        atk.setNomSort(nom);
+        atk.setPseudoSort(nom);
 
         if (atk.type == 1)
             listAttaqueInventaire.Add(new SortDeJet((SortDeJet)atk));
@@ -82,7 +82,7 @@ public class Character : MonoBehaviour
     {
         foreach (Attaque atk in listAttaqueInventaire)
         {
-            if (name == atk.getNomSort())
+            if (name == atk.getPseudoSort())
             {
                 return name + "_";
             }
@@ -98,7 +98,7 @@ public class Character : MonoBehaviour
             {
                 if (listAttaque[i] != null)
                 {
-                    if (listAttaque[i].getNomSort().Equals(listAttaqueInventaire[p_index].getNomSort()))
+                    if (listAttaque[i].getPseudoSort().Equals(listAttaqueInventaire[p_index].getPseudoSort()))
                     {
                         return false;
                     }
@@ -111,7 +111,7 @@ public class Character : MonoBehaviour
         {
             for (int i = 0; i < listAttaque.Length; i++)
             {
-                if (listAttaque[i].getNomSort().Equals(listAttaqueInventaire[p_index].getNomSort()))
+                if (listAttaque[i].getPseudoSort().Equals(listAttaqueInventaire[p_index].getPseudoSort()))
                 {
                     listAttaque[i] = null;
                     break;
