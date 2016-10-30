@@ -45,7 +45,7 @@ public class CaracZones : MonoBehaviour
         //PLUIE FLECHE
         PLUIE_DE_FLECHE = new List<structSortDeZone>();
         sort.nomZone = "Pluie de flêche";
-        sort.element = EnumScript.Element.Aucun;
+        sort.element = EnumScript.Element.Eau;
         sort.degats = 10;
         sort.cooldown = 1;
         sort.duree = 10;

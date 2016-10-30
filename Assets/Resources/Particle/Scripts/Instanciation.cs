@@ -22,5 +22,4 @@ public class Instanciation : MonoBehaviour {
             go.GetComponent<Rigidbody>().velocity = vitesseProj * Time.deltaTime * new Vector3(ForceOnX + Random.Range(-10f, 10f), ForceOnY + Random.Range(5f, 10f), ForceOnZ + Random.Range(-10f, 10f));
         }
     }
-	
 }

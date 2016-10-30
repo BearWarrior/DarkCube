@@ -24,19 +24,12 @@ public class Player : Character
 
         listAttaqueInventaire = new List<Attaque>();
 
-        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Elec, "LightningBall", "LightningBall"));
-        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Feu, "Meteor", "MeteorFeu"));
-        //listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Eau, "Meteor", "MeteorEau"));
-        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Eau, "Wave", "WaveEau"));
-        listAttaqueInventaire.Add(new SortDeJet(30, 0.5f, 10, EnumScript.Element.Elec, "ShotLaser", "ShotLaserElec"));
-        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Elec, "Bomb", "BombElec"));
-        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Eau, "Bomb", "BombEau"));
-
-        listAttaqueInventaire.Add(new SortDeJet(60, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme"));
-        listAttaqueInventaire.Add(new SortDeJet(70, 2, 10, EnumScript.Element.Eau, "Shuriken", "ShuShu"));
-        listAttaqueInventaire.Add(new SortDeJet(45, 2, 10, EnumScript.Element.Aucun, "Canon", "4ligne"));
-        listAttaqueInventaire.Add(new SortDeJet(45, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme-rafale"));
-        listAttaqueInventaire.Add(new SortDeJet(45, 2, 10, EnumScript.Element.Eau, "Prisme", "Prisme-rafale"));
+        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Feu, "Meteor", "Meteore de Feu", "Météore", 1));
+        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Eau, "Meteor", "Meteore d'Eau", "Météore", 1));
+        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Elec, "Meteor", "Meteore d'Elec", "Météore", 1));
+        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Toxic, "Meteor", "Meteore Toxic", "Météore", 1));
+        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Elec, "Bomb", "Bombe d'Elec", "Bombe", 1));
+        listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Eau, "Bomb", "Bombe d'Eau", "Bombe", 1));
 
         equipeAttaqueAt(1, 0);
         equipeAttaqueAt(2, 1);
@@ -97,7 +90,7 @@ public class Player : Character
         if (GetComponent<PlayerController>().getControllable())
             if (Input.GetMouseButton(0) && GetComponent<PlayerController>().isAiming() && GetComponent<SortChooser>().playerCanShoot())
                 if (listAttaque[cubeFace - 1] != null)
-                    listAttaque[cubeFace - 1].Attaquer();
+                    listAttaque[cubeFace - 1].AttackFromPlayer();
 
         //Transparency
         if (Vector3.Distance(transform.position, Camera.main.transform.position) < 1.5f && !isTransparent)

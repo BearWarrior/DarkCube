@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class SortDeZone : Attaque
 {
@@ -27,7 +28,7 @@ public class SortDeZone : Attaque
         degats = 0;
         element = EnumScript.Element.Eau;
         gabarit = EnumScript.GabaritSortDeZone.Cercle;
-        nomSort = "none";
+        pseudoSort = "none";
         nomZone = "none";
         particleSystemStr = "none";
     }
@@ -42,7 +43,7 @@ public class SortDeZone : Attaque
         degats = copy.degats;
         element = copy.element;
         gabarit = copy.gabarit;
-        nomSort = copy.nomSort;
+        pseudoSort = copy.pseudoSort;
         nomZone = copy.nomZone;
         particleSystemStr = copy.particleSystemStr;
     }
@@ -58,13 +59,13 @@ public class SortDeZone : Attaque
         degats = p_degats;
         element = p_element;
         gabarit = p_gabarit;
-        nomSort = p_nomSort;
+        pseudoSort = p_nomSort;
         nomZone = p_nomZone;
         particleSystemStr = p_partSysStr;
     }
 
 
-    public override void Attaquer()
+    public override void AttackFromPlayer()
     {
         if (canShoot)
         {
@@ -157,5 +158,10 @@ public class SortDeZone : Attaque
             lastShot = Time.time;
             canShoot = false;
         }
+    }
+
+    public override void AttackFromEnemy(Vector3 direction)
+    {
+        throw new NotImplementedException();
     }
 }
