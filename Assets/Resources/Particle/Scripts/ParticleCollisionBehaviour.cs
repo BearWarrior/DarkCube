@@ -15,6 +15,7 @@ public class ParticleCollisionBehaviour : MonoBehaviour {
             explosion.SetActive(true);
             Destroy(this.gameObject, timeBeforeDestroy);
             GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+            GetComponent<Rigidbody>().useGravity = false;
         }
     }
 }

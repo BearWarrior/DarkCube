@@ -47,25 +47,33 @@ public class SimpleAgent : MonoBehaviour
                 }
             }
         }
-        else
+        else //playerDetected
         {
             //destination
-            if (Vector3.Distance(agentPos, playerPos) > distPlayer)
+            if (Vector3.Distance(agentPos, playerPos) > distPlayer) //trop loin
             {
                 agent.Resume();
                 agent.SetDestination(target.transform.position);
-                //agent.enabled = true;
             }
-            else
+            else //A portée
             {
                 agent.Stop();
-                //agent.enabled = false;
                 agent.transform.LookAt(target.transform);
-            }
 
-            
+                RaycastHit hit;
+                Ray ray = new Ray(this.transform.position, (target.transform.position - this.transform.position));
+                if (Physics.Raycast(ray, out hit, Vector3.Distance(this.transform.position, target.transform.position)))
+                {
+                    if (hit.transform.tag == "Player")
+                    {
+                        GetComponent<Enemy>().shoot();
+                    }
+                }
+
+                
+            }
         }
 
-        //Debug.Log(Vector3.Distance(agentPos, playerPos));
+
     }
 }

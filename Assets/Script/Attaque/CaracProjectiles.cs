@@ -5,7 +5,8 @@ using System.Collections.Generic;
 
 public struct structSortJet
 {
-    public string nomProj;
+    public string nameInMenu;
+    public string nomParticle;
     public float degats;
     public float cooldown;
     public float vitesse;
@@ -17,17 +18,13 @@ public class CaracProjectiles : MonoBehaviour
 {
     public List<List<structSortJet>> tabSort;
 
-    public List<structSortJet> DEFAULT;
-    public List<structSortJet> CANON;
-    public List<structSortJet> PRISME;
-    public List<structSortJet> SHURIKEN;
-    public List<structSortJet> ARROW;
-
-    public List<structSortJet> LIGHTNINGBALL;
+    //public List<structSortJet> LIGHTNINGBALL;
+    //public List<structSortJet> LASER;
     public List<structSortJet> METEOR;
     public List<structSortJet> WAVE;
-    public List<structSortJet> LASER;
     public List<structSortJet> BOMB;
+    public List<structSortJet> SHOT;
+    public List<structSortJet> BALL;
 
     public void Start()
     {
@@ -35,84 +32,52 @@ public class CaracProjectiles : MonoBehaviour
 
         structSortJet sort;
 
-        //CANON
-        CANON = new List<structSortJet>();
-        sort.nomProj = "Canon";
-        sort.element = EnumScript.Element.Aucun;
-        sort.degats = 10;
-        sort.cooldown = 1;
-        sort.vitesse = 30;
-        CANON.Add(sort);
-        tabSort.Add(CANON);
-
-        //PRISME
-        PRISME = new List<structSortJet>();
-        sort.nomProj = "Prisme";
-        sort.element = EnumScript.Element.Aucun;
-        sort.degats = 30;
-        sort.cooldown = 3;
-        sort.vitesse = 60;
-        PRISME.Add(sort);
-        sort.nomProj = "Prisme";
-        sort.element = EnumScript.Element.Eau;
-        sort.degats = 30;
-        sort.cooldown = 3;
-        sort.vitesse = 60;
-        PRISME.Add(sort);
-        tabSort.Add(PRISME);
-
-        //SHURIKEN
-        SHURIKEN = new List<structSortJet>();
-        sort.nomProj = "Shuriken";
-        sort.element = EnumScript.Element.Aucun;
-        sort.degats = 10;
-        sort.cooldown = 0.5f;
-        sort.vitesse = 80;
-        SHURIKEN.Add(sort);
-        sort.nomProj = "Shuriken";
-        sort.element = EnumScript.Element.Eau;
-        sort.degats = 5;
-        sort.cooldown = 0.75f;
-        sort.vitesse = 40;
-        SHURIKEN.Add(sort);
-        tabSort.Add(SHURIKEN);
-
-        //ARROW
-        ARROW = new List<structSortJet>();
-        sort.nomProj = "Fleche";
-        sort.element = EnumScript.Element.Aucun;
-        sort.degats = 10;
-        sort.cooldown = 0.5f;
-        sort.vitesse = 80;
-        ARROW.Add(sort);
-        sort.nomProj = "Fleche";
-        sort.element = EnumScript.Element.Feu;
-        sort.degats = 10;
-        sort.cooldown = 0.5f;
-        sort.vitesse = 80;
-        ARROW.Add(sort);
-        tabSort.Add(ARROW);
-
         //LIGHTNINGBALL
-        LIGHTNINGBALL = new List<structSortJet>();
-        sort.nomProj = "LightningBall";
-        sort.element = EnumScript.Element.Elec;
-        sort.degats = 10;
-        sort.cooldown = 0.5f;
-        sort.vitesse = 10;
-        LIGHTNINGBALL.Add(sort);
-        tabSort.Add(LIGHTNINGBALL);
+        //LIGHTNINGBALL = new List<structSortJet>();
+        //sort.nomProj = "LightningBall";
+        //sort.element = EnumScript.Element.Elec;
+        //sort.degats = 10;
+        //sort.cooldown = 0.5f;
+        //sort.vitesse = 10;
+        //LIGHTNINGBALL.Add(sort);
+        //tabSort.Add(LIGHTNINGBALL);
+
+        //LASER
+        //LASER = new List<structSortJet>();
+        //sort.nomProj = "ShotLaser";
+        //sort.element = EnumScript.Element.Elec;
+        //sort.degats = 10;
+        //sort.cooldown = 0.5f;
+        //sort.vitesse = 10;
+        //LASER.Add(sort);
+        //tabSort.Add(LASER);
 
         //METEOR
         METEOR = new List<structSortJet>();
-        sort.nomProj = "Meteor";
+        sort.nameInMenu = "Météore";
+        sort.nomParticle = "Meteor";
         sort.element = EnumScript.Element.Feu;
         sort.degats = 10;
         sort.cooldown = 0.5f;
         sort.vitesse = 10;
         METEOR.Add(sort);
-        sort.nomProj = "Meteor";
+        sort.nameInMenu = "Météore";
+        sort.nomParticle = "Meteor";
         sort.element = EnumScript.Element.Eau;
+        sort.degats = 10;
+        sort.cooldown = 0.5f;
+        sort.vitesse = 10;
+        METEOR.Add(sort);
+        sort.nameInMenu = "Météore";
+        sort.nomParticle = "Meteor";
+        sort.element = EnumScript.Element.Elec;
+        sort.degats = 10;
+        sort.cooldown = 0.5f;
+        sort.vitesse = 10;
+        METEOR.Add(sort);
+        sort.nameInMenu = "Météore";
+        sort.nomParticle = "Meteor";
+        sort.element = EnumScript.Element.Toxic;
         sort.degats = 10;
         sort.cooldown = 0.5f;
         sort.vitesse = 10;
@@ -121,7 +86,8 @@ public class CaracProjectiles : MonoBehaviour
 
         //WAVE
         WAVE = new List<structSortJet>();
-        sort.nomProj = "Wave";
+        sort.nameInMenu = "Vague";
+        sort.nomParticle = "Wave";
         sort.element = EnumScript.Element.Eau;
         sort.degats = 10;
         sort.cooldown = 0.5f;
@@ -129,41 +95,94 @@ public class CaracProjectiles : MonoBehaviour
         WAVE.Add(sort);
         tabSort.Add(WAVE);
 
-        //LASER
-        LASER = new List<structSortJet>();
-        sort.nomProj = "ShotLaser";
-        sort.element = EnumScript.Element.Elec;
-        sort.degats = 10;
-        sort.cooldown = 0.5f;
-        sort.vitesse = 10;
-        LASER.Add(sort);
-        tabSort.Add(LASER);
-
-        //LASER
-        LASER = new List<structSortJet>();
-        sort.nomProj = "ShotLaser";
-        sort.element = EnumScript.Element.Elec;
-        sort.degats = 10;
-        sort.cooldown = 0.5f;
-        sort.vitesse = 10;
-        LASER.Add(sort);
-        tabSort.Add(LASER);
-
         //BOMB
         BOMB = new List<structSortJet>();
-        sort.nomProj = "Bomb";
+        sort.nameInMenu = "Bombe";
+        sort.nomParticle = "Bomb";
         sort.element = EnumScript.Element.Eau;
         sort.degats = 10;
         sort.cooldown = 0.5f;
         sort.vitesse = 10;
         BOMB.Add(sort);
-        sort.nomProj = "Bomb";
+        sort.nameInMenu = "Bombe";
+        sort.nomParticle = "Bomb";
         sort.element = EnumScript.Element.Elec;
         sort.degats = 10;
         sort.cooldown = 0.5f;
         sort.vitesse = 10;
         BOMB.Add(sort);
+        sort.nameInMenu = "Bombe";
+        sort.nomParticle = "Bomb";
+        sort.element = EnumScript.Element.Feu;
+        sort.degats = 10;
+        sort.cooldown = 0.5f;
+        sort.vitesse = 10;
+        BOMB.Add(sort);
+        sort.nameInMenu = "Bombe";
+        sort.nomParticle = "Bomb";
+        sort.element = EnumScript.Element.Toxic;
+        sort.degats = 10;
+        sort.cooldown = 0.5f;
+        sort.vitesse = 10;
+        BOMB.Add(sort);
         tabSort.Add(BOMB);
+
+        //SHOT
+        SHOT = new List<structSortJet>();
+        sort.nameInMenu = "Tir";
+        sort.nomParticle = "Shot";
+        sort.element = EnumScript.Element.Feu;
+        sort.degats = 10;
+        sort.cooldown = 0.5f;
+        sort.vitesse = 10;
+        SHOT.Add(sort);
+        sort.nameInMenu = "Tir";
+        sort.nomParticle = "Shot";
+        sort.element = EnumScript.Element.Elec;
+        sort.degats = 10;
+        sort.cooldown = 0.5f;
+        sort.vitesse = 10;
+        SHOT.Add(sort);
+        sort.nameInMenu = "Tir";
+        sort.nomParticle = "Shot";
+        sort.element = EnumScript.Element.Eau;
+        sort.degats = 10;
+        sort.cooldown = 0.5f;
+        sort.vitesse = 10;
+        SHOT.Add(sort);
+        tabSort.Add(SHOT);
+
+        //BALL
+        BALL = new List<structSortJet>();
+        sort.nameInMenu = "Boule";
+        sort.nomParticle = "Ball";
+        sort.element = EnumScript.Element.Feu;
+        sort.degats = 10;
+        sort.cooldown = 0.5f;
+        sort.vitesse = 10;
+        BALL.Add(sort);
+        sort.nameInMenu = "Boule";
+        sort.nomParticle = "Ball";
+        sort.element = EnumScript.Element.Elec;
+        sort.degats = 10;
+        sort.cooldown = 0.5f;
+        sort.vitesse = 10;
+        BALL.Add(sort);
+        sort.nameInMenu = "Boule";
+        sort.nomParticle = "Ball";
+        sort.element = EnumScript.Element.Eau;
+        sort.degats = 10;
+        sort.cooldown = 0.5f;
+        sort.vitesse = 10;
+        BALL.Add(sort);
+        sort.nameInMenu = "Boule";
+        sort.nomParticle = "Ball";
+        sort.element = EnumScript.Element.Toxic;
+        sort.degats = 10;
+        sort.cooldown = 0.5f;
+        sort.vitesse = 10;
+        BALL.Add(sort);
+        tabSort.Add(BALL);
     }
 
 
@@ -171,7 +190,7 @@ public class CaracProjectiles : MonoBehaviour
     {
         foreach (List<structSortJet> sorts in tabSort)
         {
-            if (sorts[0].nomProj.Equals(p_name))
+            if (sorts[0].nomParticle.Equals(p_name))
             {
                 foreach (structSortJet sort in sorts)
                 {
@@ -182,9 +201,7 @@ public class CaracProjectiles : MonoBehaviour
                 }
             }
         }
-
         return tabSort[0][0];
-
     }
 
     public List<structSortJet> getProjsFromElement(EnumScript.Element p_elem)

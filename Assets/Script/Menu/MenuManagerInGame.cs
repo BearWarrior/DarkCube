@@ -42,7 +42,7 @@ public class MenuManagerInGame : MonoBehaviour
     public GameObject editorPanelCaC;
     public GameObject editorPanelSupport;
     [Space(15)]
-    public GameObject editorProjNomSort;
+    public GameObject editorProjPseudoSort;
     public GameObject editorProjElement;
     public GameObject editorProjProjectile;
     public GameObject editorProjNbProj;
@@ -51,7 +51,7 @@ public class MenuManagerInGame : MonoBehaviour
     public GameObject editorProjCoolDown;
     public GameObject editorProjDegats;
     [Space(15)]
-    public GameObject editorZoneNomSort;
+    public GameObject editorZonePseudoSort;
     public GameObject editorZoneElement;
     public GameObject editorZoneGabarit;
     public GameObject editorZoneSort;
@@ -62,7 +62,7 @@ public class MenuManagerInGame : MonoBehaviour
     public GameObject chooserPanelProj;
     public GameObject chooserPanelZone;
     [Space(15)]
-    public GameObject chooserProjNomSort;
+    public GameObject chooserProjPseudoSort;
     public GameObject chooserProjElement;
     public GameObject chooserProjProjectile;
     public GameObject chooserProjNbProj;
@@ -71,7 +71,7 @@ public class MenuManagerInGame : MonoBehaviour
     public GameObject chooserProjCoolDown;
     public GameObject chooserProjDegats;
     [Space(15)]
-    public GameObject chooserZoneNomSort;
+    public GameObject chooserZonePseudoSort;
     public GameObject chooserZoneElement;
     public GameObject chooserZoneGabarit;
     public GameObject chooserZoneSort;
@@ -145,7 +145,7 @@ public class MenuManagerInGame : MonoBehaviour
         List<structSortJet> listSortJet = GetComponent<CaracProjectiles>().getProjsFromElement((EnumScript.Element)editorProjElement.GetComponent<Dropdown>().value);
         editorProjProjectile.GetComponent<Dropdown>().options.Clear();
         foreach (structSortJet proj in listSortJet)
-            editorProjProjectile.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(proj.nomProj));
+            editorProjProjectile.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(proj.nameInMenu));
         editorProjProjectile.GetComponent<Dropdown>().value = 0;
         editorProjProjectile.GetComponent<Dropdown>().captionText = editorProjProjectile.GetComponent<Dropdown>().captionText;
         editorElementChanged();
@@ -170,6 +170,7 @@ public class MenuManagerInGame : MonoBehaviour
     void Update()
     {
         if (lerpingCanvas) lerpCanvas();
+        print(selectedSort);
     }
 
     public void Init(GameObject p)
@@ -310,13 +311,13 @@ public class MenuManagerInGame : MonoBehaviour
         List<structSortJet> listSort = GetComponent<CaracProjectiles>().getProjsFromElement((EnumScript.Element)editorProjElement.GetComponent<Dropdown>().value);
         editorProjProjectile.GetComponent<Dropdown>().options.Clear();
         foreach (structSortJet proj in listSort)
-            editorProjProjectile.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(proj.nomProj));
+            editorProjProjectile.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(proj.nameInMenu));
         editorProjProjectile.GetComponent<Dropdown>().value = 0;
         editorProjProjectile.GetComponent<Dropdown>().captionText = editorProjProjectile.GetComponent<Dropdown>().captionText;
         //changement de l'élément et du projectile
         sortDeJetEnConstruction.setElement((EnumScript.Element)editorProjElement.GetComponent<Dropdown>().value);
-        string nomProj = GetComponent<CaracProjectiles>().getProjsFromElement((EnumScript.Element)editorProjElement.GetComponent<Dropdown>().value)[editorProjProjectile.GetComponent<Dropdown>().value].nomProj;
-        sortDeJetEnConstruction.nomProj = nomProj;
+        string nomProj = GetComponent<CaracProjectiles>().getProjsFromElement((EnumScript.Element)editorProjElement.GetComponent<Dropdown>().value)[editorProjProjectile.GetComponent<Dropdown>().value].nomParticle;
+        sortDeJetEnConstruction.setNameParticle(nomProj);
 
         //ZONE
         //On récupère la liste des projectiles de cet element puis affichage dans la dropview
@@ -328,7 +329,7 @@ public class MenuManagerInGame : MonoBehaviour
         //changement de l'élément et du projectile
         sortDeZoneEnConstruction.setElement((EnumScript.Element)editorZoneElement.GetComponent<Dropdown>().value);
         string nomSort = GetComponent<CaracZones>().getZoneFromElement((EnumScript.Element)editorZoneElement.GetComponent<Dropdown>().value)[editorZoneSort.GetComponent<Dropdown>().value].nomZone;
-        sortDeZoneEnConstruction.setNomSort(nomSort);
+        sortDeZoneEnConstruction.setPseudoSort(nomSort);
         editorZoneChanged();
 
         majCaracSortEnConstr();
@@ -337,8 +338,8 @@ public class MenuManagerInGame : MonoBehaviour
     public void editorProjectileChanged()
     {
         //On récupere le nom du prjectile et on l'affecte au sort
-        string nomProj = GetComponent<CaracProjectiles>().getProjsFromElement((EnumScript.Element)editorProjElement.GetComponent<Dropdown>().value)[editorProjProjectile.GetComponent<Dropdown>().value].nomProj;
-        sortDeJetEnConstruction.nomProj = nomProj;
+        string namePart = GetComponent<CaracProjectiles>().getProjsFromElement((EnumScript.Element)editorProjElement.GetComponent<Dropdown>().value)[editorProjProjectile.GetComponent<Dropdown>().value].nomParticle;
+        sortDeJetEnConstruction.setNameParticle(namePart);
 
         //Mise a jour des carac + affichage
         majCaracSortEnConstr();
@@ -444,19 +445,19 @@ public class MenuManagerInGame : MonoBehaviour
     {
         if (selectedType == 1) //Projectile / Jet
         {
-            if (editorProjNomSort.GetComponent<InputField>().text != "")
-                sortDeJetEnConstruction.setNomSort(editorProjNomSort.GetComponent<InputField>().text);
+            if (editorProjPseudoSort.GetComponent<InputField>().text != "")
+                sortDeJetEnConstruction.setPseudoSort(editorProjPseudoSort.GetComponent<InputField>().text);
             else
-                sortDeJetEnConstruction.setNomSort("_defaut_");
+                sortDeJetEnConstruction.setPseudoSort("_defaut_");
             
             player.GetComponent<Player>().addAttaqueToInventaire(sortDeJetEnConstruction);
         }
         else if (selectedType == 2) //Zone
         {
-            if (editorZoneNomSort.GetComponent<InputField>().text != "")
-                sortDeZoneEnConstruction.setNomSort(editorZoneNomSort.GetComponent<InputField>().text);
+            if (editorZonePseudoSort.GetComponent<InputField>().text != "")
+                sortDeZoneEnConstruction.setPseudoSort(editorZonePseudoSort.GetComponent<InputField>().text);
             else
-                sortDeZoneEnConstruction.setNomSort("_defaut_");
+                sortDeZoneEnConstruction.setPseudoSort("_defaut_");
 
             string partSys = GetComponent<CaracZones>().getZoneFromElement((EnumScript.Element)editorZoneElement.GetComponent<Dropdown>().value)[editorZoneSort.GetComponent<Dropdown>().value].partSysStr;
             sortDeZoneEnConstruction.particleSystemStr = partSys;
@@ -477,7 +478,7 @@ public class MenuManagerInGame : MonoBehaviour
             sortDeZoneEnConstruction.nomZone = nomZone;
 
             
-            Debug.Log(sortDeZoneEnConstruction.getNomSort());
+            Debug.Log(sortDeZoneEnConstruction.getPseudoSort());
             Debug.Log(sortDeZoneEnConstruction.nomZone);
             Debug.Log(sortDeZoneEnConstruction.particleSystemStr);
 
@@ -521,32 +522,29 @@ public class MenuManagerInGame : MonoBehaviour
             button.transform.localPosition = new Vector3(0, 0, 0);
             button.transform.localRotation = Quaternion.Euler(0, 0, 0);
             button.transform.localScale = new Vector3(1, 1, 1);
-            button.transform.GetChild(0).GetComponent<Text>().text = player.GetComponent<Player>().getListAttaqueInventaire()[selectedSort].getNomSort();
+            button.transform.GetChild(0).GetComponent<Text>().text = player.GetComponent<Player>().getListAttaqueInventaire()[selectedSort].getPseudoSort();
             button.GetComponent<Button>().onClick.RemoveAllListeners();
             //-1 -> sort équipé
             button.GetComponent<Button>().onClick.AddListener(() => buttonClicked(-1));
         }
-        else
+        else if (selectedSort == -1) //Sort équipé
         {
-            if (selectedSort == -1) //Sort équipé
-            {
-                player.GetComponent<Player>().desequipeAttaque(selectedFace);
-                Destroy(chooserScrollListSortEq.transform.GetChild(0).GetChild(0).GetChild(0).gameObject);
-                selectedSort = 0;
-            }
+            player.GetComponent<Player>().desequipeAttaque(selectedFace);
+            Destroy(chooserScrollListSortEq.transform.GetChild(0).GetChild(0).GetChild(0).gameObject);
+            selectedSort = 0;
         }
     }
 
 
     public void resetEditorWindow()
     {
-        editorProjNomSort.GetComponent<InputField>().text = "";
+        editorProjPseudoSort.GetComponent<InputField>().text = "";
         editorProjElement.GetComponent<Dropdown>().value = 0; editorProjElement.GetComponent<Dropdown>().captionText = editorProjElement.GetComponent<Dropdown>().captionText;
         editorProjProjectile.GetComponent<Dropdown>().value = 0; editorProjProjectile.GetComponent<Dropdown>().captionText = editorProjProjectile.GetComponent<Dropdown>().captionText;
         editorProjNbProj.GetComponent<Dropdown>().value = 0; editorProjNbProj.GetComponent<Dropdown>().captionText = editorProjNbProj.GetComponent<Dropdown>().captionText;
         editorProjPattern.GetComponent<Dropdown>().value = 0; editorProjPattern.GetComponent<Dropdown>().captionText = editorProjPattern.GetComponent<Dropdown>().captionText;
 
-        editorZoneNomSort.GetComponent<InputField>().text = "";
+        editorZonePseudoSort.GetComponent<InputField>().text = "";
         editorZoneElement.GetComponent<Dropdown>().value = 0; editorZoneElement.GetComponent<Dropdown>().captionText = editorZoneElement.GetComponent<Dropdown>().captionText;
         //editorZoneGabarit.GetComponent<Dropdown>().value = 0; editorZoneGabarit.GetComponent<Dropdown>().captionText = editorZoneGabarit.GetComponent<Dropdown>().captionText;
         editorZoneSort.GetComponent<Dropdown>().value = 0; editorZoneSort.GetComponent<Dropdown>().captionText = editorZoneSort.GetComponent<Dropdown>().captionText;
@@ -566,7 +564,7 @@ public class MenuManagerInGame : MonoBehaviour
     {
         //JET
         //On récupère la structure du sort depuis l'element et le nom
-        structSortJet structureDuSortJ = GetComponent<CaracProjectiles>().getStructFromNameAndElement(sortDeJetEnConstruction.nomProj, sortDeJetEnConstruction.getElement());
+        structSortJet structureDuSortJ = GetComponent<CaracProjectiles>().getStructFromNameAndElement(sortDeJetEnConstruction.getNameParticle(), sortDeJetEnConstruction.getElement());
         //On modifie le sort en conséquent
         //sortDeJetEnConstruction.nbProjectile = editorProjNbProj.GetComponent<Dropdown>().value + 1;
         sortDeJetEnConstruction.vitesseProj = structureDuSortJ.vitesse;
@@ -601,9 +599,9 @@ public class MenuManagerInGame : MonoBehaviour
                 chooserPanelZone.SetActive(false);
 
                 SortDeJet sortChoisi = (SortDeJet)player.GetComponent<Player>().getListAttaqueInventaire()[selectedSort];
-                chooserProjNomSort.GetComponent<Text>().text = sortChoisi.getNomSort();
+                chooserProjPseudoSort.GetComponent<Text>().text = sortChoisi.getPseudoSort();
                 chooserProjElement.GetComponent<Text>().text = sortChoisi.getElement().ToString();
-                chooserProjProjectile.GetComponent<Text>().text = sortChoisi.nomProj;
+                chooserProjProjectile.GetComponent<Text>().text = sortChoisi.getNameInMenu();
                 //chooserProjNbProj.GetComponent<Text>().text = sortChoisi.nbProjectile.ToString();
                 //chooserProjPattern.GetComponent<Text>().text = sortChoisi.patternEnvoi.ToString();
                 chooserProjVitesse.GetComponent<Text>().text = sortChoisi.vitesseProj.ToString();
@@ -616,7 +614,7 @@ public class MenuManagerInGame : MonoBehaviour
                 chooserPanelZone.SetActive(true);
 
                 SortDeZone sortChoisi = (SortDeZone)player.GetComponent<Player>().getListAttaqueInventaire()[selectedSort];
-                chooserZoneNomSort.GetComponent<Text>().text = sortChoisi.getNomSort();
+                chooserZonePseudoSort.GetComponent<Text>().text = sortChoisi.getPseudoSort();
                 chooserZoneElement.GetComponent<Text>().text = sortChoisi.getElement().ToString();
                 chooserZoneGabarit.GetComponent<Text>().text = sortChoisi.gabarit.ToString();
                 chooserZoneSort.GetComponent<Text>().text = sortChoisi.nomZone;
@@ -633,9 +631,9 @@ public class MenuManagerInGame : MonoBehaviour
                 chooserPanelZone.SetActive(false);
 
                 SortDeJet sortChoisi = (SortDeJet)player.GetComponent<Player>().getAttaqueEquipOnFace(selectedFace);
-                chooserProjNomSort.GetComponent<Text>().text = sortChoisi.getNomSort();
+                chooserProjPseudoSort.GetComponent<Text>().text = sortChoisi.getPseudoSort();
                 chooserProjElement.GetComponent<Text>().text = sortChoisi.getElement().ToString();
-                chooserProjProjectile.GetComponent<Text>().text = sortChoisi.nomProj;
+                chooserProjProjectile.GetComponent<Text>().text = sortChoisi.getNameInMenu();
                 //chooserProjNbProj.GetComponent<Text>().text = sortChoisi.nbProjectile.ToString();
                 //chooserProjPattern.GetComponent<Text>().text = sortChoisi.patternEnvoi.ToString();
                 chooserProjVitesse.GetComponent<Text>().text = sortChoisi.vitesseProj.ToString();
@@ -648,7 +646,7 @@ public class MenuManagerInGame : MonoBehaviour
                 chooserPanelZone.SetActive(true);
 
                 SortDeZone sortChoisi = (SortDeZone)player.GetComponent<Player>().getAttaqueEquipOnFace(selectedFace);
-                chooserZoneNomSort.GetComponent<Text>().text = sortChoisi.getNomSort();
+                chooserZonePseudoSort.GetComponent<Text>().text = sortChoisi.getPseudoSort();
                 chooserZoneElement.GetComponent<Text>().text = sortChoisi.getElement().ToString();
                 chooserZoneGabarit.GetComponent<Text>().text = sortChoisi.gabarit.ToString();
                 chooserZoneSort.GetComponent<Text>().text = sortChoisi.nomZone;
@@ -668,7 +666,7 @@ public class MenuManagerInGame : MonoBehaviour
             button.transform.localPosition = new Vector3(0, -1 * nbButton * button.GetComponent<RectTransform>().rect.height, 0);
             button.transform.localRotation = Quaternion.Euler(0, 0, 0);
             button.transform.localScale = new Vector3(1, 1, 1);
-            button.transform.GetChild(0).GetComponent<Text>().text = player.GetComponent<Player>().getListAttaqueInventaire()[nbButton].getNomSort();
+            button.transform.GetChild(0).GetComponent<Text>().text = player.GetComponent<Player>().getListAttaqueInventaire()[nbButton].getPseudoSort();
 
             button.GetComponent<Button>().onClick.RemoveAllListeners();
             //Ne pas enlever : permet au bouton de marcher
@@ -689,7 +687,7 @@ public class MenuManagerInGame : MonoBehaviour
             button.transform.localPosition = new Vector3(0, 0, 0);
             button.transform.localRotation = Quaternion.Euler(0, 0, 0);
             button.transform.localScale = new Vector3(1, 1, 1);
-            button.transform.GetChild(0).GetComponent<Text>().text = player.GetComponent<Player>().getAttaqueEquipOnFace(selectedFace).getNomSort();
+            button.transform.GetChild(0).GetComponent<Text>().text = player.GetComponent<Player>().getAttaqueEquipOnFace(selectedFace).getPseudoSort();
             button.GetComponent<Button>().onClick.RemoveAllListeners();
             //-1 -> sort équipé
             button.GetComponent<Button>().onClick.AddListener(() => buttonClicked(-1));

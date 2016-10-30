@@ -6,7 +6,6 @@ public class SortDeJet : Attaque
 {
     public float vitesseProj;
     public float rayonEffet;
-    public string nomProj;
     public GameObject proj;
 
     public delegate void Del();
@@ -18,9 +17,11 @@ public class SortDeJet : Attaque
         vitesseProj = 0;
         cooldown = 1;
         degats = 0;
-        nomProj = "none";
+        nameParticle = "none";
         element = EnumScript.Element.Eau;
-        nomSort = "none";
+        pseudoSort = "none";
+        nameInMenu = "none";
+        lvl = 1;
     }
 
     public SortDeJet(SortDeJet copy)
@@ -29,35 +30,50 @@ public class SortDeJet : Attaque
         vitesseProj = copy.vitesseProj;
         cooldown = copy.cooldown;
         degats = copy.degats;
-        nomProj = copy.nomProj;
+        nameParticle = copy.nameParticle;
         element = copy.element;
-        nomSort = copy.nomSort;
+        pseudoSort = copy.pseudoSort;
+        nameInMenu = copy.nameInMenu;
+        lvl = copy.lvl;
     }
 
-    public SortDeJet(float p_vitesse, float p_cd, float p_degats, EnumScript.Element p_element, string p_nomProj, string p_nomSort)
+    public SortDeJet(float p_vitesse, float p_cd, float p_degats, EnumScript.Element p_element, string p_nomProj, string p_nomSort, string p_nameInMenu, int p_lvl)
     {
         type = 1;
         vitesseProj = p_vitesse;
         cooldown = p_cd;
         degats = p_degats;
-        nomProj = p_nomProj;
+        nameParticle = p_nomProj;
         element = p_element;
-        nomSort = p_nomSort;
+        pseudoSort = p_nomSort;
+        nameInMenu = p_nameInMenu;
+        lvl = p_lvl;
     }
 
-    public override void Attaquer()
-    {
+    public override void AttackFromPlayer()
+    { 
         if (canShoot)
         {
-            createProj(0, 0);
+            launchProjPlayer(0, 0);
             lastShot = Time.time;
             canShoot = false;
         }
     }
 
-    public void createProj(float offsetH, float offsetW)
+    public override void AttackFromEnemy(Vector3 direction)
     {
-        proj = GameObject.Instantiate(Resources.Load("Particle/prefabs/SortsDeJet/" + nomProj + element.ToString()), GameObject.FindWithTag("SpawnProjectile").transform.position + new Vector3(offsetW, offsetH, 0), new Quaternion(0, 0, 0, 0)) as GameObject;
+        if (canShoot)
+        {
+            launchProjPlayer(0, 0);
+            lastShot = Time.time;
+            canShoot = false;
+        }
+    }
+
+    public void launchProjPlayer(float offsetH, float offsetW)
+    {
+        Debug.Log("Particle / Prefabs / SortsDeJet / " + nameParticle + element.ToString() +"1");
+        proj = GameObject.Instantiate(Resources.Load("Particle/Prefabs/SortsDeJet/" + nameParticle + element.ToString() +"1"), GameObject.FindWithTag("SpawnProjectile").transform.position + new Vector3(offsetW, offsetH, 0), new Quaternion(0, 0, 0, 0)) as GameObject;
         proj.transform.parent = null;
 
         RaycastHit hit;
@@ -66,7 +82,7 @@ public class SortDeJet : Attaque
         LayerMask layerPlayer = LayerMask.GetMask("Player");
         LayerMask layerProj = LayerMask.GetMask("Projectile");
         int layerValue = layerPlayer.value | layerProj.value;
-        //Inversion (on avoir la detection de tout SAUF du joueur et des projectiles
+        //Inversion (on avoir la detection de tout SAUF du joueur et des projectiles)
         layerValue = ~layerValue;
 
         Vector3 direction = new Vector3(0, 0, 0);
@@ -75,8 +91,8 @@ public class SortDeJet : Attaque
 
         proj.transform.eulerAngles = new Vector3(0, GameObject.FindWithTag("Player").transform.eulerAngles.y, 0);
 
-        proj.GetComponent<Rigidbody>().velocity = 75 * direction * Time.deltaTime * vitesseProj;
         proj.transform.tag = "AttaquePlayer";
+        setAllTagsAndAddVelocity("AttaquePlayer", proj, 75 * direction * Time.deltaTime * vitesseProj);
 
         ProjectileData projData = proj.AddComponent<ProjectileData>();
         projData.degats = degats;
@@ -84,6 +100,45 @@ public class SortDeJet : Attaque
 
     }
 
+    public void launchProjEnemy(float offsetH, float offsetW)
+    {
+        proj = GameObject.Instantiate(Resources.Load("Particle/Prefabs/SortsDeJet/" + nameParticle + element.ToString() + "1"), GameObject.FindWithTag("SpawnProjectile").transform.position + new Vector3(offsetW, offsetH, 0), new Quaternion(0, 0, 0, 0)) as GameObject;
+        proj.transform.parent = null;
+
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(new Vector2(Screen.width / 2, Screen.height / 2 + 0.08f * Screen.height));
+        //Recuperation du layerMask Player et Projectile
+        LayerMask layerPlayer = LayerMask.GetMask("Player");
+        LayerMask layerProj = LayerMask.GetMask("Projectile");
+        int layerValue = layerPlayer.value | layerProj.value;
+        //Inversion (on avoir la detection de tout SAUF du joueur et des projectiles)
+        layerValue = ~layerValue;
+
+        Vector3 direction = new Vector3(0, 0, 0);
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerValue))
+            direction = (hit.point - GameObject.FindWithTag("SpawnProjectile").transform.position) / Vector3.Distance(hit.point, GameObject.FindWithTag("SpawnProjectile").transform.position);
+
+        proj.transform.eulerAngles = new Vector3(0, GameObject.FindWithTag("Player").transform.eulerAngles.y, 0);
+
+        proj.transform.tag = "AttaquePlayer";
+        setAllTagsAndAddVelocity("AttaquePlayer", proj, 75 * direction * Time.deltaTime * vitesseProj);
+
+        ProjectileData projData = proj.AddComponent<ProjectileData>();
+        projData.degats = degats;
+        projData.element = element;
+
+    }
+
+    public void setAllTagsAndAddVelocity(string tag, GameObject go, Vector3 velocity)
+    {
+        for(int i = 0; i < go.transform.childCount; i++)
+        {
+            go.transform.GetChild(i).tag = "AttaquePlayer";
+            if (go.GetComponent<Rigidbody>() != null)
+                go.GetComponent<Rigidbody>().velocity = velocity;
+            setAllTagsAndAddVelocity(tag, go.transform.GetChild(i).transform.gameObject, velocity);
+        }
+    }
 
 
 
