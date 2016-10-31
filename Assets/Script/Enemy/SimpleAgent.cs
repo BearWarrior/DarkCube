@@ -66,14 +66,10 @@ public class SimpleAgent : MonoBehaviour
                 {
                     if (hit.transform.tag == "Player")
                     {
-                        GetComponent<Enemy>().shoot();
+                        GetComponent<Enemy>().shoot(hit);
                     }
                 }
-
-                
             }
         }
-
-
     }
 }

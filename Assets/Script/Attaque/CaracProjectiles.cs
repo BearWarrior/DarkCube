@@ -32,26 +32,6 @@ public class CaracProjectiles : MonoBehaviour
 
         structSortJet sort;
 
-        //LIGHTNINGBALL
-        //LIGHTNINGBALL = new List<structSortJet>();
-        //sort.nomProj = "LightningBall";
-        //sort.element = EnumScript.Element.Elec;
-        //sort.degats = 10;
-        //sort.cooldown = 0.5f;
-        //sort.vitesse = 10;
-        //LIGHTNINGBALL.Add(sort);
-        //tabSort.Add(LIGHTNINGBALL);
-
-        //LASER
-        //LASER = new List<structSortJet>();
-        //sort.nomProj = "ShotLaser";
-        //sort.element = EnumScript.Element.Elec;
-        //sort.degats = 10;
-        //sort.cooldown = 0.5f;
-        //sort.vitesse = 10;
-        //LASER.Add(sort);
-        //tabSort.Add(LASER);
-
         //METEOR
         METEOR = new List<structSortJet>();
         sort.nameInMenu = "Météore";
