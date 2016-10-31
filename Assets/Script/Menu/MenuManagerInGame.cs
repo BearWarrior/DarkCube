@@ -454,7 +454,7 @@ public class MenuManagerInGame : MonoBehaviour
         {
             player.GetComponent<Player>().desequipeAttaque(selectedFace);
             Destroy(chooserScrollListSortEq.transform.GetChild(0).GetChild(0).GetChild(0).gameObject);
-            selectedSort = 0;
+            selectedSort = player.GetComponent<Player>().getListAttaqueInventaire().Count-1;
         }
         resetClassChooser();
         fillClassChooserTable();
