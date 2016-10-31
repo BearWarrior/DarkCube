@@ -121,7 +121,7 @@ public class MenuManagerInGame : MonoBehaviour
         Cursor.visible = true;
 
         selectedFace = 1;
-        selectedSort = 0;
+        selectedSort = -100;
 
         popUpYesNoAnswered = false;
         popUpYesNoResult = false;
@@ -426,6 +426,9 @@ public class MenuManagerInGame : MonoBehaviour
         majCaracSortClicked();
     }
 
+    /* Lorsque un sort est équipé, il disparait de l'inventaire 
+    *  Lorsque il est déséquipé, il revient dan l'inventaire
+    */
     public void EquiperDesequiperSort()
     {
         if (selectedSort >= 0) //Sort inventaire
@@ -433,15 +436,19 @@ public class MenuManagerInGame : MonoBehaviour
             player.GetComponent<Player>().equipeAttaqueAt(selectedFace, selectedSort); //On le met dans les sorts équipé pour la face
             for (int nbButton = 0; nbButton < chooserScrollListSortEq.transform.GetChild(0).GetChild(0).childCount; nbButton++) //On supprime le/les sort équipé de la list
                 Destroy(chooserScrollListSortEq.transform.GetChild(0).GetChild(0).GetChild(nbButton).gameObject);
+            //On supprime le sort de l'inventaire
+            Destroy(chooserScrollListSortInv.transform.GetChild(0).GetChild(0).GetChild(selectedSort).gameObject);
             GameObject button = Instantiate(buttonTemplate) as GameObject; //On met le nouveau
             button.transform.SetParent(chooserScrollListSortEq.transform.GetChild(0).GetChild(0));
             button.transform.localPosition = new Vector3(0, 0, 0);
             button.transform.localRotation = Quaternion.Euler(0, 0, 0);
             button.transform.localScale = new Vector3(1, 1, 1);
-            button.transform.GetChild(0).GetComponent<Text>().text = player.GetComponent<Player>().getListAttaqueInventaire()[selectedSort].getPseudoSort();
+            button.transform.GetChild(0).GetComponent<Text>().text = player.GetComponent<Player>().getAttaqueEquipOnFace(selectedFace).getPseudoSort();
             button.GetComponent<Button>().onClick.RemoveAllListeners();
             //-1 -> sort équipé
             button.GetComponent<Button>().onClick.AddListener(() => buttonClicked(-1));
+            //On garde en selection le sort qu'on vient d'équiper
+            selectedSort = -1;
         }
         else if (selectedSort == -1) //Sort équipé
         {
@@ -449,6 +456,8 @@ public class MenuManagerInGame : MonoBehaviour
             Destroy(chooserScrollListSortEq.transform.GetChild(0).GetChild(0).GetChild(0).gameObject);
             selectedSort = 0;
         }
+        resetClassChooser();
+        fillClassChooserTable();
     }
 
     public void resetEditorWindow()
@@ -533,7 +542,7 @@ public class MenuManagerInGame : MonoBehaviour
                 chooserZoneDegats.GetComponent<Text>().text = sortChoisi.getDegats().ToString();
             }
         }
-        else //Sort équipé
+        else if(selectedSort == -1)//Sort équipé
         {
             int type = player.GetComponent<Player>().getAttaqueEquipOnFace(selectedFace).type;
             if (type == 1) // sort de jet
@@ -561,6 +570,10 @@ public class MenuManagerInGame : MonoBehaviour
                 chooserZoneCoolDown.GetComponent<Text>().text = sortChoisi.getCooldown().ToString();
                 chooserZoneDegats.GetComponent<Text>().text = sortChoisi.getDegats().ToString();
             }
+        }
+        else
+        {
+
         }
     }
 

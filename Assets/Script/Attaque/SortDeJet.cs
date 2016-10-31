@@ -73,7 +73,7 @@ public class SortDeJet : Attaque
     public void launchProjPlayer(Vector3 spawnPoint)
     {
         Debug.Log("Particle / Prefabs / SortsDeJet / " + nameParticle + element.ToString() +"1");
-        proj = GameObject.Instantiate(Resources.Load("Particle/Prefabs/SortsDeJet/" + nameParticle + element.ToString() +"3"), spawnPoint, new Quaternion(0, 0, 0, 0)) as GameObject;
+        proj = GameObject.Instantiate(Resources.Load("Particle/Prefabs/SortsDeJet/" + nameParticle + element.ToString() +"1"), spawnPoint, new Quaternion(0, 0, 0, 0)) as GameObject;
         proj.transform.parent = null;
 
         RaycastHit hit;

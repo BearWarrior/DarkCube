@@ -34,11 +34,11 @@ public class Player : Character
         listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Eau, "Bomb", "Bombe d'Eau", "Bombe", 1));
 
         equipeAttaqueAt(1, 0);
-        equipeAttaqueAt(2, 1);
-        equipeAttaqueAt(3, 2);
-        equipeAttaqueAt(4, 3);
-        equipeAttaqueAt(5, 4);
-        equipeAttaqueAt(6, 5);
+        equipeAttaqueAt(2, 0);
+        equipeAttaqueAt(3, 0);
+        equipeAttaqueAt(4, 0);
+        equipeAttaqueAt(5, 0);
+        equipeAttaqueAt(6, 0);
 
         PDVmax = 100;
         PDVactuel = PDVmax;
