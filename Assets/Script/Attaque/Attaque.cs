@@ -17,13 +17,28 @@ public abstract class Attaque
     protected EnumScript.EffetPhysique effetPhysique;
 
 
-    public abstract void AttackFromPlayer();
-    public abstract void AttackFromEnemy(Vector3 direction);
+    public abstract void AttackFromPlayer(Vector3 spawnPoint);
+    public abstract void AttackFromEnemy(RaycastHit hit, Vector3 spawnPoint);
 
     public void reload()
     {
         if (lastShot + cooldown < Time.time )
             canShoot = true;
+    }
+
+    public void setAllTagsAndAddVelocityAndEmitter(string tag, GameObject go, Vector3 velocity, EnumScript.Character emitter)
+    {
+        for (int i = 0; i < go.transform.childCount; i++)
+        {
+            go.transform.GetChild(i).tag = tag;
+            if (go.GetComponent<Rigidbody>() != null)
+                go.GetComponent<Rigidbody>().velocity = velocity;
+            setAllTagsAndAddVelocityAndEmitter(tag, go.transform.GetChild(i).transform.gameObject, velocity, emitter);
+            if (go.GetComponent<ParticleCollisionBehaviour>() != null)
+            {
+                go.GetComponent<ParticleCollisionBehaviour>().emiter = emitter;
+            }
+        }
     }
 
     //pseudoSort

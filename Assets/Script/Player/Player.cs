@@ -15,6 +15,8 @@ public class Player : Character
 
     private int cubeFace;
 
+    public GameObject spawnProjectile;
+
     // Use this for initialization
     void Start()
     {
@@ -32,14 +34,14 @@ public class Player : Character
         listAttaqueInventaire.Add(new SortDeJet(10, 0.5f, 10, EnumScript.Element.Eau, "Bomb", "Bombe d'Eau", "Bombe", 1));
 
         equipeAttaqueAt(1, 0);
-        equipeAttaqueAt(2, 1);
-        equipeAttaqueAt(3, 2);
-        equipeAttaqueAt(4, 3);
-        equipeAttaqueAt(5, 4);
-        equipeAttaqueAt(6, 5);
+        equipeAttaqueAt(2, 0);
+        equipeAttaqueAt(3, 0);
+        equipeAttaqueAt(4, 0);
+        equipeAttaqueAt(5, 0);
+        equipeAttaqueAt(6, 0);
 
-        PDVmax = 10;
-        PDVactuel = 10;
+        PDVmax = 100;
+        PDVactuel = PDVmax;
         armureMax = 10;
         armureActuel = 10;
 
@@ -52,13 +54,13 @@ public class Player : Character
         //timeBeforeRunningAct = 0;
 
         cubeFace = 1;
-        if (listAttaque[cubeFace - 1] != null)
-        {
-            if (listAttaque[cubeFace - 1].type == 2) //Sort de Zone
-                GetComponent<PlayerController>().setGabarit(true, (SortDeZone)listAttaque[cubeFace - 1]);
-            else if (listAttaque[cubeFace - 1].type == 1) // Sort de jet
-                GetComponent<PlayerController>().setGabarit(false, null);
-        }
+        //if (listAttaque[cubeFace - 1] != null)
+        //{
+        //    if (listAttaque[cubeFace - 1].type == 2) //Sort de Zone
+        //        GetComponent<PlayerController>().setGabarit(true, (SortDeZone)listAttaque[cubeFace - 1]);
+        //    else if (listAttaque[cubeFace - 1].type == 1) // Sort de jet
+        //        GetComponent<PlayerController>().setGabarit(false, null);
+        //}
     }
 
 
@@ -90,7 +92,7 @@ public class Player : Character
         if (GetComponent<PlayerController>().getControllable())
             if (Input.GetMouseButton(0) && GetComponent<PlayerController>().isAiming() && GetComponent<SortChooser>().playerCanShoot())
                 if (listAttaque[cubeFace - 1] != null)
-                    listAttaque[cubeFace - 1].AttackFromPlayer();
+                    listAttaque[cubeFace - 1].AttackFromPlayer(spawnProjectile.transform.position);
 
         //Transparency
         if (Vector3.Distance(transform.position, Camera.main.transform.position) < 1.5f && !isTransparent)
@@ -111,19 +113,19 @@ public class Player : Character
     public void cubeFaceChanged(int face)
     {
         cubeFace = face;
-        if (GetComponent<PlayerController>().getControllable())
-        {
-            if (listAttaque[cubeFace - 1] != null)
-            {
-                if (listAttaque[cubeFace - 1].type == 2) //Sort de Zone
-                    GetComponent<PlayerController>().setGabarit(true, (SortDeZone)listAttaque[cubeFace - 1]);
-                else if (listAttaque[cubeFace - 1].type == 1) // Sort de jet
-                    GetComponent<PlayerController>().setGabarit(false, null);
-            }
-        }
+        //if (GetComponent<PlayerController>().getControllable())
+        //{
+        //    if (listAttaque[cubeFace - 1] != null)
+        //    {
+        //        if (listAttaque[cubeFace - 1].type == 2) //Sort de Zone
+        //            GetComponent<PlayerController>().setGabarit(true, (SortDeZone)listAttaque[cubeFace - 1]);
+        //        else if (listAttaque[cubeFace - 1].type == 1) // Sort de jet
+        //            GetComponent<PlayerController>().setGabarit(false, null);
+        //    }
+        //}
     }
 
-    //if the player is too close of the camera
+    //if the player is too close from the camera
     public void setTransparecy(bool set)
     {
         if (set)
@@ -156,4 +158,31 @@ public class Player : Character
     {
         return cubeFace;
     }
+
+    public void takeDegats(float degats)
+    {
+        PDVactuel -= degats;
+    }
+
+    //Player shot 
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "AttaqueEnemy")
+        {
+            //print("ARGHH attaqueEnemy" + other.GetComponent<ProjectileData>().degats);
+            takeDegats(other.GetComponent<ProjectileData>().degats);
+        }
+        Debug.Log(PDVactuel);
+    }
+
+    //Player touch enemy
+    //void OnCollisionEnter(Collision other)
+    //{
+    //    Debug.Log(other.transform.tag);
+
+    //    if (other.transform.tag == "Enemy")
+    //    {
+    //        print("ARGHH enemy");
+    //    }
+    //}
 }

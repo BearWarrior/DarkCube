@@ -289,94 +289,94 @@ public class PlayerController : MonoBehaviour
         usingZoneCone = true;
     }
 
-    public void setGabarit(bool active, SortDeZone sort)
-    {
-        if (active)
-        {
-            sortDeZone = sort;
-            gabaritUsed = active;
-            Material texture;
+    //public void setGabarit(bool active, SortDeZone sort)
+    //{
+    //    if (active)
+    //    {
+    //        sortDeZone = sort;
+    //        gabaritUsed = active;
+    //        Material texture;
 
-            switch (sort.gabarit)
-            {
-                case EnumScript.GabaritSortDeZone.Cercle:
-                    projectorAtMouse = true;
-                    texture = Resources.Load("SortDeZone/Gabarit/LightProjectorCircle") as Material;
-                    projector.GetComponent<Projector>().material = texture;
-                    //CHANGER CA
-                    //switch (sort.taille)
-                    //{
-                    //    case EnumScript.TailleSortDeZone.Petit:
-                    //        projector.GetComponent<Projector>().orthographicSize = 10;
-                    //        break;
-                    //    case EnumScript.TailleSortDeZone.Moyen:
-                    //        projector.GetComponent<Projector>().orthographicSize = 15;
-                    //        break;
-                    //    case EnumScript.TailleSortDeZone.Grand:
-                    //        projector.GetComponent<Projector>().orthographicSize = 20;
-                    //        break;
-                    //}
-                    projector.GetComponent<Projector>().orthographicSize = 3;
+    //        switch (sort.gabarit)
+    //        {
+    //            case EnumScript.GabaritSortDeZone.Cercle:
+    //                projectorAtMouse = true;
+    //                texture = Resources.Load("SortDeZone/Gabarit/LightProjectorCircle") as Material;
+    //                projector.GetComponent<Projector>().material = texture;
+    //                //CHANGER CA
+    //                //switch (sort.taille)
+    //                //{
+    //                //    case EnumScript.TailleSortDeZone.Petit:
+    //                //        projector.GetComponent<Projector>().orthographicSize = 10;
+    //                //        break;
+    //                //    case EnumScript.TailleSortDeZone.Moyen:
+    //                //        projector.GetComponent<Projector>().orthographicSize = 15;
+    //                //        break;
+    //                //    case EnumScript.TailleSortDeZone.Grand:
+    //                //        projector.GetComponent<Projector>().orthographicSize = 20;
+    //                //        break;
+    //                //}
+    //                projector.GetComponent<Projector>().orthographicSize = 3;
 
 
-                    projector.GetComponent<Projector>().aspectRatio = 1;
-                    break;
-                case EnumScript.GabaritSortDeZone.Ligne:
-                    texture = Resources.Load("SortDeZone/Gabarit/LightProjectorRectangle") as Material;
-                    projector.GetComponent<Projector>().material = texture;
-                    //CHANGER CA
-                    /*switch (sort.taille)
-                    {
-                        case EnumScript.TailleSortDeZone.Petit:
-                            projector.GetComponent<Projector>().orthographicSize = 4;
-                            projector.GetComponent<Projector>().aspectRatio = 4f;
-                            break;
-                        case EnumScript.TailleSortDeZone.Moyen:
-                            projector.GetComponent<Projector>().orthographicSize = 4;
-                            projector.GetComponent<Projector>().aspectRatio = 6f;
-                            break;
-                        case EnumScript.TailleSortDeZone.Grand:
-                            projector.GetComponent<Projector>().orthographicSize = 4;
-                            projector.GetComponent<Projector>().aspectRatio = 8f;
-                            break;
-                    }*/
-                    projector.GetComponent<Projector>().orthographicSize = 4 / 2;
-                    projector.GetComponent<Projector>().aspectRatio = 6f / 2;
+    //                projector.GetComponent<Projector>().aspectRatio = 1;
+    //                break;
+    //            case EnumScript.GabaritSortDeZone.Ligne:
+    //                texture = Resources.Load("SortDeZone/Gabarit/LightProjectorRectangle") as Material;
+    //                projector.GetComponent<Projector>().material = texture;
+    //                //CHANGER CA
+    //                /*switch (sort.taille)
+    //                {
+    //                    case EnumScript.TailleSortDeZone.Petit:
+    //                        projector.GetComponent<Projector>().orthographicSize = 4;
+    //                        projector.GetComponent<Projector>().aspectRatio = 4f;
+    //                        break;
+    //                    case EnumScript.TailleSortDeZone.Moyen:
+    //                        projector.GetComponent<Projector>().orthographicSize = 4;
+    //                        projector.GetComponent<Projector>().aspectRatio = 6f;
+    //                        break;
+    //                    case EnumScript.TailleSortDeZone.Grand:
+    //                        projector.GetComponent<Projector>().orthographicSize = 4;
+    //                        projector.GetComponent<Projector>().aspectRatio = 8f;
+    //                        break;
+    //                }*/
+    //                projector.GetComponent<Projector>().orthographicSize = 4 / 2;
+    //                projector.GetComponent<Projector>().aspectRatio = 6f / 2;
 
-                    projectorAtMouse = true;
-                    break;
-                case EnumScript.GabaritSortDeZone.Cone:
-                    projector.transform.SetParent(player.transform);
-                    float taille = 0;
-                    //CHANGER CA
-                    /*switch (sort.taille)
-                    {
-                        case EnumScript.TailleSortDeZone.Petit:
-                            taille = 15;
-                            break;
-                        case EnumScript.TailleSortDeZone.Moyen:
-                            taille = 22;
-                            break;
-                        case EnumScript.TailleSortDeZone.Grand:
-                            taille = 29;
-                            break;
-                    }*/
-                    taille = 22 / 5;
-                    projector.transform.localPosition = new Vector3(0, 0, .5f + taille);
-                    projector.transform.localEulerAngles = new Vector3(90, 0, 0);
+    //                projectorAtMouse = true;
+    //                break;
+    //            case EnumScript.GabaritSortDeZone.Cone:
+    //                projector.transform.SetParent(player.transform);
+    //                float taille = 0;
+    //                //CHANGER CA
+    //                /*switch (sort.taille)
+    //                {
+    //                    case EnumScript.TailleSortDeZone.Petit:
+    //                        taille = 15;
+    //                        break;
+    //                    case EnumScript.TailleSortDeZone.Moyen:
+    //                        taille = 22;
+    //                        break;
+    //                    case EnumScript.TailleSortDeZone.Grand:
+    //                        taille = 29;
+    //                        break;
+    //                }*/
+    //                taille = 22 / 5;
+    //                projector.transform.localPosition = new Vector3(0, 0, .5f + taille);
+    //                projector.transform.localEulerAngles = new Vector3(90, 0, 0);
 
-                    texture = Resources.Load("SortDeZone/Gabarit/LightProjectorCone") as Material;
-                    projector.GetComponent<Projector>().material = texture;
-                    projector.GetComponent<Projector>().orthographicSize = taille;
-                    projectorAtMouse = false;
-                    break;
-            }
-        }
-        else
-        {
-            gabaritUsed = false;
-        }
-    }
+    //                texture = Resources.Load("SortDeZone/Gabarit/LightProjectorCone") as Material;
+    //                projector.GetComponent<Projector>().material = texture;
+    //                projector.GetComponent<Projector>().orthographicSize = taille;
+    //                projectorAtMouse = false;
+    //                break;
+    //        }
+    //    }
+    //    else
+    //    {
+    //        gabaritUsed = false;
+    //    }
+    //}
 
 
     void FixedUpdate()

@@ -18,21 +18,6 @@ public class Character : MonoBehaviour
     protected Attaque[] listAttaque;
     protected List<Attaque> listAttaqueInventaire;
 
-
-    // Use this for initialization
-    /*void Start ()
-    {
-	
-	}*/
-	
-	// Update is called once per frame
-	/*void Update ()
-    {
-	
-	}*/
-
-   
-
     //Coroutine de lancement de projectile en rafale (voir SortDeJet)
     public void launchProjRafale(int p_nbProj, float delay, SortDeJet.Del p_function)
     {
@@ -56,11 +41,17 @@ public class Character : MonoBehaviour
 
     public void equipeAttaqueAt(int face, int indexInList)
     {
+        if(listAttaque[face-1] != null)
+            listAttaqueInventaire.Add(listAttaque[face - 1]);
         listAttaque[face - 1] = listAttaqueInventaire[indexInList];
+        listAttaqueInventaire.RemoveAt(indexInList);
     }
 
     public void desequipeAttaque(int face)
     {
+        print(listAttaqueInventaire.Count);
+        listAttaqueInventaire.Add(listAttaque[face - 1]);
+        print(listAttaqueInventaire.Count);
         listAttaque[face - 1] = null;
     }
 

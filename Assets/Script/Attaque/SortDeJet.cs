@@ -50,30 +50,30 @@ public class SortDeJet : Attaque
         lvl = p_lvl;
     }
 
-    public override void AttackFromPlayer()
+    public override void AttackFromPlayer(Vector3 spawnPoint)
     { 
         if (canShoot)
         {
-            launchProjPlayer(0, 0);
+            launchProjPlayer(spawnPoint);
             lastShot = Time.time;
             canShoot = false;
         }
     }
 
-    public override void AttackFromEnemy(Vector3 direction)
+    public override void AttackFromEnemy(RaycastHit hit, Vector3 spawnPoint)
     {
         if (canShoot)
         {
-            launchProjPlayer(0, 0);
+            launchProjEnemy(hit, spawnPoint);
             lastShot = Time.time;
             canShoot = false;
         }
     }
 
-    public void launchProjPlayer(float offsetH, float offsetW)
+    public void launchProjPlayer(Vector3 spawnPoint)
     {
         Debug.Log("Particle / Prefabs / SortsDeJet / " + nameParticle + element.ToString() +"1");
-        proj = GameObject.Instantiate(Resources.Load("Particle/Prefabs/SortsDeJet/" + nameParticle + element.ToString() +"1"), GameObject.FindWithTag("SpawnProjectile").transform.position + new Vector3(offsetW, offsetH, 0), new Quaternion(0, 0, 0, 0)) as GameObject;
+        proj = GameObject.Instantiate(Resources.Load("Particle/Prefabs/SortsDeJet/" + nameParticle + element.ToString() +"1"), spawnPoint, new Quaternion(0, 0, 0, 0)) as GameObject;
         proj.transform.parent = null;
 
         RaycastHit hit;
@@ -87,12 +87,12 @@ public class SortDeJet : Attaque
 
         Vector3 direction = new Vector3(0, 0, 0);
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerValue))
-            direction = (hit.point - GameObject.FindWithTag("SpawnProjectile").transform.position) / Vector3.Distance(hit.point, GameObject.FindWithTag("SpawnProjectile").transform.position);
+            direction = (hit.point - spawnPoint) / Vector3.Distance(hit.point, spawnPoint);
 
         proj.transform.eulerAngles = new Vector3(0, GameObject.FindWithTag("Player").transform.eulerAngles.y, 0);
 
         proj.transform.tag = "AttaquePlayer";
-        setAllTagsAndAddVelocity("AttaquePlayer", proj, 75 * direction * Time.deltaTime * vitesseProj);
+        setAllTagsAndAddVelocityAndEmitter("AttaquePlayer", proj, 75 * direction * Time.deltaTime * vitesseProj, EnumScript.Character.Player);
 
         ProjectileData projData = proj.AddComponent<ProjectileData>();
         projData.degats = degats;
@@ -100,28 +100,15 @@ public class SortDeJet : Attaque
 
     }
 
-    public void launchProjEnemy(float offsetH, float offsetW)
+    public void launchProjEnemy(RaycastHit hit, Vector3 spawnPoint)
     {
-        proj = GameObject.Instantiate(Resources.Load("Particle/Prefabs/SortsDeJet/" + nameParticle + element.ToString() + "1"), GameObject.FindWithTag("SpawnProjectile").transform.position + new Vector3(offsetW, offsetH, 0), new Quaternion(0, 0, 0, 0)) as GameObject;
+        proj = GameObject.Instantiate(Resources.Load("Particle/Prefabs/SortsDeJet/" + nameParticle + element.ToString() + "1"), spawnPoint, new Quaternion(0, 0, 0, 0)) as GameObject;
         proj.transform.parent = null;
-
-        RaycastHit hit;
-        Ray ray = Camera.main.ScreenPointToRay(new Vector2(Screen.width / 2, Screen.height / 2 + 0.08f * Screen.height));
-        //Recuperation du layerMask Player et Projectile
-        LayerMask layerPlayer = LayerMask.GetMask("Player");
-        LayerMask layerProj = LayerMask.GetMask("Projectile");
-        int layerValue = layerPlayer.value | layerProj.value;
-        //Inversion (on avoir la detection de tout SAUF du joueur et des projectiles)
-        layerValue = ~layerValue;
-
-        Vector3 direction = new Vector3(0, 0, 0);
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerValue))
-            direction = (hit.point - GameObject.FindWithTag("SpawnProjectile").transform.position) / Vector3.Distance(hit.point, GameObject.FindWithTag("SpawnProjectile").transform.position);
-
+        Vector3 direction = (hit.point - spawnPoint) / Vector3.Distance(hit.point, spawnPoint);
         proj.transform.eulerAngles = new Vector3(0, GameObject.FindWithTag("Player").transform.eulerAngles.y, 0);
 
-        proj.transform.tag = "AttaquePlayer";
-        setAllTagsAndAddVelocity("AttaquePlayer", proj, 75 * direction * Time.deltaTime * vitesseProj);
+        proj.transform.tag = "AttaqueEnemy";
+        setAllTagsAndAddVelocityAndEmitter("AttaqueEnemy", proj, 75 * direction * Time.deltaTime * vitesseProj, EnumScript.Character.Enemy);
 
         ProjectileData projData = proj.AddComponent<ProjectileData>();
         projData.degats = degats;
@@ -129,16 +116,7 @@ public class SortDeJet : Attaque
 
     }
 
-    public void setAllTagsAndAddVelocity(string tag, GameObject go, Vector3 velocity)
-    {
-        for(int i = 0; i < go.transform.childCount; i++)
-        {
-            go.transform.GetChild(i).tag = "AttaquePlayer";
-            if (go.GetComponent<Rigidbody>() != null)
-                go.GetComponent<Rigidbody>().velocity = velocity;
-            setAllTagsAndAddVelocity(tag, go.transform.GetChild(i).transform.gameObject, velocity);
-        }
-    }
+    
 
 
 

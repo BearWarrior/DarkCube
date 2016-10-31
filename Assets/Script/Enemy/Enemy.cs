@@ -5,6 +5,8 @@ using System.Collections.Generic;
 public class Enemy : Character
 {
 
+    public GameObject spawnPoint;
+
 	// Use this for initialization
 	void Start ()
     {
@@ -25,7 +27,7 @@ public class Enemy : Character
 	void Update ()
     {
         //print(GetComponent<ListSorts>().getAttaqueEquiped());
-
+        GetComponent<ListSorts>().getAttaqueEquiped().reload();
     }
 
     void OnTriggerEnter(Collider other)
@@ -43,9 +45,8 @@ public class Enemy : Character
             Destroy(this.gameObject);
     }
 
-    public void shoot()
+    public void shoot(RaycastHit hit)
     {
-        Debug.Log("shoot");
-        GetComponent<ListSorts>().getAttaqueEquiped().AttackFromEnemy(new Vector3(0, 0, 0));
+        GetComponent<ListSorts>().getAttaqueEquiped().AttackFromEnemy(hit, this.spawnPoint.transform.position);
     }
 }

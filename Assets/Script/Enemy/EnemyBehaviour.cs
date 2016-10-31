@@ -39,6 +39,7 @@ public class EnemyBehaviour : MonoBehaviour
                                 {
                                     GameObject enemy = (GameObject)Instantiate(Resources.Load("Enemy/Agent"), tiles[wid][leng].transform.GetChild(enf).GetChild(i).transform.position, Quaternion.Euler(0, 0, 0));
                                     enemy.transform.SetParent(roomGO.transform);
+                                    enemy.transform.tag = "Enemy";
                                     valActuel = 1;
                                 }
                                 else
