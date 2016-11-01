@@ -338,36 +338,62 @@ public class MenuManagerInGame : MonoBehaviour
 
     public void supprimerClasse()
     {
-        if (selectedSort != -1)
+        if (selectedSort != -1) //Sort non équipé
         {
             if (popUpYesNoAnswered)
             {
                 if (popUpYesNoResult)
                 {
-                    player.GetComponent<Player>().supprimerAttaqueInventaireAt(selectedSort, true);
+                    player.GetComponent<Player>().supprimerAttaqueInventaireAt(selectedSort, false);
                 }
 
                 popUpYesNo.GetComponent<Canvas>().enabled = false;
                 classChooser.GetComponent<CanvasGroup>().blocksRaycasts = true;
                 classChooser.GetComponent<CanvasGroup>().alpha = 1f;
 
+                selectedSort = -100;
                 popUpYesNoAnswered = false;
                 delegateYesNoUsed = true;
             }
             else
             {
-                //Si le sort a supprimer est équipé sur une des faces
-                if (!player.GetComponent<Player>().supprimerAttaqueInventaireAt(selectedSort, false))
-                {
-                    popUpYesNo.GetComponent<Canvas>().enabled = true;
-                    popUpYesNo.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = "L'attaque que vous voulez supprimer est affectée à une face, voulez vous vraiment supprimer cette attaque ?";
-                    popUpYesNo.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = "Supprimer";
-                    popUpYesNo.transform.GetChild(0).GetChild(2).GetChild(0).GetComponent<Text>().text = "Annuler";
-                    classChooser.GetComponent<CanvasGroup>().blocksRaycasts = false;
-                    classChooser.GetComponent<CanvasGroup>().alpha = 0.3f;
+                popUpYesNo.GetComponent<Canvas>().enabled = true;
+                popUpYesNo.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = "Voulez vous vraiment supprimer cette attaque ?";
+                popUpYesNo.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = "Supprimer";
+                popUpYesNo.transform.GetChild(0).GetChild(2).GetChild(0).GetComponent<Text>().text = "Annuler";
+                classChooser.GetComponent<CanvasGroup>().blocksRaycasts = false;
+                classChooser.GetComponent<CanvasGroup>().alpha = 0.3f;
 
-                    fctToCallWhenPopUpYesNoAnswer = supprimerClassDel;
+                fctToCallWhenPopUpYesNoAnswer = supprimerClassDel;
+            }
+        }
+        else if (selectedSort == -1) //Sort équipé
+        {
+            if (popUpYesNoAnswered)
+            {
+                if (popUpYesNoResult)
+                {
+                    player.GetComponent<Player>().supprimerAttaqueInventaireAt(selectedFace-1, true);
                 }
+
+                popUpYesNo.GetComponent<Canvas>().enabled = false;
+                classChooser.GetComponent<CanvasGroup>().blocksRaycasts = true;
+                classChooser.GetComponent<CanvasGroup>().alpha = 1f;
+
+                selectedSort = -100;
+                popUpYesNoAnswered = false;
+                delegateYesNoUsed = true;
+            }
+            else
+            {
+                popUpYesNo.GetComponent<Canvas>().enabled = true;
+                popUpYesNo.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = "L'attaque que vous voulez supprimer est affectée à une face, voulez vous vraiment supprimer cette attaque ?";
+                popUpYesNo.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = "Supprimer";
+                popUpYesNo.transform.GetChild(0).GetChild(2).GetChild(0).GetComponent<Text>().text = "Annuler";
+                classChooser.GetComponent<CanvasGroup>().blocksRaycasts = false;
+                classChooser.GetComponent<CanvasGroup>().alpha = 0.3f;
+
+                fctToCallWhenPopUpYesNoAnswer = supprimerClassDel;
             }
         }
         resetClassChooser();

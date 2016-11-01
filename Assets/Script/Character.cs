@@ -81,36 +81,41 @@ public class Character : MonoBehaviour
         return name;
     }
 
-    public bool supprimerAttaqueInventaireAt(int p_index, bool forceDelete)
+    public void supprimerAttaqueInventaireAt(int p_index, bool sortEquipe)
     {
-        if (!forceDelete)
-        {
-            for (int i = 0; i < listAttaque.Length; i++)
-            {
-                if (listAttaque[i] != null)
-                {
-                    if (listAttaque[i].getPseudoSort().Equals(listAttaqueInventaire[p_index].getPseudoSort()))
-                    {
-                        return false;
-                    }
-                }
-            }
+        if (!sortEquipe)
             listAttaqueInventaire.RemoveAt(p_index);
-            return true;
-        }
         else
-        {
-            for (int i = 0; i < listAttaque.Length; i++)
-            {
-                if (listAttaque[i].getPseudoSort().Equals(listAttaqueInventaire[p_index].getPseudoSort()))
-                {
-                    listAttaque[i] = null;
-                    break;
-                }
-            }
-            listAttaqueInventaire.RemoveAt(p_index);
-            return true;
-        }
+            listAttaque[p_index] = null;
+
+        //if (!forceDelete)
+        //{
+        //    for (int i = 0; i < listAttaque.Length; i++)
+        //    {
+        //        if (listAttaque[i] != null)
+        //        {
+        //            if (listAttaque[i].getPseudoSort().Equals(listAttaqueInventaire[p_index].getPseudoSort()))
+        //            {
+        //                return false;
+        //            }
+        //        }
+        //    }
+        //    listAttaqueInventaire.RemoveAt(p_index);
+        //    return true;
+        //}
+        //else
+        //{
+        //    for (int i = 0; i < listAttaque.Length; i++)
+        //    {
+        //        if (listAttaque[i].getPseudoSort().Equals(listAttaqueInventaire[p_index].getPseudoSort()))
+        //        {
+        //            listAttaque[i] = null;
+        //            break;
+        //        }
+        //    }
+        //    listAttaqueInventaire.RemoveAt(p_index);
+        //    return true;
+        //}
     }
 
     public virtual List<Attaque> getListAttaqueInventaire()
