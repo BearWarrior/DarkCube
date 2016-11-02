@@ -3,7 +3,7 @@ using System.Collections;
 
 public abstract class Attaque
 {
-    public int type; //1-Jet  2-Zone   3-Support
+    public int type; //1-Jet   2-Zone   3-Support
     protected int lvl;
 	protected float cooldown;
     protected float lastShot;
