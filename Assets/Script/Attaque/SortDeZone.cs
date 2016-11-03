@@ -38,18 +38,22 @@ public class SortDeZone : Attaque
         nameParticle = copy.nameParticle;
     }
 
-    //paramétré
-    public SortDeZone(float p_portee, float p_duree, float p_cooldown, float p_degats, EnumScript.Element p_element, string p_pseudoSort, string p_nameInMenu, string p_nameParticle)
+    
+    public SortDeZone(string p_pseudoSort, string p_nameParticle, EnumScript.Element p_element, int p_lvl, int p_xpActuel)
     {
         type = 2;
-        portee = p_portee;
-        duree = p_duree;
-        cooldown = p_cooldown;
-        degats = p_degats;
-        element = p_element;
         pseudoSort = p_pseudoSort;
-        nameInMenu = p_nameInMenu;
         nameParticle = p_nameParticle;
+        element = p_element;
+        lvl = p_lvl;
+        xpActuel = p_xpActuel;
+
+        structSortDeZone str = GameObject.FindWithTag("CaracSorts").GetComponent<CaracZones>().getStructFromName(p_nameParticle);
+
+        nameInMenu = str.nameInMenu;
+        duree = str.duree;
+        cooldown = str.cooldown;
+        degats = str.degats;
     }
 
     public override void AttackFromPlayer(Vector3 spawnPoint) //spawnPoint used for SortDeJet

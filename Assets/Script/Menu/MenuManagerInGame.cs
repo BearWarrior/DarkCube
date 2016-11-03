@@ -136,24 +136,56 @@ public class MenuManagerInGame : MonoBehaviour
         popUpYesNoResult = false;
         delegateYesNoUsed = false;
 
-        //On remplit les dropview des elements en prenant l'enum
-        foreach (EnumScript.Element elem in EnumScript.Element.GetValues(typeof(EnumScript.Element)))
-        {
-            creatorProjElement.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(elem.ToString()));
-            creatorZoneElement.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(elem.ToString()));
-            editorProjElement.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(elem.ToString()));
-        }
-        creatorProjElement.GetComponent<Dropdown>().captionText = creatorProjElement.GetComponent<Dropdown>().captionText;
-        creatorZoneElement.GetComponent<Dropdown>().captionText = creatorZoneElement.GetComponent<Dropdown>().captionText;
-        //On récupère la liste des projectiles de cet element puis affichage dans la dropview
-        List<structSortJet> listSortJet = GetComponent<CaracProjectiles>().getProjsFromElement((EnumScript.Element)creatorProjElement.GetComponent<Dropdown>().value);
+        //PROJECTILE
+        //On remplit la Dropdown des projectiles
         creatorProjProjectile.GetComponent<Dropdown>().options.Clear();
-        foreach (structSortJet proj in listSortJet)
-            creatorProjProjectile.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(proj.nameInMenu));
+        foreach (structSortJet sort in GetComponent<CaracProjectiles>().tabSort)
+            creatorProjProjectile.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(sort.nameInMenu));
         creatorProjProjectile.GetComponent<Dropdown>().value = 0;
         creatorProjProjectile.GetComponent<Dropdown>().captionText = creatorProjProjectile.GetComponent<Dropdown>().captionText;
+        //Ensuite on charge les elements dispo avec le sort choisi
+        creatorProjElement.GetComponent<Dropdown>().options.Clear();
+        foreach (EnumScript.Element elem in GetComponent<CaracProjectiles>().getElemFromProj(GetComponent<CaracProjectiles>().tabSort[0].nomParticle))
+            creatorProjElement.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(elem.ToString()));
+        creatorProjElement.GetComponent<Dropdown>().value = 0;
+        creatorProjElement.GetComponent<Dropdown>().captionText = creatorProjElement.GetComponent<Dropdown>().captionText;
+
+        //ZONE
+        creatorZoneSort.GetComponent<Dropdown>().options.Clear();
+        foreach (structSortDeZone sort in GetComponent<CaracZones>().tabSort)
+            creatorZoneSort.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(sort.nameInMenu));
+        creatorZoneSort.GetComponent<Dropdown>().value = 0;
+        creatorZoneSort.GetComponent<Dropdown>().captionText = creatorZoneSort.GetComponent<Dropdown>().captionText;
+        //Ensuite on charge les elements dispo avec le sort choisi
+        creatorZoneElement.GetComponent<Dropdown>().options.Clear();
+        foreach (EnumScript.Element elem in GetComponent<CaracZones>().getElemFromZone(GetComponent<CaracZones>().tabSort[0].nomParticle))
+            creatorZoneElement.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(elem.ToString()));
+        creatorZoneElement.GetComponent<Dropdown>().value = 0;
+        creatorZoneElement.GetComponent<Dropdown>().captionText = creatorZoneElement.GetComponent<Dropdown>().captionText;
+
+        creatorZoneChanged();
+        creatorProjectileChanged();
         creatorElementChanged();
-        
+
+
+        //On remplit les dropview des elements en prenant l'enum
+        //foreach (EnumScript.Element elem in EnumScript.Element.GetValues(typeof(EnumScript.Element)))
+        //{
+        //    creatorProjElement.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(elem.ToString()));
+        //    creatorZoneElement.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(elem.ToString()));
+        //    editorProjElement.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(elem.ToString()));
+        //}
+        //creatorProjElement.GetComponent<Dropdown>().captionText = creatorProjElement.GetComponent<Dropdown>().captionText;
+        //creatorZoneElement.GetComponent<Dropdown>().captionText = creatorZoneElement.GetComponent<Dropdown>().captionText;
+        ////On récupère la liste des projectiles de cet element puis affichage dans la dropview
+        //List<structSortJet> listSortJet = GetComponent<CaracProjectiles>().getProjsFromElement((EnumScript.Element)creatorProjElement.GetComponent<Dropdown>().value);
+        //creatorProjProjectile.GetComponent<Dropdown>().options.Clear();
+        //foreach (structSortJet proj in listSortJet)
+        //    creatorProjProjectile.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(proj.nameInMenu));
+        //creatorProjProjectile.GetComponent<Dropdown>().value = 0;
+        //creatorProjProjectile.GetComponent<Dropdown>().captionText = creatorProjProjectile.GetComponent<Dropdown>().captionText;
+        //creatorElementChanged();
+
     }
 
     // Update is called once per frame
@@ -322,49 +354,46 @@ public class MenuManagerInGame : MonoBehaviour
     public void creatorElementChanged()
     {
         //JET
-        //On récupère la liste des projectiles de cet element puis affichage dans la dropview
-        List<structSortJet> listSort = GetComponent<CaracProjectiles>().getProjsFromElement((EnumScript.Element)creatorProjElement.GetComponent<Dropdown>().value);
-        creatorProjProjectile.GetComponent<Dropdown>().options.Clear();
-        foreach (structSortJet proj in listSort)
-            creatorProjProjectile.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(proj.nameInMenu));
-        creatorProjProjectile.GetComponent<Dropdown>().value = 0;
-        creatorProjProjectile.GetComponent<Dropdown>().captionText = creatorProjProjectile.GetComponent<Dropdown>().captionText;
-        //changement de l'élément et du projectile
-        sortDeJetEnConstruction.setElement((EnumScript.Element)creatorProjElement.GetComponent<Dropdown>().value);
-        string nomProj = GetComponent<CaracProjectiles>().getProjsFromElement((EnumScript.Element)creatorProjElement.GetComponent<Dropdown>().value)[creatorProjProjectile.GetComponent<Dropdown>().value].nomParticle;
-        sortDeJetEnConstruction.setNameParticle(nomProj);
+        sortDeJetEnConstruction.setElement(GetComponent<CaracProjectiles>().getElemFromProj(sortDeJetEnConstruction.getNameParticle())[creatorProjElement.GetComponent<Dropdown>().value]);
 
         //ZONE
-        //On récupère la liste des projectiles de cet element puis affichage dans la dropview
-        List<structSortDeZone> listSortZ = GetComponent<CaracZones>().getZoneFromElement((EnumScript.Element)creatorZoneElement.GetComponent<Dropdown>().value);
-        creatorZoneSort.GetComponent<Dropdown>().options.Clear();
-        foreach (structSortDeZone proj in listSortZ)
-            creatorZoneSort.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(proj.nameInMenu));
-        creatorZoneSort.GetComponent<Dropdown>().captionText = creatorZoneSort.GetComponent<Dropdown>().captionText;
-        //changement de l'élément et du projectile
-        sortDeZoneEnConstruction.setElement((EnumScript.Element)creatorZoneElement.GetComponent<Dropdown>().value);
-        string nomParticle = GetComponent<CaracZones>().getZoneFromElement((EnumScript.Element)creatorZoneElement.GetComponent<Dropdown>().value)[creatorZoneSort.GetComponent<Dropdown>().value].nomParticle;
-        sortDeZoneEnConstruction.setPseudoSort(nomParticle);
-        editorZoneChanged();
+        sortDeZoneEnConstruction.setElement(GetComponent<CaracZones>().getElemFromZone(sortDeZoneEnConstruction.getNameParticle())[creatorZoneElement.GetComponent<Dropdown>().value]);
 
+        //Mise a jour des carac + affichage
         majCaracSortEnConstr();
     }
 
     public void creatorProjectileChanged()
     {
         //On récupere le nom du prjectile et on l'affecte au sort
-        string namePart = GetComponent<CaracProjectiles>().getProjsFromElement((EnumScript.Element)creatorProjElement.GetComponent<Dropdown>().value)[creatorProjProjectile.GetComponent<Dropdown>().value].nomParticle;
-        sortDeJetEnConstruction.setNameParticle(namePart);
+        string nomPart = GetComponent<CaracProjectiles>().tabSort[creatorProjProjectile.GetComponent<Dropdown>().value].nomParticle;
+        sortDeJetEnConstruction.setNameParticle(nomPart);
+
+        //On charge les elements disponible pour ce sort
+        creatorProjElement.GetComponent<Dropdown>().options.Clear();
+        foreach (EnumScript.Element elem in GetComponent<CaracProjectiles>().getElemFromProj(nomPart))
+            creatorProjElement.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(elem.ToString()));
+        creatorProjElement.GetComponent<Dropdown>().value = 0;
+        creatorProjElement.GetComponent<Dropdown>().captionText = creatorProjElement.GetComponent<Dropdown>().captionText;
+
 
         //Mise a jour des carac + affichage
         majCaracSortEnConstr();
     }
 
-    public void editorZoneChanged()
+    public void creatorZoneChanged()
     {
-        string nameParticle = GetComponent<CaracZones>().getZoneFromElement((EnumScript.Element)creatorZoneElement.GetComponent<Dropdown>().value)[creatorZoneSort.GetComponent<Dropdown>().value].nomParticle;
+        //On récupere le nom du sortdezone et on l'affecte au sort
+        string nameZone = GetComponent<CaracZones>().tabSort[creatorZoneSort.GetComponent<Dropdown>().value].nomParticle;
+        sortDeZoneEnConstruction.setNameParticle(nameZone);
 
-        sortDeZoneEnConstruction.setNameParticle(nameParticle);
+        //On charge les elements disponible pour ce sort
+        creatorZoneElement.GetComponent<Dropdown>().options.Clear();
+        foreach (EnumScript.Element elem in GetComponent<CaracZones>().getElemFromZone(nameZone))
+            creatorZoneElement.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(elem.ToString()));
+        creatorZoneElement.GetComponent<Dropdown>().value = 0;
+        creatorZoneElement.GetComponent<Dropdown>().captionText = creatorZoneElement.GetComponent<Dropdown>().captionText;
+
 
         //Mise a jour des carac + affichage
         majCaracSortEnConstr();
@@ -458,8 +487,8 @@ public class MenuManagerInGame : MonoBehaviour
             else
                 sortDeZoneEnConstruction.setPseudoSort("_defaut_");
 
-            string nomParticle = GetComponent<CaracZones>().getZoneFromElement((EnumScript.Element)creatorZoneElement.GetComponent<Dropdown>().value)[creatorZoneSort.GetComponent<Dropdown>().value].nomParticle;
-            sortDeZoneEnConstruction.setNameParticle(nomParticle);
+            //string nomParticle = GetComponent<CaracZones>().getZoneFromElement((EnumScript.Element)creatorZoneElement.GetComponent<Dropdown>().value)[creatorZoneSort.GetComponent<Dropdown>().value].nomParticle;
+           // sortDeZoneEnConstruction.setNameParticle(nomParticle);
 
             
             Debug.Log(sortDeZoneEnConstruction.getPseudoSort());
@@ -553,7 +582,7 @@ public class MenuManagerInGame : MonoBehaviour
     {
         //JET
         //On récupère la structure du sort depuis l'element et le nom
-        structSortJet structureDuSortJ = GetComponent<CaracProjectiles>().getStructFromNameAndElement(sortDeJetEnConstruction.getNameParticle(), sortDeJetEnConstruction.getElement());
+        structSortJet structureDuSortJ = GetComponent<CaracProjectiles>().getStructFromName(sortDeJetEnConstruction.getNameParticle());
         //On modifie le sort en conséquent
         sortDeJetEnConstruction.vitesseProj = structureDuSortJ.vitesse;
         sortDeJetEnConstruction.setCooldown(structureDuSortJ.cooldown);
@@ -565,7 +594,7 @@ public class MenuManagerInGame : MonoBehaviour
         creatorProjDegats.GetComponent<Text>().text = sortDeJetEnConstruction.getDegats().ToString();
 
         //ZONE
-        structSortDeZone structureDuSortZ = GetComponent<CaracZones>().getStructFromNameAndElement(sortDeZoneEnConstruction.getNameParticle(), sortDeZoneEnConstruction.getElement());
+        structSortDeZone structureDuSortZ = GetComponent<CaracZones>().getStructFromName(sortDeZoneEnConstruction.getNameParticle());
         //On modifie le sort en conséquent
         sortDeZoneEnConstruction.setCooldown(structureDuSortZ.cooldown);
         sortDeZoneEnConstruction.setDegats(structureDuSortZ.degats);
@@ -730,6 +759,7 @@ public class MenuManagerInGame : MonoBehaviour
 
     public void exitMenu()
     {
+        GameObject.FindWithTag("Player").GetComponent<Player>().sauvegarderSorts();
         accessMenu.GetComponent<accessMenu>().exitMenu();
     }
 

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 public class SortDeJet : Attaque
 {
     public float vitesseProj;
-    public float rayonEffet;
     public GameObject proj;
 
     public delegate void Del();
@@ -22,6 +21,9 @@ public class SortDeJet : Attaque
         pseudoSort = "none";
         nameInMenu = "none";
         lvl = 1;
+        expToLvlUp = 100;
+        xpActuel = 0;
+        nbXpPerShot = 1;
     }
 
     public SortDeJet(SortDeJet copy)
@@ -35,19 +37,29 @@ public class SortDeJet : Attaque
         pseudoSort = copy.pseudoSort;
         nameInMenu = copy.nameInMenu;
         lvl = copy.lvl;
+        expToLvlUp = copy.expToLvlUp;
+        nbXpPerShot = copy.nbXpPerShot;
+        xpActuel = copy.xpActuel;
     }
 
-    public SortDeJet(float p_vitesse, float p_cd, float p_degats, EnumScript.Element p_element, string p_nomProj, string p_nomSort, string p_nameInMenu, int p_lvl)
+    public SortDeJet(string p_nomSort, string p_nomProj, EnumScript.Element p_element, int p_lvl, int p_xpActuel)
     {
         type = 1;
-        vitesseProj = p_vitesse;
-        cooldown = p_cd;
-        degats = p_degats;
+        pseudoSort = p_nomSort;
         nameParticle = p_nomProj;
         element = p_element;
-        pseudoSort = p_nomSort;
-        nameInMenu = p_nameInMenu;
         lvl = p_lvl;
+        xpActuel = p_xpActuel;
+
+        expToLvlUp = 100;
+
+        structSortJet str = GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().getStructFromName(p_nomProj);
+
+        vitesseProj = str.vitesse;
+        cooldown = str.cooldown;
+        degats = str.degats;
+        nbXpPerShot = str.nbXpPerShot;
+        nameInMenu = str.nameInMenu;
     }
 
     public override void AttackFromPlayer(Vector3 spawnPoint)
@@ -72,8 +84,9 @@ public class SortDeJet : Attaque
 
     public void launchProjPlayer(Vector3 spawnPoint)
     {
-        Debug.Log("Particle / Prefabs / SortsDeJet / " + nameParticle + element.ToString() +"1");
-        proj = GameObject.Instantiate(Resources.Load("Particle/Prefabs/SortsDeJet/" + nameParticle + element.ToString() +"1"), spawnPoint, new Quaternion(0, 0, 0, 0)) as GameObject;
+        string lvlPart = (lvl < 3) ? "1" : (lvl < 6) ? "2" : "3";
+        string partToLoad = "Particle/Prefabs/SortsDeJet/" + nameParticle + element.ToString() + lvlPart;
+        proj = GameObject.Instantiate(Resources.Load(partToLoad), spawnPoint, new Quaternion(0, 0, 0, 0)) as GameObject;
         proj.transform.parent = null;
 
         RaycastHit hit;
@@ -102,7 +115,9 @@ public class SortDeJet : Attaque
 
     public void launchProjEnemy(RaycastHit hit, Vector3 spawnPoint)
     {
-        proj = GameObject.Instantiate(Resources.Load("Particle/Prefabs/SortsDeJet/" + nameParticle + element.ToString() + "1"), spawnPoint, new Quaternion(0, 0, 0, 0)) as GameObject;
+        string lvlPart = (lvl < 3) ? "1" : (lvl < 6) ? "2" : "3";
+        string partToLoad = "Particle/Prefabs/SortsDeJet/" + nameParticle + element.ToString() + lvlPart;
+        proj = GameObject.Instantiate(Resources.Load(partToLoad), spawnPoint, new Quaternion(0, 0, 0, 0)) as GameObject;
         proj.transform.parent = null;
         Vector3 direction = (hit.point - spawnPoint) / Vector3.Distance(hit.point, spawnPoint);
         proj.transform.eulerAngles = new Vector3(0, GameObject.FindWithTag("Player").transform.eulerAngles.y, 0);
