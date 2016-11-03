@@ -3,8 +3,11 @@ using System.Collections;
 
 public abstract class Attaque
 {
-    public int type; //1-Jet  2-Zone   3-Support
+    public int type; //1-Jet   2-Zone   3-Support
     protected int lvl;
+    protected int xpActuel;
+    protected int expToLvlUp;
+    protected int nbXpPerShot;
 	protected float cooldown;
     protected float lastShot;
     protected bool canShoot = true;
@@ -107,5 +110,15 @@ public abstract class Attaque
     public void setLvl(int p_lvl)
     {
         lvl = p_lvl;
+    }
+    
+    //xpActuel
+    public int getXpActuel()
+    {
+        return xpActuel;
+    }
+    public void setXpActuel(int x)
+    {
+        xpActuel = x;
     }
 }

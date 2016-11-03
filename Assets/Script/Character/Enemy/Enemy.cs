@@ -6,20 +6,18 @@ public class Enemy : Character
 {
 
     public GameObject spawnPoint;
+    public int numRoom;
 
 	// Use this for initialization
 	void Start ()
     {
         PDVmax = 10;
-        PDVactuel = 30;
+        PDVactuel = 10;
         armureMax = 10;
         armureActuel = 10;
-        //enduranceMax = 3;
-        //enduranceActuel = 3;
 
-        //regenEndurance = false;
-        //timeBeforeRunningMax = 3;
-        //timeBeforeRunningAct = 0;
+
+
         GetComponent<ListSorts>().initSort();
     }
 	
@@ -41,8 +39,11 @@ public class Enemy : Character
     private void takeDamage(float damage)
     {
         PDVactuel -= damage;
-        if(PDVactuel <= 0)
+        if (PDVactuel <= 0)
+        {
+            GameObject.FindWithTag("World").GetComponent<EnemyBehaviour>().enemyDied(this.gameObject);
             Destroy(this.gameObject);
+        }
     }
 
     public void shoot(RaycastHit hit)

@@ -10,7 +10,6 @@ public class PortalBehaviour : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        //TODO vérifier qu'il n'y ai plus d'enemy
         if (other.tag == "Player")
         {
             if (!lastPortal)
@@ -20,13 +19,20 @@ public class PortalBehaviour : MonoBehaviour
                     wolrdBehaviour.changeRoom(direction); //changement de salle
                 }
             }
+            else
+            {
+                GameObject.FindWithTag("CanvasEndDungeon").transform.GetChild(0).transform.gameObject.SetActive(true);
+
+                other.GetComponent<PlayerController>().setControllable(false);
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+            }
             usable = false;
         }
     }
 
     void OnTriggerExit(Collider other)
     {
-        //TODO vérifier qu'il n'y ai plus d'enemy
         if (other.tag == "Player")
         {
             usable = true;

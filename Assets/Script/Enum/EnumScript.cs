@@ -13,4 +13,21 @@ public class EnumScript
     public enum GabaritSortDeZone { Cercle, Ligne, Cone};
 
     public enum Character { Player, Enemy};
+
+    public static Element getElemFromStr(string nom)
+    {
+        switch(nom)
+        {
+            case "Eau":
+                return Element.Eau;
+            case "Feu":
+                return Element.Feu;
+            case "Elec":
+                return Element.Elec;
+            case "Toxic":
+                return Element.Toxic;
+            default:
+                return Element.Eau;
+        }
+    }
 }

@@ -10,80 +10,52 @@ public struct structSortDeZone
     public float degats;
     public float cooldown;
     public float duree;
-    public EnumScript.Element element;
+    public List<EnumScript.Element> listElement;
+
+    public float degatsPerLevel;
+    public float vitessePerLevel;
+    public float coolDownPerLevel;
 }
 
 
 public class CaracZones : MonoBehaviour
 {
-    public List<List<structSortDeZone>> tabSort;
+    public List<structSortDeZone> tabSort;
 
-    public List<structSortDeZone> DEFAULT;
-    public List<structSortDeZone> BRASIER;
-    public List<structSortDeZone> PLUIE_DE_FLECHE;
-    public List<structSortDeZone> PLUIE_DE_GLACE;
-
-    public List<structSortDeZone> WALL;
+    public structSortDeZone WALL;
 
     public void Start()
     {
-        tabSort = new List<List<structSortDeZone>>();
-
-        structSortDeZone sort;
+        tabSort = new List<structSortDeZone>();
 
         //WALL
-        WALL = new List<structSortDeZone>();
-        sort.nomParticle = "Wall";
-        sort.nameInMenu = "Mur";
-        sort.element = EnumScript.Element.Eau;
-        sort.degats = 10;
-        sort.cooldown = 1;
-        sort.duree = 10;
-        WALL.Add(sort);
-        sort.nomParticle = "Wall";
-        sort.nameInMenu = "Mur";
-        sort.element = EnumScript.Element.Feu;
-        sort.degats = 10;
-        sort.cooldown = 1;
-        sort.duree = 10;
-        WALL.Add(sort);
-        sort.nomParticle = "Wall";
-        sort.nameInMenu = "NE PAS CREER";
-        sort.element = EnumScript.Element.Elec;
-        sort.degats = 10;
-        sort.cooldown = 1;
-        sort.duree = 10;
-        WALL.Add(sort);
-        sort.nomParticle = "Wall";
-        sort.nameInMenu = "NE PAS CREER";
-        sort.element = EnumScript.Element.Toxic;
-        sort.degats = 10;
-        sort.cooldown = 1;
-        sort.duree = 10;
-        WALL.Add(sort);
+        WALL.nomParticle = "Wall";
+        WALL.nameInMenu = "Mur";
+        WALL.listElement = new List<EnumScript.Element> { EnumScript.Element.Eau, EnumScript.Element.Feu };
+        WALL.degats = 10;
+        WALL.cooldown = 1;
+        WALL.duree = 10;
+
+        WALL.degatsPerLevel = 2;
+        WALL.vitessePerLevel = 1;
+        WALL.coolDownPerLevel = -1;
         tabSort.Add(WALL);
     }
 
 
-    public structSortDeZone getStructFromNameAndElement(string p_name, EnumScript.Element p_elem)
+    public structSortDeZone getStructFromName(string p_name)
     {
-        foreach (List<structSortDeZone> sorts in tabSort)
+        foreach (structSortDeZone sorts in tabSort)
         {
-            if (sorts[0].nomParticle.Equals(p_name))
+            if (sorts.nomParticle.Equals(p_name))
             {
-                foreach (structSortDeZone sort in sorts)
-                {
-                    if (sort.element == p_elem)
-                    {
-                        return sort;
-                    }
-                }
+                return sorts;
             }
         }
-        return tabSort[0][0];
+        return tabSort[0];
     }
 
-    public List<structSortDeZone> getZoneFromElement(EnumScript.Element p_elem)
+    /*public List<structSortDeZone> getZoneFromElement(EnumScript.Element p_elem)
     {
         List<structSortDeZone> listZone= new List<structSortDeZone>();
         if (tabSort == null)
@@ -100,5 +72,17 @@ public class CaracZones : MonoBehaviour
             }
         }
         return listZone;
+    }*/
+
+    public List<EnumScript.Element> getElemFromZone(string p_name)
+    {
+        foreach (structSortDeZone sort in tabSort)
+        {
+            if (sort.nomParticle == p_name)
+            {
+                return sort.listElement;
+            }
+        }
+        return null;
     }
 }

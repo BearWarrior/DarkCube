@@ -4,24 +4,13 @@ using System.Collections.Generic;
 
 public class EnemyBehaviour : MonoBehaviour
 {
-    public List<List<GameObject>> listEnemy; //List d'enemy par salle
+    public List<List<GameObject>> listEnemy = new List<List<GameObject>>(); //List d'enemy par salle
 
-	// Use this for initialization
-	void Start ()
-    {
-	    
-	}
-	
-	// Update is called once per frame
-	void Update ()
-    {
-	       
-	}
-
-    public void PlaceEnemys(GameObject roomGO, List<List<GameObject>> tiles, List<List<int>> room, List<List<int>> decors)
+    public void PlaceEnemys(GameObject roomGO, List<List<GameObject>> tiles, List<List<int>> room, List<List<int>> decors, int numRoom)
     {
         int ratio = 3;
         int valActuel = 1;
+        List<GameObject> listEnemyInRoom = new List<GameObject>();
 
         for (int wid = 0; wid < room.Count; wid++)
         {
@@ -41,6 +30,9 @@ public class EnemyBehaviour : MonoBehaviour
                                     enemy.transform.SetParent(roomGO.transform);
                                     enemy.transform.tag = "Enemy";
                                     valActuel = 1;
+                                    enemy.GetComponent<Enemy>().numRoom = numRoom;
+
+                                    listEnemyInRoom.Add(enemy);
                                 }
                                 else
                                 {
@@ -53,7 +45,24 @@ public class EnemyBehaviour : MonoBehaviour
             }
         }
 
-
-        //return roomGO;
+        listEnemy.Add(listEnemyInRoom);
     }
+
+    public void enemyDied(GameObject en)
+    {
+        int i = 0;
+        listEnemy[en.GetComponent<Enemy>().numRoom].Remove(en);
+
+        foreach(List<GameObject> list in listEnemy)
+        {
+            print(i + "   " + list.Count);
+            if (list.Count == 0) //Si une salle n'a plus d'enemy, on active le TP
+            {
+                GetComponent<WorldBehaviour>().activePortalEnd(i);
+            }
+            i++;
+        }
+    }
+
+
 }
