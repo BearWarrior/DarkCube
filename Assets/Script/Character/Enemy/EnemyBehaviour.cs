@@ -55,7 +55,7 @@ public class EnemyBehaviour : MonoBehaviour
 
         foreach(List<GameObject> list in listEnemy)
         {
-            print(i + "   " + list.Count);
+            //print(i + "   " + list.Count);
             if (list.Count == 0) //Si une salle n'a plus d'enemy, on active le TP
             {
                 GetComponent<WorldBehaviour>().activePortalEnd(i);

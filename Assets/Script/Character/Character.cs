@@ -86,36 +86,7 @@ public class Character : MonoBehaviour
         if (!sortEquipe)
             listAttaqueInventaire.RemoveAt(p_index);
         else
-            listAttaque[p_index] = null;
-
-        //if (!forceDelete)
-        //{
-        //    for (int i = 0; i < listAttaque.Length; i++)
-        //    {
-        //        if (listAttaque[i] != null)
-        //        {
-        //            if (listAttaque[i].getPseudoSort().Equals(listAttaqueInventaire[p_index].getPseudoSort()))
-        //            {
-        //                return false;
-        //            }
-        //        }
-        //    }
-        //    listAttaqueInventaire.RemoveAt(p_index);
-        //    return true;
-        //}
-        //else
-        //{
-        //    for (int i = 0; i < listAttaque.Length; i++)
-        //    {
-        //        if (listAttaque[i].getPseudoSort().Equals(listAttaqueInventaire[p_index].getPseudoSort()))
-        //        {
-        //            listAttaque[i] = null;
-        //            break;
-        //        }
-        //    }
-        //    listAttaqueInventaire.RemoveAt(p_index);
-        //    return true;
-        //}
+            listAttaque[p_index-1] = null;
     }
 
     public virtual List<Attaque> getListAttaqueInventaire()

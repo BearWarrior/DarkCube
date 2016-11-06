@@ -39,14 +39,13 @@ public class SortDeZone : Attaque
     }
 
     
-    public SortDeZone(string p_pseudoSort, string p_nameParticle, EnumScript.Element p_element, int p_lvl, int p_xpActuel)
+    public SortDeZone(string p_pseudoSort, string p_nameParticle, EnumScript.Element p_element, int p_lvl)
     {
         type = 2;
         pseudoSort = p_pseudoSort;
         nameParticle = p_nameParticle;
         element = p_element;
         lvl = p_lvl;
-        xpActuel = p_xpActuel;
 
         structSortDeZone str = GameObject.FindWithTag("CaracSorts").GetComponent<CaracZones>().getStructFromName(p_nameParticle);
 

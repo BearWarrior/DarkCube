@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+using System;
 
 public struct structSortDeZone
 {
@@ -12,14 +12,20 @@ public struct structSortDeZone
     public float duree;
     public List<EnumScript.Element> listElement;
 
+    public int lvl;
+    public int xpActuel;
     public float degatsPerLevel;
     public float vitessePerLevel;
     public float coolDownPerLevel;
+    public int nbXpPerShot;
 }
 
 
 public class CaracZones : MonoBehaviour
 {
+    public int xpToLvlUp = 5;
+    public float multXpByLvl = 1.25f;
+
     public List<structSortDeZone> tabSort;
 
     public structSortDeZone WALL;
@@ -36,9 +42,13 @@ public class CaracZones : MonoBehaviour
         WALL.cooldown = 1;
         WALL.duree = 10;
 
+        WALL.xpActuel = 0;
         WALL.degatsPerLevel = 2;
         WALL.vitessePerLevel = 1;
         WALL.coolDownPerLevel = -1;
+        WALL.nbXpPerShot = 1;
+        WALL.lvl = 1;
+
         tabSort.Add(WALL);
     }
 
@@ -55,25 +65,6 @@ public class CaracZones : MonoBehaviour
         return tabSort[0];
     }
 
-    /*public List<structSortDeZone> getZoneFromElement(EnumScript.Element p_elem)
-    {
-        List<structSortDeZone> listZone= new List<structSortDeZone>();
-        if (tabSort == null)
-            Start();
-        foreach (List<structSortDeZone> sorts in tabSort)
-        {
-            foreach (structSortDeZone sort in sorts)
-            {
-                if (sort.element == p_elem)
-                {
-                    listZone.Add(sort);
-                    break;
-                }
-            }
-        }
-        return listZone;
-    }*/
-
     public List<EnumScript.Element> getElemFromZone(string p_name)
     {
         foreach (structSortDeZone sort in tabSort)
@@ -84,5 +75,68 @@ public class CaracZones : MonoBehaviour
             }
         }
         return null;
+    }
+
+    public void sauvegarder()
+    {
+        PlayerPrefs.SetInt("CaracZones", tabSort.Count);
+        for (int i = 0; i < tabSort.Count; i++)
+        {
+            string save = tabSort[i].nomParticle + ";" + tabSort[i].lvl + ";" + tabSort[i].xpActuel;
+            PlayerPrefs.SetString("CaracZones" + i, save);
+            print(save);
+        }
+    }
+
+    public void charger()
+    {
+        int nbSort = PlayerPrefs.GetInt("CaracZones", -1);
+        if (nbSort != -1)
+        {
+            for (int i = 0; i < nbSort; i++)
+            {
+                string save = PlayerPrefs.GetString("CaracZones" + i, "default");
+                if (save != "default")
+                {
+                    string[] array = save.Split(';');
+                    for (int j = 0; j < tabSort.Count; j++)
+                    {
+                        if (array[0].Equals(tabSort[j].nomParticle))
+                        {
+                            structSortDeZone s = tabSort[j];
+                            s.lvl = Int32.Parse(array[1]);
+                            s.xpActuel = Int32.Parse(array[2]);
+                            tabSort[j] = s;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void gagnerXP(string nameParticule)
+    {
+      
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            sauvegarder();
+        }
+    }
+
+    public int getLvlFromNamePart(string nameParticule)
+    {
+        foreach (structSortDeZone sort in tabSort)
+        {
+            if (sort.nomParticle == nameParticule)
+            {
+                return sort.lvl;
+            }
+        }
+        return 0;
     }
 }
