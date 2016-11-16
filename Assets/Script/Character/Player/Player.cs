@@ -218,6 +218,19 @@ public class Player : Character
         }
     }
 
+    public void majSortsZoneEquip(structSortDeZone s)
+    {
+        print(s.nomParticle);
+        print(listAttaque[0].getNameParticle());
+        for (int i = 0; i < 6; i++)
+        {
+            if (listAttaque[i] != null && (listAttaque[i].getNameParticle() == s.nomParticle))
+            {
+                listAttaque[i].setLvl(s.lvl);
+            }
+        }
+    }
+
     //Player shot 
     void OnTriggerEnter(Collider other)
     {

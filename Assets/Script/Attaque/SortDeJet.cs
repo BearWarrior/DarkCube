@@ -48,9 +48,9 @@ public class SortDeJet : Attaque
 
         structSortJet str = GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().getStructFromName(p_nomProj);
 
-        vitesseProj = str.vitesse;
-        cooldown = str.cooldown;
-        degats = str.degats;
+        vitesseProj = str.vitesse + str.pointsInVitesse * str.vitessePerLevel;
+        cooldown = str.cooldown + str.pointsInCooldown * str.coolDownPerLevel;
+        degats = str.degats + str.pointsInDegats * str.degatsPerLevel;
         nbXpPerShot = str.nbXpPerShot;
         nameInMenu = str.nameInMenu;
     }
@@ -77,7 +77,6 @@ public class SortDeJet : Attaque
 
     public void launchProjPlayer(Vector3 spawnPoint)
     {
-        Debug.Log("lvl"+lvl);
         string lvlPart = (lvl < 3) ? "1" : (lvl < 6) ? "2" : "3";
         string partToLoad = "Particle/Prefabs/SortsDeJet/" + nameParticle + element.ToString() + lvlPart;
         proj = GameObject.Instantiate(Resources.Load(partToLoad), spawnPoint, new Quaternion(0, 0, 0, 0)) as GameObject;
@@ -122,10 +121,7 @@ public class SortDeJet : Attaque
         proj.transform.tag = "AttaqueEnemy";
         setAllTagsAndAddVelocityAndEmitter("AttaqueEnemy", proj, 75 * direction * Time.deltaTime * vitesseProj, EnumScript.Character.Enemy);
 
-        ProjectileData projData = proj.AddComponent<ProjectileData>();
-        projData.degats = degats;
-        projData.element = element;
-
+        setAllProjData(proj, degats, element, 1, nameParticle);
     }
 
     

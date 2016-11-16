@@ -14,12 +14,15 @@ public struct structSortJet
 
     public int lvl;
     public int xpActuel;
+    public int nbXpPerShot;
+    public int nbPointsDispo;
     public float degatsPerLevel;
     public float vitessePerLevel;
     public float coolDownPerLevel;
-    public int nbXpPerShot;
+    public int pointsInVitesse;
+    public int pointsInCooldown;
+    public int pointsInDegats;
 }
-
 
 public class CaracProjectiles : MonoBehaviour
 {
@@ -49,6 +52,9 @@ public class CaracProjectiles : MonoBehaviour
         METEOR.degatsPerLevel = 2;
         METEOR.vitessePerLevel = 1;
         METEOR.coolDownPerLevel = -1;
+        METEOR.pointsInVitesse = 0;
+        METEOR.pointsInDegats = 0;
+        METEOR.pointsInCooldown = 0;
         METEOR.nbXpPerShot = 1;
         METEOR.lvl = 1;
         tabSort.Add(METEOR);
@@ -64,6 +70,9 @@ public class CaracProjectiles : MonoBehaviour
         WAVE.degatsPerLevel = 2;
         WAVE.vitessePerLevel = 1;
         WAVE.coolDownPerLevel = -1;
+        WAVE.pointsInVitesse = 0;
+        WAVE.pointsInDegats = 0;
+        WAVE.pointsInCooldown = 0;
         WAVE.nbXpPerShot = 1;
         WAVE.lvl = 1;
         tabSort.Add(WAVE);
@@ -79,6 +88,9 @@ public class CaracProjectiles : MonoBehaviour
         BOMB.degatsPerLevel = 2;
         BOMB.vitessePerLevel = 1;
         BOMB.coolDownPerLevel = -1;
+        BOMB.pointsInVitesse = 0;
+        BOMB.pointsInDegats = 0;
+        BOMB.pointsInCooldown = 0;
         BOMB.nbXpPerShot = 1;
         BOMB.lvl = 1;
         tabSort.Add(BOMB);
@@ -94,6 +106,9 @@ public class CaracProjectiles : MonoBehaviour
         SHOT.degatsPerLevel = 2;
         SHOT.vitessePerLevel = 1;
         SHOT.coolDownPerLevel = -1;
+        SHOT.pointsInVitesse = 0;
+        SHOT.pointsInDegats = 0;
+        SHOT.pointsInCooldown = 0;
         SHOT.nbXpPerShot = 1;
         SHOT.lvl = 1;
         tabSort.Add(SHOT);
@@ -109,9 +124,13 @@ public class CaracProjectiles : MonoBehaviour
         BALL.degatsPerLevel = 2;
         BALL.vitessePerLevel = 1;
         BALL.coolDownPerLevel = -1;
+        BALL.pointsInVitesse = 0;
+        BALL.pointsInDegats = 0;
+        BALL.pointsInCooldown = 0;
         BALL.nbXpPerShot = 1;
         BALL.lvl = 1;
         tabSort.Add(BALL);
+
 
         charger();
     }
@@ -128,6 +147,18 @@ public class CaracProjectiles : MonoBehaviour
         }
         return tabSort[0];
     }
+    
+    //utilisé pour l'édition
+    public void setStruct(structSortJet sort)
+    {
+        for(int i = 0; i < tabSort.Count; i++)
+        {
+            if (tabSort[i].nomParticle.Equals(sort.nomParticle))
+            {
+                tabSort[i] = sort;
+            }
+        }
+    }
 
     public List<EnumScript.Element> getElemFromProj(string p_name)
     {
@@ -141,12 +172,22 @@ public class CaracProjectiles : MonoBehaviour
         return null;
     }
 
+    /* Points a sauvegarder :
+    *   nomParticle
+    *   lvl
+    *   xpActuel
+    *   nbPointsDispo
+    *   pointsInVitesse
+    *   pointsInCooldown
+    *   pointsInDegats
+    */
     public void sauvegarder()
     {
         PlayerPrefs.SetInt("CaracProjectiles", tabSort.Count);
         for(int i = 0; i < tabSort.Count; i++)
         {
-            string save = tabSort[i].nomParticle + ";" + tabSort[i].lvl + ";" + tabSort[i].xpActuel;
+            string save = tabSort[i].nomParticle + ";" + tabSort[i].lvl + ";" + tabSort[i].xpActuel + ";" + tabSort[i].nbPointsDispo + ";" +
+                          tabSort[i].pointsInVitesse + ";" + tabSort[i].pointsInCooldown + ";" + tabSort[i].pointsInDegats ;
             PlayerPrefs.SetString("CaracProjectiles" + i, save);
             print(save);
         }
@@ -170,6 +211,10 @@ public class CaracProjectiles : MonoBehaviour
                             structSortJet s = tabSort[j];
                             s.lvl = Int32.Parse(array[1]);
                             s.xpActuel = Int32.Parse(array[2]);
+                            s.nbPointsDispo = Int32.Parse(array[3]);
+                            s.pointsInVitesse = Int32.Parse(array[4]);
+                            s.pointsInCooldown = Int32.Parse(array[5]);
+                            s.pointsInDegats = Int32.Parse(array[6]);
                             tabSort[j] = s;
                             break;
                         }
@@ -193,6 +238,7 @@ public class CaracProjectiles : MonoBehaviour
                 {
                     s.xpActuel -= (int) ( xpToLvlUp * Math.Pow(multXpByLvl, s.lvl));
                     s.lvl++;
+                    s.nbPointsDispo++;
                     GameObject.FindWithTag("Player").GetComponent<Player>().majSortsProjEquip(s);
                 }
 

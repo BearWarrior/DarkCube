@@ -18,6 +18,7 @@ public class CanvasDungeonEnd : MonoBehaviour {
 
     public void Quitter()
     {
+        GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().sauvegarder();
         SceneManager.LoadScene("CustomRoom");
     }
 }

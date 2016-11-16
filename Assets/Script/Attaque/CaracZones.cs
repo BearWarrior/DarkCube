@@ -14,12 +14,15 @@ public struct structSortDeZone
 
     public int lvl;
     public int xpActuel;
-    public float degatsPerLevel;
-    public float vitessePerLevel;
-    public float coolDownPerLevel;
     public int nbXpPerShot;
+    public int nbPointsDispo;
+    public float degatsPerLevel;
+    public float dureePerLevel;
+    public float coolDownPerLevel;
+    public int pointsInDuree;
+    public int pointsInCooldown;
+    public int pointsInDegats;
 }
-
 
 public class CaracZones : MonoBehaviour
 {
@@ -41,14 +44,15 @@ public class CaracZones : MonoBehaviour
         WALL.degats = 10;
         WALL.cooldown = 1;
         WALL.duree = 10;
-
         WALL.xpActuel = 0;
         WALL.degatsPerLevel = 2;
-        WALL.vitessePerLevel = 1;
+        WALL.dureePerLevel = 1;
         WALL.coolDownPerLevel = -1;
+        WALL.pointsInDuree = 0;
+        WALL.pointsInDegats = 0;
+        WALL.pointsInCooldown = 0;
         WALL.nbXpPerShot = 1;
         WALL.lvl = 1;
-
         tabSort.Add(WALL);
     }
 
@@ -65,6 +69,18 @@ public class CaracZones : MonoBehaviour
         return tabSort[0];
     }
 
+    //utilisé pour l'édition
+    public void setStruct(structSortDeZone sort)
+    {
+        for (int i = 0; i < tabSort.Count; i++)
+        {
+            if (tabSort[i].nomParticle.Equals(sort.nomParticle))
+            {
+                tabSort[i] = sort;
+            }
+        }
+    }
+
     public List<EnumScript.Element> getElemFromZone(string p_name)
     {
         foreach (structSortDeZone sort in tabSort)
@@ -77,12 +93,22 @@ public class CaracZones : MonoBehaviour
         return null;
     }
 
+    /* Points a sauvegarder :
+    *   nomParticle
+    *   lvl
+    *   xpActuel
+    *   nbPointsDispo
+    *   pointsInVitesse
+    *   pointsInCooldown
+    *   pointsInDegats
+    */
     public void sauvegarder()
     {
         PlayerPrefs.SetInt("CaracZones", tabSort.Count);
         for (int i = 0; i < tabSort.Count; i++)
         {
-            string save = tabSort[i].nomParticle + ";" + tabSort[i].lvl + ";" + tabSort[i].xpActuel;
+            string save = tabSort[i].nomParticle + ";" + tabSort[i].lvl + ";" + tabSort[i].xpActuel + ";" + tabSort[i].nbPointsDispo + ";" +
+                          tabSort[i].pointsInDuree + ";" + tabSort[i].pointsInCooldown + ";" + tabSort[i].pointsInDegats; ;
             PlayerPrefs.SetString("CaracZones" + i, save);
             print(save);
         }
@@ -106,6 +132,10 @@ public class CaracZones : MonoBehaviour
                             structSortDeZone s = tabSort[j];
                             s.lvl = Int32.Parse(array[1]);
                             s.xpActuel = Int32.Parse(array[2]);
+                            s.nbPointsDispo = Int32.Parse(array[3]);
+                            s.pointsInDuree = Int32.Parse(array[4]);
+                            s.pointsInCooldown = Int32.Parse(array[5]);
+                            s.pointsInDegats = Int32.Parse(array[6]);
                             tabSort[j] = s;
                             break;
                         }
@@ -117,7 +147,25 @@ public class CaracZones : MonoBehaviour
 
     public void gagnerXP(string nameParticule)
     {
-      
+        for (int i = 0; i < tabSort.Count; i++)
+        {
+            if (tabSort[i].nomParticle.Equals(nameParticule))
+            {
+                structSortDeZone s = tabSort[i];
+                s.xpActuel += s.nbXpPerShot;
+
+                //LVL UP sort
+                if (s.xpActuel > xpToLvlUp * Math.Pow(multXpByLvl, s.lvl))
+                {
+                    s.xpActuel -= (int)(xpToLvlUp * Math.Pow(multXpByLvl, s.lvl));
+                    s.lvl++;
+                    s.nbPointsDispo++;
+                    GameObject.FindWithTag("Player").GetComponent<Player>().majSortsZoneEquip(s);
+                }
+
+                tabSort[i] = s;
+            }
+        }
     }
 
     void Update()

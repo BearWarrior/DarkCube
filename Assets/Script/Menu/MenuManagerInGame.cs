@@ -83,6 +83,8 @@ public class MenuManagerInGame : MonoBehaviour
     public GameObject chooserScrollListSortInv;
     public GameObject chooserScrollListSortEq;
     [Space(15)]
+    public GameObject editorProgressBar;
+    public GameObject editorLvl;
     public GameObject editorPanelProj;
     public GameObject editorPanelZone;
     [Space(15)]
@@ -92,6 +94,10 @@ public class MenuManagerInGame : MonoBehaviour
     public GameObject editorProjVitesse;
     public GameObject editorProjCooldown;
     public GameObject editorProjDegats;
+    [Space(8)]
+    public GameObject editorProjBonusVitesse;
+    public GameObject editorProjBonusCooldown;
+    public GameObject editorProjBonusDegats;
     [Space(15)]
     public GameObject editorZoneNom;
     public GameObject editorZoneElement;
@@ -99,17 +105,23 @@ public class MenuManagerInGame : MonoBehaviour
     public GameObject editorZoneCooldown;
     public GameObject editorZoneDegats;
     [Space(15)]
+    public GameObject editorZoneBonusVitesse;
+    public GameObject editorZoneBonusCooldown;
+    public GameObject editorZoneBonusDegats;
+    [Space(15)]
     public GameObject caracSorts;
 
 
 
-    private int selectedSort = -100; // >= 0 inventaire    <0 équipéss
+    private int selectedSort = -100; // >= 0 inventaire    <0 équipéss    -100 pas de sort
     private int selectedFace = 1;
     private int selectedType;
 
     private SortDeJet sortDeJetEnConstruction;
     private SortDeZone sortDeZoneEnConstruction;
     private Attaque sortSelectionne;
+    private structSortJet structSortDeJetEnEdition;
+    private structSortDeZone structSortDeZoneEnEdition;
 
     private Color colorButtonFaceNormal;
     private Color colorButtonFaceSelected;
@@ -120,15 +132,29 @@ public class MenuManagerInGame : MonoBehaviour
     public delegate void DelYesNo();
     DelYesNo fctToCallWhenPopUpYesNoAnswer;
     
-
     private float doubleClickStart = -1;
 
     int canvasType; //1 = Chooser   2 = Editor
     bool lerpingCanvas;
 
-    // Use this for initialization
     void Start()
     {
+        StartCoroutine(seekPlayer());
+    }
+
+    public IEnumerator seekPlayer()
+    {
+        while (GameObject.FindWithTag("Player") == null)
+            yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.1f);
+        InitMenu();
+    }
+
+    // Use this for initialization
+    void InitMenu()
+    {
+        player = GameObject.FindWithTag("Player");
+        
         canvasType = 1; // Chooser
         lerpingCanvas = false;
 
@@ -178,42 +204,27 @@ public class MenuManagerInGame : MonoBehaviour
         creatorZoneChanged();
         creatorProjectileChanged();
         creatorElementChanged();
+        fillClassChooserTable();
+        majCaracSortClicked();
+        setSelectedFace(selectedFace);
 
-
-        //On remplit les dropview des elements en prenant l'enum
-        //foreach (EnumScript.Element elem in EnumScript.Element.GetValues(typeof(EnumScript.Element)))
-        //{
-        //    creatorProjElement.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(elem.ToString()));
-        //    creatorZoneElement.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(elem.ToString()));
-        //    editorProjElement.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(elem.ToString()));
-        //}
-        //creatorProjElement.GetComponent<Dropdown>().captionText = creatorProjElement.GetComponent<Dropdown>().captionText;
-        //creatorZoneElement.GetComponent<Dropdown>().captionText = creatorZoneElement.GetComponent<Dropdown>().captionText;
-        ////On récupère la liste des projectiles de cet element puis affichage dans la dropview
-        //List<structSortJet> listSortJet = caracSorts.GetComponent<CaracProjectiles>().getProjsFromElement((EnumScript.Element)creatorProjElement.GetComponent<Dropdown>().value);
-        //creatorProjProjectile.GetComponent<Dropdown>().options.Clear();
-        //foreach (structSortJet proj in listSortJet)
-        //    creatorProjProjectile.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(proj.nameInMenu));
-        //creatorProjProjectile.GetComponent<Dropdown>().value = 0;
-        //creatorProjProjectile.GetComponent<Dropdown>().captionText = creatorProjProjectile.GetComponent<Dropdown>().captionText;
-        //creatorElementChanged();
-
+        classChooser.transform.position = menuActif.transform.position;
+        classCreator.transform.position = menuTop.transform.position;
+        classEditor.transform.position = menuTop.transform.position + new Vector3(0, 0, .25f);
     }
 
     // Update is called once per frame
     void Update()
     {
         if (lerpingCanvas) lerpCanvas();
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            if(canvasType == 1)
+                accessMenu.GetComponent<accessMenu>().exitMenu();
+            else
+                changeCanvas(1);
+        }
     }
-
-    public void Init(GameObject p)
-    {
-        player = p;
-        fillClassChooserTable();
-        majCaracSortClicked();
-        setSelectedFace(selectedFace);
-    }
-
 
     public void changeCanvas(int can)
     {
@@ -254,6 +265,7 @@ public class MenuManagerInGame : MonoBehaviour
             }
             else if (can == 3) //On veut l'editor
             {
+                print(selectedSort);
                 if (selectedSort != -100)
                 {
                     //On passe le chooser en bottom
@@ -266,7 +278,7 @@ public class MenuManagerInGame : MonoBehaviour
                     classEditor.GetComponent<CanvasGroup>().alpha = 1;
                     classEditor.GetComponent<RectTransform>().localScale = new Vector3(0.03f, 0.03f, 0.03f);
 
-                    setEditorCanvas();
+                    setEditorCanvas(true);
 
                     lerpingCanvas = true;
                 }
@@ -282,7 +294,7 @@ public class MenuManagerInGame : MonoBehaviour
         {
             classChooser.transform.position = Vector3.Lerp(classChooser.transform.position, menuActif.transform.position, .05f);
             classCreator.transform.position = Vector3.Lerp(classCreator.transform.position, menuTop.transform.position, .05f);
-            classEditor.transform.position = Vector3.Lerp(classEditor.transform.position, menuTop.transform.position, .05f);
+            classEditor.transform.position = Vector3.Lerp(classEditor.transform.position, menuTop.transform.position + new Vector3(0, 0, .25f), .05f);
         }
         else if (canvasType == 2) // On veut l'editor
         {
@@ -301,19 +313,21 @@ public class MenuManagerInGame : MonoBehaviour
         //Changement titre fenetre
         creatorTextFacesChosen.GetComponent<Text>().text = "Personnalitsation de la face n° " + face;
 
-        //Mise a jour caractéristiques affichés
-        majCaracSortClicked();
-
         //On met le bouton de l'ancienne face en blanc et le nouveau en cyan
         creatorButtonsFaces.transform.GetChild(selectedFace - 1).GetComponent<Button>().image.color = Color.white;
         selectedFace = face;
         creatorButtonsFaces.transform.GetChild(selectedFace - 1).GetComponent<Button>().image.color = Color.cyan;
 
+        if (selectedSort == -1) //sort équipé selectionné
+            if (player.GetComponent<Player>().getAttaqueEquipOnFace(selectedFace) == null)
+                selectedSort = -100;
+
+        //Mise a jour caractéristiques affichés
+        majCaracSortClicked();
         //On vide les scrollView et on le reremplit avec les bons sort
         resetClassChooser();
         fillClassChooserTable();
     }
-
 
     public void chooserTypeChanged(int type) //1 proj - 2 zone - 3 CaC - 4 support
     {
@@ -362,15 +376,12 @@ public class MenuManagerInGame : MonoBehaviour
             creatorPanelSupport.SetActive(true);
     }
 
-
     public void creatorElementChanged()
     {
         //JET
         sortDeJetEnConstruction.setElement(caracSorts.GetComponent<CaracProjectiles>().getElemFromProj(sortDeJetEnConstruction.getNameParticle())[creatorProjElement.GetComponent<Dropdown>().value]);
-
         //ZONE
         sortDeZoneEnConstruction.setElement(caracSorts.GetComponent<CaracZones>().getElemFromZone(sortDeZoneEnConstruction.getNameParticle())[creatorZoneElement.GetComponent<Dropdown>().value]);
-
         //Mise a jour des carac + affichage
         majCaracSortEnConstr();
     }
@@ -388,7 +399,6 @@ public class MenuManagerInGame : MonoBehaviour
         creatorProjElement.GetComponent<Dropdown>().value = 0;
         creatorProjElement.GetComponent<Dropdown>().captionText = creatorProjElement.GetComponent<Dropdown>().captionText;
 
-
         //Mise a jour des carac + affichage
         majCaracSortEnConstr();
     }
@@ -405,7 +415,6 @@ public class MenuManagerInGame : MonoBehaviour
             creatorZoneElement.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(elem.ToString()));
         creatorZoneElement.GetComponent<Dropdown>().value = 0;
         creatorZoneElement.GetComponent<Dropdown>().captionText = creatorZoneElement.GetComponent<Dropdown>().captionText;
-
 
         //Mise a jour des carac + affichage
         majCaracSortEnConstr();
@@ -499,25 +508,15 @@ public class MenuManagerInGame : MonoBehaviour
             else
                 sortDeZoneEnConstruction.setPseudoSort("_defaut_");
 
-            //string nomParticle = caracSorts.GetComponent<CaracZones>().getZoneFromElement((EnumScript.Element)creatorZoneElement.GetComponent<Dropdown>().value)[creatorZoneSort.GetComponent<Dropdown>().value].nomParticle;
-           // sortDeZoneEnConstruction.setNameParticle(nomParticle);
-
-            
-            Debug.Log(sortDeZoneEnConstruction.getPseudoSort());
-
-
             player.GetComponent<Player>().addAttaqueToInventaire(sortDeZoneEnConstruction);
         }
-
         resetClassChooser();
         fillClassChooserTable();
     }
 
-
     public void buttonClicked(int position)
     {
         int oldPos = selectedSort;
-
         if (doubleClickStart > 0 && (Time.time - doubleClickStart) < delayDoubleClick) //double click
         {
             if (position == oldPos) //Si le clic se fait au même endroit que le précédent
@@ -529,7 +528,6 @@ public class MenuManagerInGame : MonoBehaviour
             doubleClickStart = Time.time;
             selectedSort = position;
         }
-
         majCaracSortClicked();
     }
 
@@ -616,7 +614,6 @@ public class MenuManagerInGame : MonoBehaviour
         creatorZoneDegats.GetComponent<Text>().text = sortDeZoneEnConstruction.getDegats().ToString();
     }
 
-
     //TODO changer le panel d'affchage (zone -> jet   jet -> zone)
     public void majCaracSortClicked()
     {
@@ -625,16 +622,18 @@ public class MenuManagerInGame : MonoBehaviour
             int type = player.GetComponent<Player>().getListAttaqueInventaire()[selectedSort].type;
             if (type == 1) // sort de jet
             {
+                sortSelectionne = (SortDeJet)player.GetComponent<Player>().getListAttaqueInventaire()[selectedSort];
+                structSortDeJetEnEdition = caracSorts.GetComponent<CaracProjectiles>().getStructFromName(sortSelectionne.getNameParticle());
+
                 chooserPanelProj.SetActive(true);
                 chooserPanelZone.SetActive(false);
 
-                sortSelectionne = (SortDeJet)player.GetComponent<Player>().getListAttaqueInventaire()[selectedSort];
                 chooserProjPseudoSort.GetComponent<Text>().text = sortSelectionne.getPseudoSort();
                 chooserProjElement.GetComponent<Text>().text = sortSelectionne.getElement().ToString();
                 chooserProjProjectile.GetComponent<Text>().text = sortSelectionne.getNameInMenu();
-                chooserProjVitesse.GetComponent<Text>().text = ((SortDeJet)sortSelectionne).vitesseProj.ToString();
-                chooserProjCoolDown.GetComponent<Text>().text = sortSelectionne.getCooldown().ToString();
-                chooserProjDegats.GetComponent<Text>().text = sortSelectionne.getDegats().ToString();
+                chooserProjVitesse.GetComponent<Text>().text = ( ((SortDeJet)sortSelectionne).vitesseProj + (structSortDeJetEnEdition.pointsInVitesse * structSortDeJetEnEdition.vitessePerLevel) ).ToString();
+                chooserProjCoolDown.GetComponent<Text>().text = ( sortSelectionne.getCooldown() + (structSortDeJetEnEdition.pointsInCooldown * structSortDeJetEnEdition.coolDownPerLevel) ).ToString();
+                chooserProjDegats.GetComponent<Text>().text = ( sortSelectionne.getDegats() + (structSortDeJetEnEdition.pointsInDegats * structSortDeJetEnEdition.degatsPerLevel) ).ToString();
             }
             else if (type == 2) // sort de zone
             {
@@ -654,16 +653,19 @@ public class MenuManagerInGame : MonoBehaviour
             int type = player.GetComponent<Player>().getAttaqueEquipOnFace(selectedFace).type;
             if (type == 1) // sort de jet
             {
+                sortSelectionne = (SortDeJet)player.GetComponent<Player>().getAttaqueEquipOnFace(selectedFace);
+
                 chooserPanelProj.SetActive(true);
                 chooserPanelZone.SetActive(false);
 
-                sortSelectionne = (SortDeJet)player.GetComponent<Player>().getAttaqueEquipOnFace(selectedFace);
+                structSortDeJetEnEdition = caracSorts.GetComponent<CaracProjectiles>().getStructFromName(sortSelectionne.getNameParticle());
+
                 chooserProjPseudoSort.GetComponent<Text>().text = sortSelectionne.getPseudoSort();
                 chooserProjElement.GetComponent<Text>().text = sortSelectionne.getElement().ToString();
                 chooserProjProjectile.GetComponent<Text>().text = sortSelectionne.getNameInMenu();
-                chooserProjVitesse.GetComponent<Text>().text = ((SortDeJet)sortSelectionne).vitesseProj.ToString();
-                chooserProjCoolDown.GetComponent<Text>().text = sortSelectionne.getCooldown().ToString();
-                chooserProjDegats.GetComponent<Text>().text = sortSelectionne.getDegats().ToString();
+                chooserProjVitesse.GetComponent<Text>().text = (((SortDeJet)sortSelectionne).vitesseProj + (structSortDeJetEnEdition.pointsInVitesse * structSortDeJetEnEdition.vitessePerLevel)).ToString();
+                chooserProjCoolDown.GetComponent<Text>().text = (sortSelectionne.getCooldown() + (structSortDeJetEnEdition.pointsInCooldown * structSortDeJetEnEdition.coolDownPerLevel)).ToString();
+                chooserProjDegats.GetComponent<Text>().text = (sortSelectionne.getDegats() + (structSortDeJetEnEdition.pointsInDegats * structSortDeJetEnEdition.degatsPerLevel)).ToString();
             }
             else if (type == 2) // sort de zone
             {
@@ -677,10 +679,6 @@ public class MenuManagerInGame : MonoBehaviour
                 chooserZoneCoolDown.GetComponent<Text>().text = sortSelectionne.getCooldown().ToString();
                 chooserZoneDegats.GetComponent<Text>().text = sortSelectionne.getDegats().ToString();
             }
-        }
-        else
-        {
-
         }
     }
 
@@ -701,7 +699,6 @@ public class MenuManagerInGame : MonoBehaviour
             int nbButtonTemp = nbButton;
             button.GetComponent<Button>().onClick.AddListener(() => { this.buttonClicked(nbButtonTemp); });
             //Redimensionnement bouton
-
         }
         //On adapte la taille du content pour que les boutons prennent la bonne taille
         float hauteurFinal = 10 + 10 + player.GetComponent<Player>().getListAttaqueInventaire().Count * buttonHeight + 10 * (player.GetComponent<Player>().getListAttaqueInventaire().Count - 1);
@@ -725,19 +722,23 @@ public class MenuManagerInGame : MonoBehaviour
         chooserScrollListSortEq.transform.GetChild(0).GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(chooserScrollListSortEq.transform.GetChild(0).GetChild(0).GetComponent<RectTransform>().sizeDelta.x, hauteurFinale);
     }
 
-    public void setEditorCanvas()
+    public void setEditorCanvas(bool debutEdition)
     {
         int type = sortSelectionne.type;
         if (type == 1) //Sort de jet
         {
+            if(debutEdition)
+                structSortDeJetEnEdition = caracSorts.GetComponent<CaracProjectiles>().getStructFromName(sortSelectionne.getNameParticle());
+
             editorPanelProj.SetActive(true);
             editorPanelZone.SetActive(false);
 
+            //info
             editorProjNom.GetComponent<InputField>().text = sortSelectionne.getPseudoSort();
             editorProjProj.GetComponent<Text>().text = sortSelectionne.getNameInMenu();
-            editorProjVitesse.GetComponent<Text>().text = ((SortDeJet)sortSelectionne).vitesseProj.ToString();
-            editorProjCooldown.GetComponent<Text>().text = sortSelectionne.getCooldown().ToString();
-            editorProjDegats.GetComponent<Text>().text = sortSelectionne.getDegats().ToString();
+            editorProjVitesse.GetComponent<Text>().text = ((SortDeJet)sortSelectionne).vitesseProj.ToString() + " + " + (structSortDeJetEnEdition.pointsInVitesse * structSortDeJetEnEdition.vitessePerLevel);
+            editorProjCooldown.GetComponent<Text>().text = sortSelectionne.getCooldown().ToString() + " + " + (structSortDeJetEnEdition.pointsInCooldown * structSortDeJetEnEdition.coolDownPerLevel);
+            editorProjDegats.GetComponent<Text>().text = sortSelectionne.getDegats().ToString() + " + " + (structSortDeJetEnEdition.pointsInDegats * structSortDeJetEnEdition.degatsPerLevel);
 
             editorProjElement.GetComponent<Dropdown>().options.Clear();
             int cpt = 0;
@@ -749,16 +750,29 @@ public class MenuManagerInGame : MonoBehaviour
                 cpt++;
             }
             editorProjElement.GetComponent<Dropdown>().captionText = editorProjElement.GetComponent<Dropdown>().captionText;
+
+            //bonus
+            editorProjBonusVitesse.GetComponent<Text>().text = structSortDeJetEnEdition.pointsInVitesse.ToString();
+            editorProjBonusCooldown.GetComponent<Text>().text = structSortDeJetEnEdition.pointsInCooldown.ToString();
+            editorProjBonusDegats.GetComponent<Text>().text = structSortDeJetEnEdition.pointsInDegats.ToString();
+
+            //ProgressBar and Lvl
+            editorProgressBar.GetComponent<Image>().fillAmount = structSortDeJetEnEdition.xpActuel / caracSorts.GetComponent<CaracProjectiles>().xpToLvlUp * Mathf.Pow(caracSorts.GetComponent<CaracProjectiles>().multXpByLvl, sortDeJetEnConstruction.getLvl());
+            editorLvl.GetComponent<Text>().text = structSortDeJetEnEdition.lvl.ToString();
         }
         else if (type == 2) //Sort de zone
         {
+            if (debutEdition)
+                structSortDeZoneEnEdition = caracSorts.GetComponent<CaracZones>().getStructFromName(sortSelectionne.getNameParticle());
+
             editorPanelProj.SetActive(false);
             editorPanelZone.SetActive(true);
 
+            //info
             editorZoneNom.GetComponent<InputField>().text = sortSelectionne.getPseudoSort();
             editorZoneSort.GetComponent<Text>().text = sortSelectionne.getNameInMenu();
-            editorZoneCooldown.GetComponent<Text>().text = sortSelectionne.getCooldown().ToString();
-            editorZoneDegats.GetComponent<Text>().text = sortSelectionne.getDegats().ToString();
+            editorZoneCooldown.GetComponent<Text>().text = sortSelectionne.getCooldown().ToString() + " + " + (structSortDeZoneEnEdition.pointsInCooldown * structSortDeZoneEnEdition.coolDownPerLevel);
+            editorZoneDegats.GetComponent<Text>().text = sortSelectionne.getDegats().ToString() + " + " + (structSortDeZoneEnEdition.pointsInDegats * structSortDeZoneEnEdition.degatsPerLevel);
 
             editorZoneElement.GetComponent<Dropdown>().options.Clear();
             int cpt = 0;
@@ -768,9 +782,16 @@ public class MenuManagerInGame : MonoBehaviour
                 if (elem == sortSelectionne.getElement())
                     editorZoneElement.GetComponent<Dropdown>().value = cpt;
                 cpt++;
-
             }
             editorZoneElement.GetComponent<Dropdown>().captionText = editorZoneElement.GetComponent<Dropdown>().captionText;
+
+            //bonus
+            editorZoneBonusCooldown.GetComponent<Text>().text = structSortDeZoneEnEdition.pointsInCooldown.ToString();
+            editorZoneBonusDegats.GetComponent<Text>().text = structSortDeZoneEnEdition.pointsInDegats.ToString();
+
+            //ProgressBar and Lvl
+            editorProgressBar.GetComponent<Image>().fillAmount = structSortDeZoneEnEdition.xpActuel / caracSorts.GetComponent<CaracZones>().xpToLvlUp * Mathf.Pow(caracSorts.GetComponent<CaracZones>().multXpByLvl, sortDeZoneEnConstruction.getLvl());
+            editorLvl.GetComponent<Text>().text = structSortDeZoneEnEdition.lvl.ToString();
         }
     }
 
@@ -780,15 +801,129 @@ public class MenuManagerInGame : MonoBehaviour
         //Pour l'instant, on en peut changer que l'élément
         if (type == 1) //Sort de jet
         {
+            //Element
             EnumScript.Element newElem = caracSorts.GetComponent<CaracProjectiles>().getElemFromProj(sortSelectionne.getNameParticle())[editorProjElement.GetComponent<Dropdown>().value];
             sortSelectionne.setElement(newElem);
+            //Nom
+            String newName = editorZoneNom.GetComponent<InputField>().text;
+            sortSelectionne.setPseudoSort(newName);
+
+            caracSorts.GetComponent<CaracProjectiles>().setStruct(structSortDeJetEnEdition);
         }
         else if(type == 2)
         {
+            //Element
             EnumScript.Element newElem = caracSorts.GetComponent<CaracZones>().getElemFromZone(sortSelectionne.getNameParticle())[editorZoneElement.GetComponent<Dropdown>().value];
             sortSelectionne.setElement(newElem);
+            //Nom
+            String newName = editorZoneNom.GetComponent<InputField>().text;
+            sortSelectionne.setPseudoSort(newName);
         }
         majCaracSortClicked();
+        resetClassChooser();
+        fillClassChooserTable();
+    }
+
+    public void editerProjVitesse(int point)
+    {
+        if (point == 1)
+        {
+            if(structSortDeJetEnEdition.nbPointsDispo > 0)
+            {
+                structSortDeJetEnEdition.pointsInVitesse++;
+                structSortDeJetEnEdition.nbPointsDispo--;
+            }
+        }
+        else if(point == -1)
+        {
+            if(structSortDeJetEnEdition.pointsInVitesse > 0)
+            {
+                structSortDeJetEnEdition.pointsInVitesse--;
+                structSortDeJetEnEdition.nbPointsDispo++;
+            }
+        }
+        setEditorCanvas(false);
+    }
+    public void editerProjCooldown(int point)
+    {
+        if (point == 1)
+        {
+            if (structSortDeJetEnEdition.nbPointsDispo > 0)
+            {
+                structSortDeJetEnEdition.pointsInCooldown++;
+                structSortDeJetEnEdition.nbPointsDispo--;
+            }
+        }
+        else if (point == -1)
+        {
+            if (structSortDeJetEnEdition.pointsInCooldown > 0)
+            {
+                structSortDeJetEnEdition.pointsInCooldown--;
+                structSortDeJetEnEdition.nbPointsDispo++;
+            }
+        }
+        setEditorCanvas(false);
+    }
+    public void editerProjDegats(int point)
+    {
+        if (point == 1)
+        {
+            if (structSortDeJetEnEdition.nbPointsDispo > 0)
+            {
+                structSortDeJetEnEdition.pointsInDegats++;
+                structSortDeJetEnEdition.nbPointsDispo--;
+            }
+        }
+        else if (point == -1)
+        {
+            if (structSortDeJetEnEdition.pointsInDegats > 0)
+            {
+                structSortDeJetEnEdition.pointsInDegats--;
+                structSortDeJetEnEdition.nbPointsDispo++;
+            }
+        }
+        setEditorCanvas(false);
+    }
+
+    public void editerZoneDegats(int point)
+    {
+        if (point == 1)
+        {
+            if (structSortDeZoneEnEdition.nbPointsDispo > 0)
+            {
+                structSortDeZoneEnEdition.pointsInDegats++;
+                structSortDeZoneEnEdition.nbPointsDispo--;
+            }
+        }
+        else if (point == -1)
+        {
+            if (structSortDeZoneEnEdition.pointsInDegats > 0)
+            {
+                structSortDeZoneEnEdition.pointsInDegats--;
+                structSortDeZoneEnEdition.nbPointsDispo++;
+            }
+        }
+        setEditorCanvas(false);
+    }
+    public void editerZoneCooldown(int point)
+    {
+        if (point == 1)
+        {
+            if (structSortDeZoneEnEdition.nbPointsDispo > 0)
+            {
+                structSortDeZoneEnEdition.pointsInCooldown++;
+                structSortDeZoneEnEdition.nbPointsDispo--;
+            }
+        }
+        else if (point == -1)
+        {
+            if (structSortDeZoneEnEdition.pointsInCooldown > 0)
+            {
+                structSortDeZoneEnEdition.pointsInCooldown--;
+                structSortDeZoneEnEdition.nbPointsDispo++;
+            }
+        }
+        setEditorCanvas(false);
     }
 
     public void exitMenu()
