@@ -42,6 +42,7 @@ public class MenuManagerInGame : MonoBehaviour
     public GameObject creatorPanelZone;
     public GameObject creatorPanelCaC;
     public GameObject creatorPanelSupport;
+    public GameObject creatorPanelHorizBarre;
     [Space(15)]
     public GameObject creatorProjPseudoSort;
     public GameObject creatorProjElement;
@@ -162,7 +163,6 @@ public class MenuManagerInGame : MonoBehaviour
         sortDeZoneEnConstruction = new SortDeZone();
 
         selectedType = 1;
-        creatorButtonProj.GetComponent<Image>().sprite = buttonPressed;
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -333,47 +333,41 @@ public class MenuManagerInGame : MonoBehaviour
     {
         //mettre en surbrillance le bouton
         //afficher le panel correcspondant
-
         //NOT_PRESSED
         if (selectedType == 1)
-        {
-            creatorButtonProj.GetComponent<Image>().sprite = buttonNotPressed;
             creatorPanelProj.SetActive(false);
-        }
         else if (selectedType == 2)
-        {
-            creatorButtonZone.GetComponent<Image>().sprite = buttonNotPressed;
             creatorPanelZone.SetActive(false);
-        }
         else if (selectedType == 3)
-        {
-            creatorButtonCaC.GetComponent<Image>().sprite = buttonNotPressed;
             creatorPanelCaC.SetActive(false);
-        }
         else if (selectedType == 4)
-        {
-            creatorButtonSupport.GetComponent<Image>().sprite = buttonNotPressed;
             creatorPanelSupport.SetActive(false);
-        }
-        //PRESSED
-        if (type == 1) //Proj
-            creatorButtonProj.GetComponent<Image>().sprite = buttonPressed;
-        else if (type == 2)//Zone
-            creatorButtonZone.GetComponent<Image>().sprite = buttonPressed;
-        else if (type == 3)//Cac
-            creatorButtonCaC.GetComponent<Image>().sprite = buttonPressed;
-        else if (type == 4)//Support
-            creatorButtonSupport.GetComponent<Image>().sprite = buttonPressed;
         selectedType = type;
         //PANEL
         if (selectedType == 1)
+        {
             creatorPanelProj.SetActive(true);
+            creatorPanelHorizBarre.transform.SetAsLastSibling();
+            creatorButtonProj.transform.SetAsLastSibling();
+        }
         else if (selectedType == 2)
+        {
             creatorPanelZone.SetActive(true);
-        else if (selectedType == 2)
+            creatorPanelHorizBarre.transform.SetAsLastSibling();
+            creatorButtonZone.transform.SetAsLastSibling();
+        }
+        else if (selectedType == 3)
+        {
             creatorPanelCaC.SetActive(true);
-        else if (selectedType == 2)
+            creatorPanelHorizBarre.transform.SetAsLastSibling();
+            creatorButtonCaC.transform.SetAsLastSibling();
+        }
+        else if (selectedType == 4)
+        {
             creatorPanelSupport.SetActive(true);
+            creatorPanelHorizBarre.transform.SetAsLastSibling();
+            creatorButtonSupport.transform.SetAsLastSibling();
+        }
     }
 
     public void creatorElementChanged()
