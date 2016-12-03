@@ -14,8 +14,6 @@ public struct structSortDeZone
 
     public int lvl;
     public int xpActuel;
-    public int xpTemp;
-    public int lvlPrevious;
     public int nbXpPerShot;
     public int nbPointsDispo;
     public float degatsPerLevel;
@@ -47,7 +45,6 @@ public class CaracZones : MonoBehaviour
         WALL.cooldown = 1;
         WALL.duree = 10;
         WALL.xpActuel = 0;
-        WALL.xpTemp = 0;
         WALL.degatsPerLevel = 2;
         WALL.dureePerLevel = 1;
         WALL.coolDownPerLevel = -1;
@@ -156,7 +153,6 @@ public class CaracZones : MonoBehaviour
             {
                 structSortDeZone s = tabSort[i];
                 s.xpActuel += s.nbXpPerShot;
-                s.xpTemp += s.nbXpPerShot;
 
                 //LVL UP sort
                 if (s.xpActuel > xpToLvlUp * Math.Pow(multXpByLvl, s.lvl))
