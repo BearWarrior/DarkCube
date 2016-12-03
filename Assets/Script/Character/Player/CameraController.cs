@@ -28,7 +28,6 @@ public class CameraController : MonoBehaviour
             cameraLookAtPlayer = GameObject.FindWithTag("CameraLookAt");
 
         playerInMenu = false;
-
     }
 
     /*void Update()
@@ -51,8 +50,6 @@ public class CameraController : MonoBehaviour
         //Camera sur la cible et regarde le joueur
         transform.position = target.transform.position;
 
-
-
         RaycastHit hit;
         Ray ray = new Ray(player.transform.position, (target.transform.position - player.transform.position));
         LayerMask layerPlayer = LayerMask.GetMask("Player");
@@ -64,15 +61,10 @@ public class CameraController : MonoBehaviour
         if (Physics.Raycast(ray, out hit, Vector3.Distance(player.transform.position, target.transform.position), layerValue))
             this.transform.position = hit.point + new Vector3(0.1f * hit.normal.x, 0.1f * hit.normal.y, 0.1f * hit.normal.z);
 
-
-
-
         if (!playerInMenu)
             this.transform.LookAt(cameraLookAtPlayer.transform);
         else
-        {
             this.transform.LookAt(cameraLookAtMenuTR);
-        }
 	}
 
     public void changeTarget(GameObject newTarg)
