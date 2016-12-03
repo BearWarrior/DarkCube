@@ -14,8 +14,6 @@ public struct structSortJet
 
     public int lvl;
     public int xpActuel;
-    public int lvlPrevious;
-    public int xpTemp;
     public int nbXpPerShot;
     public int nbPointsDispo;
     public float degatsPerLevel;
@@ -51,7 +49,6 @@ public class CaracProjectiles : MonoBehaviour
         METEOR.cooldown = 0.5f;
         METEOR.vitesse = 10;
         METEOR.xpActuel = 0;
-        METEOR.xpTemp = 0;
         METEOR.degatsPerLevel = 2;
         METEOR.vitessePerLevel = 1;
         METEOR.coolDownPerLevel = -1;
@@ -70,7 +67,6 @@ public class CaracProjectiles : MonoBehaviour
         WAVE.cooldown = 0.5f;
         WAVE.vitesse = 10;
         WAVE.xpActuel = 0;
-        WAVE.xpTemp = 0;
         WAVE.degatsPerLevel = 2;
         WAVE.vitessePerLevel = 1;
         WAVE.coolDownPerLevel = -1;
@@ -89,7 +85,6 @@ public class CaracProjectiles : MonoBehaviour
         BOMB.cooldown = 0.5f;
         BOMB.vitesse = 10;
         BOMB.xpActuel = 0;
-        BOMB.xpTemp = 0;
         BOMB.degatsPerLevel = 2;
         BOMB.vitessePerLevel = 1;
         BOMB.coolDownPerLevel = -1;
@@ -108,7 +103,6 @@ public class CaracProjectiles : MonoBehaviour
         SHOT.cooldown = 0.5f;
         SHOT.vitesse = 10;
         SHOT.xpActuel = 0;
-        SHOT.xpTemp = 0;
         SHOT.degatsPerLevel = 2;
         SHOT.vitessePerLevel = 1;
         SHOT.coolDownPerLevel = -1;
@@ -127,7 +121,6 @@ public class CaracProjectiles : MonoBehaviour
         BALL.cooldown = 0.5f;
         BALL.vitesse = 10;
         BALL.xpActuel = 0;
-        BALL.xpTemp = 0;
         BALL.degatsPerLevel = 2;
         BALL.vitessePerLevel = 1;
         BALL.coolDownPerLevel = -1;
@@ -239,10 +232,9 @@ public class CaracProjectiles : MonoBehaviour
             {
                 structSortJet s = tabSort[i];
                 s.xpActuel += s.nbXpPerShot;
-                s.xpTemp += s.nbXpPerShot;
 
                 //LVL UP sort
-                if (s.xpActuel > xpToLvlUp * Math.Pow(multXpByLvl, s.lvl))
+                if(s.xpActuel > xpToLvlUp * Math.Pow(multXpByLvl, s.lvl))
                 {
                     s.xpActuel -= (int) ( xpToLvlUp * Math.Pow(multXpByLvl, s.lvl));
                     s.lvl++;

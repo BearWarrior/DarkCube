@@ -216,8 +216,6 @@ public class MenuManagerInGame : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        print(canvasType);
-
         if (lerpingCanvas) lerpCanvas();
         if(Input.GetKeyDown(KeyCode.Escape))
         {
@@ -250,8 +248,6 @@ public class MenuManagerInGame : MonoBehaviour
                 classEditor.GetComponent<RectTransform>().localScale = new Vector3(0.027f, 0.027f, 0.027f);
 
                 lerpingCanvas = true;
-
-                canvasType = can;
             }
             else if (can == 2) //On veut le creator
             {
@@ -266,8 +262,6 @@ public class MenuManagerInGame : MonoBehaviour
                 classCreator.GetComponent<RectTransform>().localScale = new Vector3(0.03f, 0.03f, 0.03f);
 
                 lerpingCanvas = true;
-
-                canvasType = can;
             }
             else if (can == 3) //On veut l'editor
             {
@@ -287,12 +281,12 @@ public class MenuManagerInGame : MonoBehaviour
                     setEditorCanvas(true);
 
                     lerpingCanvas = true;
-
-                    canvasType = can;
                 }
             }
         }
+        canvasType = can;
     }
+
 
     public void lerpCanvas()
     {
@@ -805,7 +799,7 @@ public class MenuManagerInGame : MonoBehaviour
             EnumScript.Element newElem = caracSorts.GetComponent<CaracProjectiles>().getElemFromProj(sortSelectionne.getNameParticle())[editorProjElement.GetComponent<Dropdown>().value];
             sortSelectionne.setElement(newElem);
             //Nom
-            String newName = editorProjNom.GetComponent<InputField>().text;
+            String newName = editorZoneNom.GetComponent<InputField>().text;
             sortSelectionne.setPseudoSort(newName);
 
             caracSorts.GetComponent<CaracProjectiles>().setStruct(structSortDeJetEnEdition);
