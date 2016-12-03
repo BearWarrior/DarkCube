@@ -18,6 +18,8 @@ public class Player : Character
 
     public GameObject spawnProjectile;
 
+    private bool dead;
+
     // Use this for initialization
     void Start()
     {
@@ -34,6 +36,7 @@ public class Player : Character
         armureActuel = armureMax;
 
         cubeFace = 1;
+        dead = false;
     }
 
 
@@ -238,8 +241,45 @@ public class Player : Character
         {
             //print("ARGHH attaqueEnemy" + other.GetComponent<ProjectileData>().degats);
             takeDegats(other.GetComponent<ProjectileData>().degats);
+            GetComponent<PlayerCubeFlock>().setShakiness(PDVactuel, PDVmax);
+
+            if(PDVactuel < 0)
+            {
+                Die();
+            }
         }
         //Debug.Log(PDVactuel);
+    }
+
+    void Die()
+    {
+        dead = true;
+        GetComponent<PlayerCubeFlock>().Die();
+        GetComponent<PlayerController>().setControllable(false);
+        Camera.main.transform.gameObject.GetComponent<CameraDeath>().enabled = true;
+        Camera.main.transform.gameObject.GetComponent<CameraController>().enabled = false;
+
+        List<String> noms = new List<String>();
+        List<int> types = new List<int>();
+        for (int i = 0; i < 6; i++)
+        {
+            if (listAttaque[i] != null)
+            {
+                if (!noms.Contains(listAttaque[i].getNameInMenu()))
+                {
+                    noms.Add(listAttaque[i].getNameInMenu());
+                    types.Add(listAttaque[i].type);
+                }
+            }
+        }
+
+        GameObject.Find("MenuDeath").GetComponent<MenuDeath>().displayResults(noms, types);
+
+    }
+
+    public bool isDead()
+    {
+        return dead;
     }
 
     //Player touch enemy
