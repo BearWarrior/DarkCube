@@ -7,6 +7,7 @@ public class Enemy : Character
 
     public GameObject spawnPoint;
     public int numRoom;
+    private GameObject caracSorts;
 
 	// Use this for initialization
 	void Start ()
@@ -16,15 +17,13 @@ public class Enemy : Character
         armureMax = 10;
         armureActuel = 10;
 
-
-
+        caracSorts = GameObject.FindWithTag("CaracSorts");
         GetComponent<ListSorts>().initSort();
     }
 	
 	// Update is called once per frame
 	void Update ()
     {
-        //print(GetComponent<ListSorts>().getAttaqueEquiped());
         GetComponent<ListSorts>().getAttaqueEquiped().reload();
     }
 
@@ -33,6 +32,10 @@ public class Enemy : Character
         if(other.tag == "AttaquePlayer")
         {
             takeDamage(other.GetComponent<ProjectileData>().degats);
+            if (other.GetComponent<ProjectileData>().type == 1)
+            {
+                caracSorts.GetComponent<CaracProjectiles>().gagnerXP(other.GetComponent<ProjectileData>().nomParticule);
+            }
         }
     }
 

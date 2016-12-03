@@ -6,6 +6,6 @@ public class SimpleEnemyListSorts : ListSorts
 {
     public override void initSort()
     {
-        attaqueEquiped = new SortDeJet("_", "Ball", EnumScript.Element.Elec, 1, 0);
+        attaqueEquiped = new SortDeJet("_", "Ball", EnumScript.Element.Elec, 1);
     }
 }

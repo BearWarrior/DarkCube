@@ -21,8 +21,6 @@ public class SortDeJet : Attaque
         pseudoSort = "none";
         nameInMenu = "none";
         lvl = 1;
-        expToLvlUp = 100;
-        xpActuel = 0;
         nbXpPerShot = 1;
     }
 
@@ -37,27 +35,22 @@ public class SortDeJet : Attaque
         pseudoSort = copy.pseudoSort;
         nameInMenu = copy.nameInMenu;
         lvl = copy.lvl;
-        expToLvlUp = copy.expToLvlUp;
         nbXpPerShot = copy.nbXpPerShot;
-        xpActuel = copy.xpActuel;
     }
 
-    public SortDeJet(string p_nomSort, string p_nomProj, EnumScript.Element p_element, int p_lvl, int p_xpActuel)
+    public SortDeJet(string p_nomSort, string p_nomProj, EnumScript.Element p_element, int p_lvl)
     {
         type = 1;
         pseudoSort = p_nomSort;
         nameParticle = p_nomProj;
         element = p_element;
         lvl = p_lvl;
-        xpActuel = p_xpActuel;
-
-        expToLvlUp = 100;
 
         structSortJet str = GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().getStructFromName(p_nomProj);
 
-        vitesseProj = str.vitesse;
-        cooldown = str.cooldown;
-        degats = str.degats;
+        vitesseProj = str.vitesse + str.pointsInVitesse * str.vitessePerLevel;
+        cooldown = str.cooldown + str.pointsInCooldown * str.coolDownPerLevel;
+        degats = str.degats + str.pointsInDegats * str.degatsPerLevel;
         nbXpPerShot = str.nbXpPerShot;
         nameInMenu = str.nameInMenu;
     }
@@ -106,11 +99,14 @@ public class SortDeJet : Attaque
 
         proj.transform.tag = "AttaquePlayer";
         setAllTagsAndAddVelocityAndEmitter("AttaquePlayer", proj, 75 * direction * Time.deltaTime * vitesseProj, EnumScript.Character.Player);
+        setAllProjData(proj, degats, element, 1, nameParticle);
 
-        ProjectileData projData = proj.AddComponent<ProjectileData>();
-        projData.degats = degats;
-        projData.element = element;
 
+        //ProjectileData projData = proj.AddComponent<ProjectileData>();
+        //projData.degats = degats;
+        //projData.element = element;
+        //projData.type = 1;
+        //projData.nomParticule = nameParticle;
     }
 
     public void launchProjEnemy(RaycastHit hit, Vector3 spawnPoint)
@@ -125,10 +121,7 @@ public class SortDeJet : Attaque
         proj.transform.tag = "AttaqueEnemy";
         setAllTagsAndAddVelocityAndEmitter("AttaqueEnemy", proj, 75 * direction * Time.deltaTime * vitesseProj, EnumScript.Character.Enemy);
 
-        ProjectileData projData = proj.AddComponent<ProjectileData>();
-        projData.degats = degats;
-        projData.element = element;
-
+        setAllProjData(proj, degats, element, 1, nameParticle);
     }
 
     

@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: fcaa8ae0017132e41bd67c6a99259347
+timeCreated: 1479332588
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Koshgarian
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 18aa6144fd29e9a44a56a785ff769272, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

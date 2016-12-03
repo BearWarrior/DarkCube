@@ -17,22 +17,13 @@ public class accessMenu : MonoBehaviour
     {
         inMenu = false;
 
-        menu.SetActive(false);
-
         lookAt = new GameObject(); //Ne pas supprimer (voir ligne 34)
     }
 	
-	// Update is called once per frame
-	void Update () 
-    {
-	
-	}
-
     void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Player")
         {
-            //lookAt.transform.position = other.transform.GetChild(3).position;
             lookAt.transform.position = GameObject.FindWithTag("CameraLookAt").transform.position;
             player = other.gameObject;
         }
@@ -62,21 +53,8 @@ public class accessMenu : MonoBehaviour
 
                     //On enleve le crossHair
                     Camera.main.GetComponent<Crosshair>().display = false;
-
-                    //On affiche le menu
-                    menu.SetActive(true);
-
-                    menu.transform.GetComponentInChildren<MenuManagerInGame>(false).Init(player);
                 }
             }
-            else
-            {
-                if (Input.GetKeyDown(KeyCode.Escape))
-                {
-                    exitMenu();
-                }
-            }
-
 
             if(inMenu)
             {
@@ -106,24 +84,17 @@ public class accessMenu : MonoBehaviour
     {
         if(player != null)
         {
-            Debug.Log("exitMenu");
             inMenu = false;
             //On redonne le control au joueur
             player.GetComponent<PlayerController>().setControllable(true);
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
             player.transform.parent = null;
-
             //On change le point de vue de la caméra
             Camera.main.GetComponent<CameraController>().playerInMenu = false;
             Camera.main.GetComponent<CameraController>().resetTarget();
-
             //On remet le crossHair
             Camera.main.GetComponent<Crosshair>().display = true;
-
-            //On désactive le menu
-            menu.SetActive(false);
-
             //On actualise le sort qu'il avait en main
             player.GetComponent<Player>().cubeFaceChanged(player.GetComponent<Player>().getCubeFace());
         }

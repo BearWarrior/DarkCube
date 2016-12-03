@@ -20,6 +20,8 @@ public class LaunchDungeon : MonoBehaviour {
     {
         if (other.tag == "Player")
         {
+            GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().sauvegarder();
+            //GameObject.FindWithTag("CaracSort").GetComponent<CaracZones>().sauvegarder();
             SceneManager.LoadScene("TestRoom");
         }
     }

@@ -11,6 +11,9 @@ public class SimpleAgent : MonoBehaviour
     private Vector3 posDepart;
     public bool playerDetected;
     private NavMeshAgent agent;
+
+    private float timeBetweenShots;
+    private float timeBetweenShotsAct;
     
 
     // Use this for initialization
@@ -24,7 +27,8 @@ public class SimpleAgent : MonoBehaviour
         }
         playerDetected = false;
 
-        
+        timeBetweenShots = 2;
+        timeBetweenShotsAct = 0;
     }
 
     // Update is called once per frame
@@ -66,10 +70,23 @@ public class SimpleAgent : MonoBehaviour
                 {
                     if (hit.transform.tag == "Player")
                     {
-                        GetComponent<Enemy>().shoot(hit);
+                        tryShot(hit);
                     }
                 }
             }
+        }
+    }
+
+    private void tryShot(RaycastHit hit)
+    {
+        if(timeBetweenShotsAct > timeBetweenShots)
+        {
+            GetComponent<Enemy>().shoot(hit);
+            timeBetweenShotsAct = 0;
+        }
+        else
+        {
+            timeBetweenShotsAct += Time.deltaTime;
         }
     }
 }

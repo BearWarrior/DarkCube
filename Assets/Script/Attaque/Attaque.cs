@@ -5,8 +5,6 @@ public abstract class Attaque
 {
     public int type; //1-Jet   2-Zone   3-Support
     protected int lvl;
-    protected int xpActuel;
-    protected int expToLvlUp;
     protected int nbXpPerShot;
 	protected float cooldown;
     protected float lastShot;
@@ -41,6 +39,22 @@ public abstract class Attaque
             {
                 go.GetComponent<ParticleCollisionBehaviour>().emiter = emitter;
             }
+        }
+    }
+
+    public void setAllProjData(GameObject go, float p_degats, EnumScript.Element p_elem, int p_type, string p_nameParticle)
+    {
+        if (go.GetComponent<Rigidbody>() != null)
+        {
+            ProjectileData projD = go.AddComponent<ProjectileData>();
+            projD.degats = p_degats;
+            projD.element = p_elem;
+            projD.type = p_type;
+            projD.nomParticule = p_nameParticle;
+        }
+        for (int i = 0; i < go.transform.childCount; i++)
+        {
+            setAllProjData(go.transform.GetChild(i).transform.gameObject, p_degats, p_elem, p_type, p_nameParticle);
         }
     }
 
@@ -112,13 +126,4 @@ public abstract class Attaque
         lvl = p_lvl;
     }
     
-    //xpActuel
-    public int getXpActuel()
-    {
-        return xpActuel;
-    }
-    public void setXpActuel(int x)
-    {
-        xpActuel = x;
-    }
 }
