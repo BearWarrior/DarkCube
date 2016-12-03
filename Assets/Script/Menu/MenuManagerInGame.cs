@@ -216,8 +216,6 @@ public class MenuManagerInGame : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        print(canvasType);
-
         if (lerpingCanvas) lerpCanvas();
         if(Input.GetKeyDown(KeyCode.Escape))
         {
