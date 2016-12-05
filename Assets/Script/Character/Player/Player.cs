@@ -245,21 +245,25 @@ public class Player : Character
 
             if(PDVactuel < 0)
             {
-                Die();
+                EndLvl(true);
             }
         }
         //Debug.Log(PDVactuel);
     }
 
-    void Die()
+    public void EndLvl(bool dead)
     {
-        dead = true;
-        GetComponent<PlayerCubeFlock>().Die();
+        if (dead)
+        {
+            GetComponent<PlayerCubeFlock>().Die();
+        }
+        
         GetComponent<PlayerController>().setControllable(false);
         Camera.main.transform.gameObject.GetComponent<CameraDeath>().enabled = true;
         Camera.main.transform.gameObject.GetComponent<CameraController>().enabled = false;
 
         List<String> noms = new List<String>();
+        List<String> nomsPart = new List<String>();
         List<int> types = new List<int>();
         for (int i = 0; i < 6; i++)
         {
@@ -268,12 +272,13 @@ public class Player : Character
                 if (!noms.Contains(listAttaque[i].getNameInMenu()))
                 {
                     noms.Add(listAttaque[i].getNameInMenu());
+                    nomsPart.Add(listAttaque[i].getNameParticle());
                     types.Add(listAttaque[i].type);
                 }
             }
         }
 
-        GameObject.Find("MenuDeath").GetComponent<MenuDeath>().displayResults(noms, types);
+        GameObject.Find("MenuDeath").GetComponent<MenuDeath>().displayResults(noms, nomsPart, types, dead);
 
     }
 

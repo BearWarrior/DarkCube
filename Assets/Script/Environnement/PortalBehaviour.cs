@@ -21,11 +21,13 @@ public class PortalBehaviour : MonoBehaviour
             }
             else
             {
-                GameObject.FindWithTag("CanvasEndDungeon").transform.GetChild(0).transform.gameObject.SetActive(true);
+                /*GameObject.FindWithTag("CanvasEndDungeon").transform.GetChild(0).transform.gameObject.SetActive(true);
 
                 other.GetComponent<PlayerController>().setControllable(false);
                 Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
+                Cursor.lockState = CursorLockMode.None;*/
+
+                GameObject.FindWithTag("Player").GetComponent<Player>().EndLvl(false);
             }
             usable = false;
         }

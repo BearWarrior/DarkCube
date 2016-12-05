@@ -771,7 +771,6 @@ public class WorldBehaviour : MonoBehaviour
 
     public void activePortalEnd(int nbRoom)
     {
-        print(nbRoom);
         portalBeginEndGameObject[nbRoom][1].transform.GetChild(0).gameObject.SetActive(true);
     }
 
