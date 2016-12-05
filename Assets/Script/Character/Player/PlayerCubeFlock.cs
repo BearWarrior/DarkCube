@@ -106,13 +106,15 @@ public class PlayerCubeFlock : MonoBehaviour
 
                 if(i == cubes.transform.childCount-1)
                 {
-                   Vector3 explosionPos = cubes.transform.GetChild(cubes.transform.childCount - 1).transform.position;
+                    Vector3 explosionPos = cubes.transform.GetChild(cubes.transform.childCount - 1).transform.position;
                     Collider[] colliders = Physics.OverlapSphere(explosionPos, 2);
                     for(int j = 0; j < colliders.Length; j++)
                     {
                         if(colliders[j].GetComponent<Rigidbody>() != null)
-                            colliders[j].GetComponent<Rigidbody>().AddExplosionForce(250, explosionPos, 5, 0);
+                            colliders[j].GetComponent<Rigidbody>().AddExplosionForce(Random.Range(200, 300), explosionPos, 5, 0);
                     }
+
+                    cubes.transform.GetChild(cubes.transform.childCount - 1).gameObject.SetActive(false);
                 }
             }
             deathApplied = true;

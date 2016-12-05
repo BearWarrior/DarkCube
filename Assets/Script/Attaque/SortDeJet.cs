@@ -79,6 +79,7 @@ public class SortDeJet : Attaque
     {
         string lvlPart = (lvl < 3) ? "1" : (lvl < 6) ? "2" : "3";
         string partToLoad = "Particle/Prefabs/SortsDeJet/" + nameParticle + element.ToString() + lvlPart;
+        Debug.Log(partToLoad);
         proj = GameObject.Instantiate(Resources.Load(partToLoad), spawnPoint, new Quaternion(0, 0, 0, 0)) as GameObject;
         proj.transform.parent = null;
 
