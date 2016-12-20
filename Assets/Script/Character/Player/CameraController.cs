@@ -5,51 +5,51 @@ public class CameraController : MonoBehaviour
 {
     private GameObject player;
     private GameObject target;
-    private GameObject targetStatic;
 
     public bool playerInMenu;
+    public bool lookAtPlayer;
 
     public float vitesse;
 
     public GameObject cameraLookAtPlayer;
     public Vector3 cameraLookAtMenuTR;
 
-	// Use this for initialization
-	void Start () 
+    //Place camera
+    public GameObject posCameraMenu;
+    private float cameraStartTime;
+    private float cameraSpeed;
+    private float cameraJourneyLength;
+    private Vector3 cameraFrom;
+    private Vector3 cameraTo;
+
+    private bool cameraPlayerToMenu;
+    private bool cameraMenuToPlayer;
+
+    void Start () 
     {
         if (player == null)
             player = GameObject.FindWithTag("Player");
         if (target == null)
         {
             target = GameObject.FindWithTag("CameraTarget");
-            targetStatic = target;
         }
         if (cameraLookAtPlayer == null)
             cameraLookAtPlayer = GameObject.FindWithTag("CameraLookAt");
 
+        if(GameObject.FindWithTag("Menu") != null)
+            posCameraMenu = GameObject.FindWithTag("Menu").transform.GetChild(0).gameObject;
         playerInMenu = false;
+        lookAtPlayer = true;
+
+        //Camera to Menu
+        cameraSpeed = 2.5f;
     }
 
-    /*void Update()
-    {
-        RaycastHit hit;
-        Ray ray = new Ray(player.transform.position, (target.transform.position - player.transform.position));
-        LayerMask layerPlayer = LayerMask.GetMask("Player");
-        LayerMask layerProj = LayerMask.GetMask("Projectile");
-        
-        int layerValue = ~ (layerPlayer.value | layerProj.value);
-
-        //Si il y a un obstable entre la target et le point a regarder, on place la caméra sur le point de contact et on la décale par rapport a sa normale
-        if (Physics.Raycast(ray, out hit, Vector3.Distance(player.transform.position, target.transform.position), layerValue))
-            this.transform.position = hit.point + new Vector3(0.1f * hit.normal.x, 0.1f * hit.normal.y, 0.1f * hit.normal.z);
-    }*/
-    
-	// Update is called once per frame
 	void FixedUpdate () 
     {
-        //Camera sur la cible et regarde le joueur
-        transform.position = target.transform.position;
-
+        //Camera sur la cible et regarde le joueur si il n'est pas en menu
+        if (!playerInMenu)
+            transform.position = target.transform.position;
         RaycastHit hit;
         Ray ray = new Ray(player.transform.position, (target.transform.position - player.transform.position));
         LayerMask layerPlayer = LayerMask.GetMask("Player");
@@ -61,19 +61,82 @@ public class CameraController : MonoBehaviour
         if (Physics.Raycast(ray, out hit, Vector3.Distance(player.transform.position, target.transform.position), layerValue))
             this.transform.position = hit.point + new Vector3(0.1f * hit.normal.x, 0.1f * hit.normal.y, 0.1f * hit.normal.z);
 
-        if (!playerInMenu)
+        if (lookAtPlayer)
             this.transform.LookAt(cameraLookAtPlayer.transform);
         else
             this.transform.LookAt(cameraLookAtMenuTR);
-	}
 
-    public void changeTarget(GameObject newTarg)
-    {
-        target = newTarg;
+
+        //Camera to and from menu managment
+        if(cameraPlayerToMenu) //Camera from player to menu
+        {
+            float distCovered = (Time.time - cameraStartTime) * cameraSpeed;
+            float fracJourney = distCovered / cameraJourneyLength;
+            Camera.main.transform.position = Vector3.Lerp(cameraFrom, cameraTo, fracJourney);
+            
+            if(fracJourney > 1)
+            {
+                cameraPlayerToMenu = false;
+            }
+        }
+        else if(cameraMenuToPlayer) //Camera from menu to player
+        {
+            float distCovered = (Time.time - cameraStartTime) * cameraSpeed;
+            float fracJourney = distCovered / cameraJourneyLength;
+            Camera.main.transform.position = Vector3.Lerp(cameraFrom, cameraTo, fracJourney);
+
+            if (fracJourney > 1)
+            {
+                cameraMenuToPlayer = false;
+                playerInMenu = false;
+                //give control to player
+                player.GetComponent<PlayerController>().setControllable(true);
+                //cursor invisible and locked + crosshair
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+                Camera.main.GetComponent<Crosshair>().display = true;
+            }
+        }        
     }
 
-    public void resetTarget()
+    public void launchMenu()
     {
-        target = targetStatic;
+        //Place camera
+        cameraStartTime = Time.time;
+        cameraFrom = Camera.main.transform.position;
+        cameraTo = posCameraMenu.transform.position;
+        cameraJourneyLength = Vector3.Distance(cameraFrom, cameraTo);
+        cameraPlayerToMenu = true;
+        playerInMenu = true;
+        lookAtPlayer = false;
+        Camera.main.GetComponent<Crosshair>().display = false;
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+        player.GetComponent<PlayerController>().setControllable(false);
+    }
+
+    public void exitMenu()
+    {
+        //Reset Camera
+        cameraStartTime = Time.time;
+        cameraFrom = Camera.main.transform.position;
+        cameraTo = target.transform.position;
+        cameraJourneyLength = Vector3.Distance(cameraFrom, cameraTo);
+        cameraMenuToPlayer = true;
+        lookAtPlayer = true;
     }
 }
+
+/*void Update()
+{
+    RaycastHit hit;
+    Ray ray = new Ray(player.transform.position, (target.transform.position - player.transform.position));
+    LayerMask layerPlayer = LayerMask.GetMask("Player");
+    LayerMask layerProj = LayerMask.GetMask("Projectile");
+
+    int layerValue = ~ (layerPlayer.value | layerProj.value);
+
+    //Si il y a un obstable entre la target et le point a regarder, on place la caméra sur le point de contact et on la décale par rapport a sa normale
+    if (Physics.Raycast(ray, out hit, Vector3.Distance(player.transform.position, target.transform.position), layerValue))
+        this.transform.position = hit.point + new Vector3(0.1f * hit.normal.x, 0.1f * hit.normal.y, 0.1f * hit.normal.z);
+}*/

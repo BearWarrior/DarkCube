@@ -219,8 +219,11 @@ public class MenuManagerInGame : MonoBehaviour
         if (lerpingCanvas) lerpCanvas();
         if(Input.GetKeyDown(KeyCode.Escape))
         {
-            if(canvasType == 1)
-                accessMenu.GetComponent<accessMenu>().exitMenu();
+            if (canvasType == 1)
+            {
+                if (accessMenu.GetComponent<accessMenu>().isReady())
+                    accessMenu.GetComponent<accessMenu>().exitMenu();
+            }
             else
                 changeCanvas(1);
         }

@@ -10,6 +10,9 @@ public class EnumScript
 	public enum DispersionProjectile{ cone, droit, obus, rafale };
     public enum PatternSortDeJet { Unique, Rafale, SimultaneLigne, SimultaneTriangle, SimultaneCarre };
 
+    public enum CustomProj1 { Normal, Courbe };
+    public enum CustomProj2 { Normal, MultiProj};
+
     public enum GabaritSortDeZone { Cercle, Ligne, Cone};
 
     public enum Character { Player, Enemy};

@@ -7,6 +7,9 @@ public class SortDeJet : Attaque
     public float vitesseProj;
     public GameObject proj;
 
+    public EnumScript.CustomProj1 custom1;
+    public EnumScript.CustomProj2 custom2;
+
     public delegate void Del();
     Del fctDelegate;
 
@@ -22,6 +25,8 @@ public class SortDeJet : Attaque
         nameInMenu = "none";
         lvl = 1;
         nbXpPerShot = 1;
+        custom1 = EnumScript.CustomProj1.Normal;
+        custom2 = EnumScript.CustomProj2.Normal;
     }
 
     public SortDeJet(SortDeJet copy)
@@ -36,15 +41,19 @@ public class SortDeJet : Attaque
         nameInMenu = copy.nameInMenu;
         lvl = copy.lvl;
         nbXpPerShot = copy.nbXpPerShot;
+        custom1 = copy.custom1;
+        custom2 = copy.custom2;
     }
 
-    public SortDeJet(string p_nomSort, string p_nomProj, EnumScript.Element p_element, int p_lvl)
+    public SortDeJet(string p_nomSort, string p_nomProj, EnumScript.Element p_element, int p_lvl, EnumScript.CustomProj1 p_custom1, EnumScript.CustomProj2 p_custom2)
     {
         type = 1;
         pseudoSort = p_nomSort;
         nameParticle = p_nomProj;
         element = p_element;
         lvl = p_lvl;
+        custom1 = p_custom1;
+        custom2 = p_custom2;
 
         structSortJet str = GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().getStructFromName(p_nomProj);
 
@@ -79,7 +88,6 @@ public class SortDeJet : Attaque
     {
         string lvlPart = (lvl < 3) ? "1" : (lvl < 6) ? "2" : "3";
         string partToLoad = "Particle/Prefabs/SortsDeJet/" + nameParticle + element.ToString() + lvlPart;
-        Debug.Log(partToLoad);
         proj = GameObject.Instantiate(Resources.Load(partToLoad), spawnPoint, new Quaternion(0, 0, 0, 0)) as GameObject;
         proj.transform.parent = null;
 
