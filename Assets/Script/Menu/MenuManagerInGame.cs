@@ -1,10 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-using System.Collections.Generic;
 using System;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
+
 
 public class MenuManagerInGame : MonoBehaviour
 {
@@ -136,7 +134,6 @@ public class MenuManagerInGame : MonoBehaviour
 
     private bool popUpYesNoAnswered;
     private bool popUpYesNoResult;
-    private bool delegateYesNoUsed;
     public delegate void DelYesNo();
     DelYesNo fctToCallWhenPopUpYesNoAnswer;
     
@@ -179,7 +176,6 @@ public class MenuManagerInGame : MonoBehaviour
 
         popUpYesNoAnswered = false;
         popUpYesNoResult = false;
-        delegateYesNoUsed = false;
 
         //PROJECTILE
         //On remplit la Dropdown des projectiles
@@ -298,7 +294,6 @@ public class MenuManagerInGame : MonoBehaviour
             }
             else if (can == 3) //On veut l'editor
             {
-                print(selectedSort);
                 if (selectedSort != -100)
                 {
                     //On passe le chooser en bottom
@@ -450,7 +445,6 @@ public class MenuManagerInGame : MonoBehaviour
     public void supprimerClassDel()
     {
         supprimerClasse();
-        delegateYesNoUsed = false;
     }
 
     public void supprimerClasse()
@@ -470,7 +464,6 @@ public class MenuManagerInGame : MonoBehaviour
 
                 selectedSort = -100;
                 popUpYesNoAnswered = false;
-                delegateYesNoUsed = true;
             }
             else
             {
@@ -499,7 +492,6 @@ public class MenuManagerInGame : MonoBehaviour
 
                 selectedSort = -100;
                 popUpYesNoAnswered = false;
-                delegateYesNoUsed = true;
             }
             else
             {
@@ -770,9 +762,9 @@ public class MenuManagerInGame : MonoBehaviour
             //info
             editorProjNom.GetComponent<InputField>().text = sortSelectionne.getPseudoSort();
             editorProjProj.GetComponent<Text>().text = sortSelectionne.getNameInMenu();
-            editorProjVitesse.GetComponent<Text>().text = structSortDeJetEnEdition.vitesse + " + " + (structSortDeJetEnEdition.pointsInVitesse * structSortDeJetEnEdition.vitessePerLevel);
-            editorProjCooldown.GetComponent<Text>().text = structSortDeJetEnEdition.cooldown + " + " + (structSortDeJetEnEdition.pointsInCooldown * structSortDeJetEnEdition.coolDownPerLevel);
-            editorProjDegats.GetComponent<Text>().text = structSortDeJetEnEdition.degats + " + " + (structSortDeJetEnEdition.pointsInDegats * structSortDeJetEnEdition.degatsPerLevel);
+            editorProjVitesse.GetComponent<Text>().text = structSortDeJetEnEdition.vitesse + " + " + ( ((SortDeJet)sortSelectionne).pointsInVitesse * structSortDeJetEnEdition.vitessePerLevel);
+            editorProjCooldown.GetComponent<Text>().text = structSortDeJetEnEdition.cooldown + " + " + (((SortDeJet)sortSelectionne).pointsInCooldown * structSortDeJetEnEdition.coolDownPerLevel);
+            editorProjDegats.GetComponent<Text>().text = structSortDeJetEnEdition.degats + " + " + (((SortDeJet)sortSelectionne).pointsInDegats * structSortDeJetEnEdition.degatsPerLevel);
 
             editorProjElement.GetComponent<Dropdown>().options.Clear();
             int cpt = 0;
@@ -791,14 +783,14 @@ public class MenuManagerInGame : MonoBehaviour
             editorProjCustom2.GetComponent<Dropdown>().captionText = editorProjCustom2.GetComponent<Dropdown>().captionText;
 
             //bonus
-            editorProjBonusCustom1.GetComponent<Text>().text = structSortDeJetEnEdition.pointsInCustom1.ToString();
-            editorProjBonusCustom2.GetComponent<Text>().text = structSortDeJetEnEdition.pointsInCustom2.ToString();
-            editorProjBonusVitesse.GetComponent<Text>().text = structSortDeJetEnEdition.pointsInVitesse.ToString();
-            editorProjBonusCooldown.GetComponent<Text>().text = structSortDeJetEnEdition.pointsInCooldown.ToString();
-            editorProjBonusDegats.GetComponent<Text>().text = structSortDeJetEnEdition.pointsInDegats.ToString();
+            editorProjBonusCustom1.GetComponent<Text>().text = ((SortDeJet)sortSelectionne).pointsInCustom1.ToString();
+            editorProjBonusCustom2.GetComponent<Text>().text = ((SortDeJet)sortSelectionne).pointsInCustom2.ToString();
+            editorProjBonusVitesse.GetComponent<Text>().text = ((SortDeJet)sortSelectionne).pointsInVitesse.ToString();
+            editorProjBonusCooldown.GetComponent<Text>().text = ((SortDeJet)sortSelectionne).pointsInCooldown.ToString();
+            editorProjBonusDegats.GetComponent<Text>().text = ((SortDeJet)sortSelectionne).pointsInDegats.ToString();
 
             //Points restants
-            editorProjPointsRestants.GetComponent<Text>().text = structSortDeJetEnEdition.nbPointsDispo.ToString();
+            editorProjPointsRestants.GetComponent<Text>().text = (structSortDeJetEnEdition.nbPointsDispo - ((SortDeJet)sortSelectionne).nbDePointsTot).ToString();
 
             //ProgressBar and Lvl
             editorProgressBar.GetComponent<Image>().fillAmount = structSortDeJetEnEdition.xpActuel / caracSorts.GetComponent<CaracProjectiles>().xpToLvlUp * Mathf.Pow(caracSorts.GetComponent<CaracProjectiles>().multXpByLvl, sortDeJetEnConstruction.getLvl());
@@ -877,18 +869,18 @@ public class MenuManagerInGame : MonoBehaviour
     {
         if (point == 1)
         {
-            if(structSortDeJetEnEdition.nbPointsDispo > 0)
+            if(((SortDeJet)sortSelectionne).nbDePointsTot < structSortDeJetEnEdition.nbPointsDispo) 
             {
-                structSortDeJetEnEdition.pointsInVitesse++;
-                structSortDeJetEnEdition.nbPointsDispo--;
+                ((SortDeJet)sortSelectionne).pointsInVitesse++;
+                ((SortDeJet)sortSelectionne).nbDePointsTot++;
             }
         }
         else if(point == -1)
         {
-            if(structSortDeJetEnEdition.pointsInVitesse > 0)
+            if(((SortDeJet)sortSelectionne).pointsInVitesse > 0)
             {
-                structSortDeJetEnEdition.pointsInVitesse--;
-                structSortDeJetEnEdition.nbPointsDispo++;
+                ((SortDeJet)sortSelectionne).pointsInVitesse--;
+                ((SortDeJet)sortSelectionne).nbDePointsTot--;
             }
         }
         setEditorCanvas(false);
@@ -897,18 +889,18 @@ public class MenuManagerInGame : MonoBehaviour
     {
         if (point == 1)
         {
-            if (structSortDeJetEnEdition.nbPointsDispo > 0)
+            if (((SortDeJet)sortSelectionne).nbDePointsTot < structSortDeJetEnEdition.nbPointsDispo)
             {
-                structSortDeJetEnEdition.pointsInCooldown++;
-                structSortDeJetEnEdition.nbPointsDispo--;
+                ((SortDeJet)sortSelectionne).pointsInCooldown++;
+                ((SortDeJet)sortSelectionne).nbDePointsTot++;
             }
         }
         else if (point == -1)
         {
-            if (structSortDeJetEnEdition.pointsInCooldown > 0)
+            if (((SortDeJet)sortSelectionne).pointsInCooldown > 0)
             {
-                structSortDeJetEnEdition.pointsInCooldown--;
-                structSortDeJetEnEdition.nbPointsDispo++;
+                ((SortDeJet)sortSelectionne).pointsInCooldown--;
+                ((SortDeJet)sortSelectionne).nbDePointsTot--;
             }
         }
         setEditorCanvas(false);
@@ -917,58 +909,58 @@ public class MenuManagerInGame : MonoBehaviour
     {
         if (point == 1)
         {
-            if (structSortDeJetEnEdition.nbPointsDispo > 0)
+            if (((SortDeJet)sortSelectionne).nbDePointsTot < structSortDeJetEnEdition.nbPointsDispo)
             {
-                structSortDeJetEnEdition.pointsInDegats++;
-                structSortDeJetEnEdition.nbPointsDispo--;
+                ((SortDeJet)sortSelectionne).pointsInDegats++;
+                ((SortDeJet)sortSelectionne).nbDePointsTot++;
             }
         }
         else if (point == -1)
         {
-            if (structSortDeJetEnEdition.pointsInDegats > 0)
+            if (((SortDeJet)sortSelectionne).pointsInDegats > 0)
             {
-                structSortDeJetEnEdition.pointsInDegats--;
-                structSortDeJetEnEdition.nbPointsDispo++;
+                ((SortDeJet)sortSelectionne).pointsInDegats--;
+                ((SortDeJet)sortSelectionne).nbDePointsTot--;
             }
         }
         setEditorCanvas(false);
     }
-    public void editerProjCustom1(int point)
+    public void editerProjCustom1(int point) //TODO METTRE 10
     {
         if (point == 1)
         {
-            if (structSortDeJetEnEdition.nbPointsDispo > 4)
+            if (structSortDeJetEnEdition.nbPointsDispo - ((SortDeJet)sortSelectionne).nbDePointsTot > 9)
             {
-                structSortDeJetEnEdition.pointsInCustom1++;
-                structSortDeJetEnEdition.nbPointsDispo -= 5;
+                ((SortDeJet)sortSelectionne).pointsInCustom1++;
+                ((SortDeJet)sortSelectionne).nbDePointsTot += 5;
             }
         }
         else if (point == -1)
         {
-            if (structSortDeJetEnEdition.pointsInCustom1 > 0)
+            if (((SortDeJet)sortSelectionne).pointsInCustom1 > 0)
             {
-                structSortDeJetEnEdition.pointsInCustom1--;
-                structSortDeJetEnEdition.nbPointsDispo+=5;
+                ((SortDeJet)sortSelectionne).pointsInCustom1--;
+                ((SortDeJet)sortSelectionne).nbDePointsTot -=5;
             }
         }
         setEditorCanvas(false);
     }
-    public void editerProjCustom2(int point)
+    public void editerProjCustom2(int point) //TODO METTRE 10
     {
         if (point == 1)
         {
-            if (structSortDeJetEnEdition.nbPointsDispo > 4)
+            if (structSortDeJetEnEdition.nbPointsDispo - ((SortDeJet)sortSelectionne).nbDePointsTot > 9 )
             {
-                structSortDeJetEnEdition.pointsInCustom2++;
-                structSortDeJetEnEdition.nbPointsDispo-=5;
+                ((SortDeJet)sortSelectionne).pointsInCustom2++;
+                ((SortDeJet)sortSelectionne).nbDePointsTot += 5;
             }
         }
         else if (point == -1)
         {
-            if (structSortDeJetEnEdition.pointsInCustom2 > 0)
+            if (((SortDeJet)sortSelectionne).pointsInCustom2 > 0)
             {
-                structSortDeJetEnEdition.pointsInCustom2--;
-                structSortDeJetEnEdition.nbPointsDispo += 5;
+                ((SortDeJet)sortSelectionne).pointsInCustom2--;
+                ((SortDeJet)sortSelectionne).nbDePointsTot -= 5;
             }
         }
         setEditorCanvas(false);

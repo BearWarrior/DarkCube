@@ -10,7 +10,6 @@ public class CameraDeath : MonoBehaviour
     private Transform playerCameraTarget;
 
     private float distance;
-    private float timeToGo = 2;
     private float startTime = 0;
     private float speed = 4;
 

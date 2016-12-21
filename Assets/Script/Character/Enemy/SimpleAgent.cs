@@ -8,7 +8,6 @@ public class SimpleAgent : MonoBehaviour
     public float distDetection;
 
     public  GameObject target;
-    private Vector3 posDepart;
     public bool playerDetected;
     private NavMeshAgent agent;
 
@@ -19,7 +18,6 @@ public class SimpleAgent : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        posDepart = transform.position;
         agent = GetComponent<NavMeshAgent>();
         if (GameObject.FindWithTag("Player") != null)
         {

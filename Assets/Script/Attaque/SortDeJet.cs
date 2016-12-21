@@ -9,6 +9,12 @@ public class SortDeJet : Attaque
 
     public EnumScript.CustomProj1 custom1;
     public EnumScript.CustomProj2 custom2;
+    public int nbDePointsTot;
+    public int pointsInVitesse; 
+    public int pointsInCooldown; 
+    public int pointsInDegats;  
+    public int pointsInCustom1; 
+    public int pointsInCustom2; 
 
     public int nbProjSec;
 
@@ -30,7 +36,12 @@ public class SortDeJet : Attaque
         custom1 = EnumScript.CustomProj1.Normal;
         custom2 = EnumScript.CustomProj2.Normal;
         nbProjSec = 2;
-    }
+        pointsInVitesse = 0;
+        pointsInCooldown = 0;
+        pointsInDegats = 0;
+        pointsInCustom1 = 0;
+        pointsInCustom2 = 0;
+}
 
     public SortDeJet(SortDeJet copy)
     {
@@ -47,9 +58,14 @@ public class SortDeJet : Attaque
         custom1 = copy.custom1;
         custom2 = copy.custom2;
         nbProjSec = copy.nbProjSec;
+        pointsInVitesse = copy.pointsInVitesse;
+        pointsInCooldown = copy.pointsInCooldown;
+        pointsInDegats = copy.pointsInDegats;
+        pointsInCustom1 = copy.pointsInCustom1;
+        pointsInCustom2 = copy.pointsInCustom2;
     }
 
-    public SortDeJet(string p_nomSort, string p_nomProj, EnumScript.Element p_element, int p_lvl, EnumScript.CustomProj1 p_custom1, EnumScript.CustomProj2 p_custom2)
+    public SortDeJet(string p_nomSort, string p_nomProj, EnumScript.Element p_element, int p_lvl, int p_ptVit, int p_ptCd, int p_ptDeg, int p_ptCust1, int p_ptCust2, EnumScript.CustomProj1 p_custom1, EnumScript.CustomProj2 p_custom2)
     {
         type = 1;
         pseudoSort = p_nomSort;
@@ -58,27 +74,33 @@ public class SortDeJet : Attaque
         lvl = p_lvl;
         custom1 = p_custom1;
         custom2 = p_custom2;
+        pointsInVitesse = p_ptVit;
+        pointsInCooldown = p_ptCd;
+        pointsInDegats = p_ptDeg;
+        pointsInCustom1 = p_ptCust1;
+        pointsInCustom2 = p_ptCust2;
+        nbDePointsTot = pointsInVitesse + pointsInCooldown + pointsInDegats + pointsInCustom1 + pointsInCustom2;
 
         structSortJet str = GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().getStructFromName(p_nomProj);
 
-        vitesseProj = str.vitesse + str.pointsInVitesse * str.vitessePerLevel;
-        cooldown = str.cooldown + str.pointsInCooldown * str.coolDownPerLevel;
-        degats = str.degats + str.pointsInDegats * str.degatsPerLevel;
+        vitesseProj = str.vitesse + pointsInVitesse * str.vitessePerLevel;
+        cooldown = str.cooldown + pointsInCooldown * str.coolDownPerLevel;
+        degats = str.degats + pointsInDegats * str.degatsPerLevel;
         nbXpPerShot = str.nbXpPerShot;
         nameInMenu = str.nameInMenu;
-        nbProjSec = GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().nbMultiProjBase + str.pointsInCustom2;
+        nbProjSec = GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().nbMultiProjBase + pointsInCustom2;
     }
 
     public override void majSort()
     {
         structSortJet str = GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().getStructFromName(nameParticle);
 
-        vitesseProj = str.vitesse + str.pointsInVitesse * str.vitessePerLevel;
-        cooldown = str.cooldown + str.pointsInCooldown * str.coolDownPerLevel;
-        degats = str.degats + str.pointsInDegats * str.degatsPerLevel;
+        vitesseProj = str.vitesse + pointsInVitesse * str.vitessePerLevel;
+        cooldown = str.cooldown + pointsInCooldown * str.coolDownPerLevel;
+        degats = str.degats + pointsInDegats * str.degatsPerLevel;
         nbXpPerShot = str.nbXpPerShot;
         nameInMenu = str.nameInMenu;
-        nbProjSec = GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().nbMultiProjBase + str.pointsInCustom2;
+        nbProjSec = GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().nbMultiProjBase + pointsInCustom2;
     }
 
     public override void AttackFromPlayer(Vector3 spawnPoint)
