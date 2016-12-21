@@ -24,12 +24,19 @@ public struct structSortJet
     public int pointsInVitesse;
     public int pointsInCooldown;
     public int pointsInDegats;
+    public int pointsInCustom1;
+    public int pointsInCustom2;
 }
 
 public class CaracProjectiles : MonoBehaviour
 {
     public int xpToLvlUp = 5;
     public float multXpByLvl = 1.25f;
+
+    public float coeffCustom2MultiProj = 0.5f;
+    public int nbPointsToUpCustom2 = 10;
+
+    public int nbMultiProjBase = 2;
 
     public List<structSortJet> tabSort;
 
@@ -48,18 +55,20 @@ public class CaracProjectiles : MonoBehaviour
         METEOR.nomParticle = "Meteor";
         METEOR.listElement = new List<EnumScript.Element>{ EnumScript.Element.Feu, EnumScript.Element.Eau, EnumScript.Element.Elec, EnumScript.Element.Toxic };
         METEOR.degats = 10;
-        METEOR.cooldown = 0.5f;
+        METEOR.cooldown = 1f;
         METEOR.vitesse = 10;
         METEOR.xpActuel = 0;
         METEOR.xpTemp = 0;
         METEOR.degatsPerLevel = 2;
         METEOR.vitessePerLevel = 1;
-        METEOR.coolDownPerLevel = -1;
+        METEOR.coolDownPerLevel = -.1f;
         METEOR.pointsInVitesse = 0;
         METEOR.pointsInDegats = 0;
         METEOR.pointsInCooldown = 0;
         METEOR.nbXpPerShot = 1;
         METEOR.lvl = 1;
+        METEOR.pointsInCustom1 = 0;
+        METEOR.pointsInCustom2 = 0;
         tabSort.Add(METEOR);
 
         //WAVE
@@ -67,18 +76,20 @@ public class CaracProjectiles : MonoBehaviour
         WAVE.nomParticle = "Wave";
         WAVE.listElement = new List<EnumScript.Element> { EnumScript.Element.Eau};
         WAVE.degats = 10;
-        WAVE.cooldown = 0.5f;
+        WAVE.cooldown = 1f;
         WAVE.vitesse = 10;
         WAVE.xpActuel = 0;
         WAVE.xpTemp = 0;
         WAVE.degatsPerLevel = 2;
         WAVE.vitessePerLevel = 1;
-        WAVE.coolDownPerLevel = -1;
+        WAVE.coolDownPerLevel = -.1f;
         WAVE.pointsInVitesse = 0;
         WAVE.pointsInDegats = 0;
         WAVE.pointsInCooldown = 0;
         WAVE.nbXpPerShot = 1;
         WAVE.lvl = 1;
+        WAVE.pointsInCustom1 = 0;
+        WAVE.pointsInCustom2 = 0;
         tabSort.Add(WAVE);
 
         //BOMB
@@ -86,18 +97,20 @@ public class CaracProjectiles : MonoBehaviour
         BOMB.nomParticle = "Bomb";
         BOMB.listElement = new List<EnumScript.Element> { EnumScript.Element.Feu, EnumScript.Element.Eau, EnumScript.Element.Elec, EnumScript.Element.Toxic };
         BOMB.degats = 10;
-        BOMB.cooldown = 0.5f;
+        BOMB.cooldown = 1f;
         BOMB.vitesse = 10;
         BOMB.xpActuel = 0;
         BOMB.xpTemp = 0;
         BOMB.degatsPerLevel = 2;
         BOMB.vitessePerLevel = 1;
-        BOMB.coolDownPerLevel = -1;
+        BOMB.coolDownPerLevel = -.1f;
         BOMB.pointsInVitesse = 0;
         BOMB.pointsInDegats = 0;
         BOMB.pointsInCooldown = 0;
         BOMB.nbXpPerShot = 1;
         BOMB.lvl = 1;
+        METEOR.pointsInCustom1 = 0;
+        METEOR.pointsInCustom2 = 0;
         tabSort.Add(BOMB);
 
         //SHOT
@@ -105,18 +118,20 @@ public class CaracProjectiles : MonoBehaviour
         SHOT.nomParticle = "Shot";
         SHOT.listElement = new List<EnumScript.Element> { EnumScript.Element.Feu, EnumScript.Element.Eau, EnumScript.Element.Elec};
         SHOT.degats = 10;
-        SHOT.cooldown = 0.5f;
+        SHOT.cooldown = 1f;
         SHOT.vitesse = 10;
         SHOT.xpActuel = 0;
         SHOT.xpTemp = 0;
         SHOT.degatsPerLevel = 2;
         SHOT.vitessePerLevel = 1;
-        SHOT.coolDownPerLevel = -1;
+        SHOT.coolDownPerLevel = -.1f;
         SHOT.pointsInVitesse = 0;
         SHOT.pointsInDegats = 0;
         SHOT.pointsInCooldown = 0;
         SHOT.nbXpPerShot = 1;
         SHOT.lvl = 1;
+        SHOT.pointsInCustom1 = 0;
+        SHOT.pointsInCustom2 = 0;
         tabSort.Add(SHOT);
 
         //BALL
@@ -124,18 +139,20 @@ public class CaracProjectiles : MonoBehaviour
         BALL.nomParticle = "Ball";
         BALL.listElement = new List<EnumScript.Element> { EnumScript.Element.Feu, EnumScript.Element.Eau, EnumScript.Element.Elec, EnumScript.Element.Toxic };
         BALL.degats = 10;
-        BALL.cooldown = 0.5f;
+        BALL.cooldown = 1f;
         BALL.vitesse = 10;
         BALL.xpActuel = 0;
         BALL.xpTemp = 0;
         BALL.degatsPerLevel = 2;
         BALL.vitessePerLevel = 1;
-        BALL.coolDownPerLevel = -1;
+        BALL.coolDownPerLevel = -.1f;
         BALL.pointsInVitesse = 0;
         BALL.pointsInDegats = 0;
         BALL.pointsInCooldown = 0;
         BALL.nbXpPerShot = 1;
         BALL.lvl = 1;
+        BALL.pointsInCustom1 = 0;
+        BALL.pointsInCustom2 = 0;
         tabSort.Add(BALL);
 
 
@@ -196,7 +213,6 @@ public class CaracProjectiles : MonoBehaviour
             string save = tabSort[i].nomParticle + ";" + tabSort[i].lvl + ";" + tabSort[i].xpActuel + ";" + tabSort[i].nbPointsDispo + ";" +
                           tabSort[i].pointsInVitesse + ";" + tabSort[i].pointsInCooldown + ";" + tabSort[i].pointsInDegats ;
             PlayerPrefs.SetString("CaracProjectiles" + i, save);
-            print(save);
         }
     }
 

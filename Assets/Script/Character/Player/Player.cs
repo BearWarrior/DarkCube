@@ -121,6 +121,8 @@ public class Player : Character
     * PseudoSort
     * NomProjectile
     * Element
+    * Custom1
+    * Custom2
     *
     * xp et lvl stocké dans CaracProj et CaracZone
     */
@@ -134,6 +136,13 @@ public class Player : Character
             {
                 save = listAttaque[i].type + ";" + listAttaque[i].getPseudoSort() + ";" + listAttaque[i].getNameParticle() + ";" +
                     listAttaque[i].getElement().ToString();
+                switch (listAttaque[i].type)
+                {
+                    case 1:
+                        save += ";" + ((SortDeJet)listAttaque[i]).getCustom1().ToString() + ";" + ((SortDeJet)listAttaque[i]).getCustom2().ToString();
+                        break;
+                        
+                }
             }
             else
             {
@@ -146,9 +155,14 @@ public class Player : Character
         PlayerPrefs.SetInt("attaqueInventaireCount", listAttaqueInventaire.Count);
         for (int i = 0; i < listAttaqueInventaire.Count; i++)
         {
-            string save = listAttaqueInventaire[i].type +";" + listAttaqueInventaire[i].getPseudoSort() + ";" + listAttaqueInventaire[i].getNameParticle() + ";" + 
+            string save = listAttaqueInventaire[i].type + ";" + listAttaqueInventaire[i].getPseudoSort() + ";" + listAttaqueInventaire[i].getNameParticle() + ";" +
                 listAttaqueInventaire[i].getElement().ToString();
-            print(save);
+            switch(listAttaqueInventaire[i].type)
+            {
+                case 1:
+                    save += ";" + ((SortDeJet) listAttaqueInventaire[i]).getCustom1().ToString() + ";" + ((SortDeJet)listAttaqueInventaire[i]).getCustom2().ToString();
+                    break;
+            }
             PlayerPrefs.SetString("attaqueInventaire" + i.ToString(), save);
         }
     }
@@ -167,7 +181,7 @@ public class Player : Character
                     switch (array[0])
                     {
                         case "1":
-                            SortDeJet sortJ = new SortDeJet(array[1], array[2], EnumScript.getElemFromStr(array[3]), GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().getLvlFromNamePart(array[2]));
+                            SortDeJet sortJ = new SortDeJet(array[1], array[2], EnumScript.getElemFromStr(array[3]), GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().getLvlFromNamePart(array[2]), EnumScript.getCustom1FromString(array[4]), EnumScript.getCustom2FromString(array[5])); //TODO CHANGE
                             listAttaqueInventaire.Add(sortJ);
                             equipeAttaqueAt(i+1, 0);
                             break;
@@ -195,7 +209,7 @@ public class Player : Character
                     switch(array[0])
                     {
                         case "1":
-                            SortDeJet sortJ = new SortDeJet(array[1], array[2], EnumScript.getElemFromStr(array[3]), GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().getLvlFromNamePart(array[2]));
+                            SortDeJet sortJ = new SortDeJet(array[1], array[2], EnumScript.getElemFromStr(array[3]), GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().getLvlFromNamePart(array[2]), EnumScript.getCustom1FromString(array[4]), EnumScript.getCustom2FromString(array[5]));
                             listAttaqueInventaire.Add(sortJ);
                             break;
                         case "2":
@@ -217,8 +231,17 @@ public class Player : Character
             if(listAttaque[i] != null && (listAttaque[i].getNameParticle() == s.nomParticle))
             {
                 listAttaque[i].setLvl(s.lvl);
+                
             }
         }
+    }
+    public void majAllSort()
+    {
+        for (int i = 0; i < 6; i++)
+            if(listAttaque[i] != null)
+                listAttaque[i].majSort();
+        foreach(Attaque atk in listAttaqueInventaire)
+            atk.majSort();
     }
 
     public void majSortsZoneEquip(structSortDeZone s)

@@ -27,6 +27,11 @@ public abstract class Attaque
             canShoot = true;
     }
 
+    public virtual void majSort()
+    {
+        Debug.Log("mother");
+    }
+
     public void setAllTagsAndAddVelocityAndEmitter(string tag, GameObject go, Vector3 velocity, EnumScript.Character emitter)
     {
         for (int i = 0; i < go.transform.childCount; i++)
@@ -34,7 +39,7 @@ public abstract class Attaque
             go.transform.GetChild(i).tag = tag;
             if (go.GetComponent<Rigidbody>() != null)
                 go.GetComponent<Rigidbody>().velocity = velocity;
-            setAllTagsAndAddVelocityAndEmitter(tag, go.transform.GetChild(i).transform.gameObject, velocity, emitter);
+            //setAllTagsAndAddVelocityAndEmitter(tag, go.transform.GetChild(i).transform.gameObject, velocity, emitter);
             if (go.GetComponent<ParticleCollisionBehaviour>() != null)
             {
                 go.GetComponent<ParticleCollisionBehaviour>().emiter = emitter;

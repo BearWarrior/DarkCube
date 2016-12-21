@@ -49,6 +49,8 @@ public class MenuManagerInGame : MonoBehaviour
     public GameObject creatorProjProjectile;
     public GameObject creatorProjNbProj;
     public GameObject creatorProjPattern;
+    public GameObject creatorProjCustom1;
+    public GameObject creatorProjCustom2;
     public GameObject creatorProjVitesse;
     public GameObject creatorProjCoolDown;
     public GameObject creatorProjDegats;
@@ -67,8 +69,8 @@ public class MenuManagerInGame : MonoBehaviour
     public GameObject chooserProjPseudoSort;
     public GameObject chooserProjElement;
     public GameObject chooserProjProjectile;
-    public GameObject chooserProjNbProj;
-    public GameObject chooserProjPattern;
+    public GameObject chooserProjCustom1;
+    public GameObject chooserProjCustom2;
     public GameObject chooserProjVitesse;
     public GameObject chooserProjCoolDown;
     public GameObject chooserProjDegats;
@@ -91,14 +93,19 @@ public class MenuManagerInGame : MonoBehaviour
     [Space(15)]
     public GameObject editorProjNom;
     public GameObject editorProjElement;
+    public GameObject editorProjCustom1;
+    public GameObject editorProjCustom2;
     public GameObject editorProjProj;
     public GameObject editorProjVitesse;
     public GameObject editorProjCooldown;
     public GameObject editorProjDegats;
     [Space(8)]
+    public GameObject editorProjBonusCustom1;
+    public GameObject editorProjBonusCustom2;
     public GameObject editorProjBonusVitesse;
     public GameObject editorProjBonusCooldown;
     public GameObject editorProjBonusDegats;
+    public GameObject editorProjPointsRestants;
     [Space(15)]
     public GameObject editorZoneNom;
     public GameObject editorZoneElement;
@@ -106,9 +113,9 @@ public class MenuManagerInGame : MonoBehaviour
     public GameObject editorZoneCooldown;
     public GameObject editorZoneDegats;
     [Space(15)]
-    public GameObject editorZoneBonusVitesse;
     public GameObject editorZoneBonusCooldown;
     public GameObject editorZoneBonusDegats;
+    public GameObject editorZonePointsRestants;
     [Space(15)]
     public GameObject caracSorts;
 
@@ -187,7 +194,18 @@ public class MenuManagerInGame : MonoBehaviour
             creatorProjElement.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(elem.ToString()));
         creatorProjElement.GetComponent<Dropdown>().value = 0;
         creatorProjElement.GetComponent<Dropdown>().captionText = creatorProjElement.GetComponent<Dropdown>().captionText;
-
+        //Ensuite on remplit les dropdown des custom 1 et 2
+        creatorProjCustom1.GetComponent<Dropdown>().options.Clear();
+        foreach (EnumScript.CustomProj1 cust in EnumScript.CustomProj1.GetValues(typeof(EnumScript.CustomProj1)))
+            creatorProjCustom1.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(cust.ToString()));
+        creatorProjCustom1.GetComponent<Dropdown>().value = 0;
+        creatorProjCustom1.GetComponent<Dropdown>().captionText = creatorProjCustom1.GetComponent<Dropdown>().captionText;
+        creatorProjCustom2.GetComponent<Dropdown>().options.Clear();
+        foreach (EnumScript.CustomProj2 cust in EnumScript.CustomProj2.GetValues(typeof(EnumScript.CustomProj2)))
+            creatorProjCustom2.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(cust.ToString()));
+        creatorProjCustom2.GetComponent<Dropdown>().value = 0;
+        creatorProjCustom2.GetComponent<Dropdown>().captionText = creatorProjCustom2.GetComponent<Dropdown>().captionText;
+        
         //ZONE
         creatorZoneSort.GetComponent<Dropdown>().options.Clear();
         foreach (structSortDeZone sort in caracSorts.GetComponent<CaracZones>().tabSort)
@@ -211,6 +229,14 @@ public class MenuManagerInGame : MonoBehaviour
         classChooser.transform.position = menuActif.transform.position;
         classCreator.transform.position = menuTop.transform.position;
         classEditor.transform.position = menuTop.transform.position + new Vector3(0, 0, .25f);
+
+        //EDITOR
+        editorProjCustom1.GetComponent<Dropdown>().options.Clear();
+        foreach (EnumScript.CustomProj1 cust in EnumScript.CustomProj1.GetValues(typeof(EnumScript.CustomProj1)))
+            editorProjCustom1.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(cust.ToString()));
+        editorProjCustom2.GetComponent<Dropdown>().options.Clear();
+        foreach (EnumScript.CustomProj2 cust in EnumScript.CustomProj2.GetValues(typeof(EnumScript.CustomProj2)))
+            editorProjCustom2.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(cust.ToString()));
     }
 
     // Update is called once per frame
@@ -499,7 +525,10 @@ public class MenuManagerInGame : MonoBehaviour
                 sortDeJetEnConstruction.setPseudoSort(creatorProjPseudoSort.GetComponent<InputField>().text);
             else
                 sortDeJetEnConstruction.setPseudoSort("_defaut_");
-            
+
+            sortDeJetEnConstruction.setCustom1((EnumScript.CustomProj1)creatorProjCustom1.GetComponent<Dropdown>().value);
+            sortDeJetEnConstruction.setCustom2((EnumScript.CustomProj2)creatorProjCustom2.GetComponent<Dropdown>().value);
+
             player.GetComponent<Player>().addAttaqueToInventaire(sortDeJetEnConstruction);
         }
         else if (selectedType == 2) //Zone
@@ -631,10 +660,12 @@ public class MenuManagerInGame : MonoBehaviour
 
                 chooserProjPseudoSort.GetComponent<Text>().text = sortSelectionne.getPseudoSort();
                 chooserProjElement.GetComponent<Text>().text = sortSelectionne.getElement().ToString();
+                chooserProjCustom1.GetComponent<Text>().text = ((SortDeJet)sortSelectionne).getCustom1().ToString();
+                chooserProjCustom2.GetComponent<Text>().text = ((SortDeJet)sortSelectionne).getCustom2().ToString();
                 chooserProjProjectile.GetComponent<Text>().text = sortSelectionne.getNameInMenu();
-                chooserProjVitesse.GetComponent<Text>().text = ( ((SortDeJet)sortSelectionne).vitesseProj + (structSortDeJetEnEdition.pointsInVitesse * structSortDeJetEnEdition.vitessePerLevel) ).ToString();
-                chooserProjCoolDown.GetComponent<Text>().text = ( sortSelectionne.getCooldown() + (structSortDeJetEnEdition.pointsInCooldown * structSortDeJetEnEdition.coolDownPerLevel) ).ToString();
-                chooserProjDegats.GetComponent<Text>().text = ( sortSelectionne.getDegats() + (structSortDeJetEnEdition.pointsInDegats * structSortDeJetEnEdition.degatsPerLevel) ).ToString();
+                chooserProjVitesse.GetComponent<Text>().text = ((SortDeJet)sortSelectionne).vitesseProj.ToString();
+                chooserProjCoolDown.GetComponent<Text>().text = sortSelectionne.getCooldown().ToString();
+                chooserProjDegats.GetComponent<Text>().text = sortSelectionne.getDegats().ToString();
             }
             else if (type == 2) // sort de zone
             {
@@ -663,10 +694,12 @@ public class MenuManagerInGame : MonoBehaviour
 
                 chooserProjPseudoSort.GetComponent<Text>().text = sortSelectionne.getPseudoSort();
                 chooserProjElement.GetComponent<Text>().text = sortSelectionne.getElement().ToString();
+                chooserProjCustom1.GetComponent<Text>().text = ((SortDeJet)sortSelectionne).getCustom1().ToString();
+                chooserProjCustom2.GetComponent<Text>().text = ((SortDeJet)sortSelectionne).getCustom2().ToString();
                 chooserProjProjectile.GetComponent<Text>().text = sortSelectionne.getNameInMenu();
-                chooserProjVitesse.GetComponent<Text>().text = (((SortDeJet)sortSelectionne).vitesseProj + (structSortDeJetEnEdition.pointsInVitesse * structSortDeJetEnEdition.vitessePerLevel)).ToString();
-                chooserProjCoolDown.GetComponent<Text>().text = (sortSelectionne.getCooldown() + (structSortDeJetEnEdition.pointsInCooldown * structSortDeJetEnEdition.coolDownPerLevel)).ToString();
-                chooserProjDegats.GetComponent<Text>().text = (sortSelectionne.getDegats() + (structSortDeJetEnEdition.pointsInDegats * structSortDeJetEnEdition.degatsPerLevel)).ToString();
+                chooserProjVitesse.GetComponent<Text>().text = ((SortDeJet)sortSelectionne).vitesseProj.ToString();
+                chooserProjCoolDown.GetComponent<Text>().text = sortSelectionne.getCooldown().ToString();
+                chooserProjDegats.GetComponent<Text>().text = sortSelectionne.getDegats().ToString();
             }
             else if (type == 2) // sort de zone
             {
@@ -737,9 +770,9 @@ public class MenuManagerInGame : MonoBehaviour
             //info
             editorProjNom.GetComponent<InputField>().text = sortSelectionne.getPseudoSort();
             editorProjProj.GetComponent<Text>().text = sortSelectionne.getNameInMenu();
-            editorProjVitesse.GetComponent<Text>().text = ((SortDeJet)sortSelectionne).vitesseProj.ToString() + " + " + (structSortDeJetEnEdition.pointsInVitesse * structSortDeJetEnEdition.vitessePerLevel);
-            editorProjCooldown.GetComponent<Text>().text = sortSelectionne.getCooldown().ToString() + " + " + (structSortDeJetEnEdition.pointsInCooldown * structSortDeJetEnEdition.coolDownPerLevel);
-            editorProjDegats.GetComponent<Text>().text = sortSelectionne.getDegats().ToString() + " + " + (structSortDeJetEnEdition.pointsInDegats * structSortDeJetEnEdition.degatsPerLevel);
+            editorProjVitesse.GetComponent<Text>().text = structSortDeJetEnEdition.vitesse + " + " + (structSortDeJetEnEdition.pointsInVitesse * structSortDeJetEnEdition.vitessePerLevel);
+            editorProjCooldown.GetComponent<Text>().text = structSortDeJetEnEdition.cooldown + " + " + (structSortDeJetEnEdition.pointsInCooldown * structSortDeJetEnEdition.coolDownPerLevel);
+            editorProjDegats.GetComponent<Text>().text = structSortDeJetEnEdition.degats + " + " + (structSortDeJetEnEdition.pointsInDegats * structSortDeJetEnEdition.degatsPerLevel);
 
             editorProjElement.GetComponent<Dropdown>().options.Clear();
             int cpt = 0;
@@ -752,10 +785,20 @@ public class MenuManagerInGame : MonoBehaviour
             }
             editorProjElement.GetComponent<Dropdown>().captionText = editorProjElement.GetComponent<Dropdown>().captionText;
 
+            editorProjCustom1.GetComponent<Dropdown>().value = (int)((SortDeJet)sortSelectionne).getCustom1();
+            editorProjCustom1.GetComponent<Dropdown>().captionText = editorProjCustom1.GetComponent<Dropdown>().captionText;
+            editorProjCustom2.GetComponent<Dropdown>().value = (int)((SortDeJet)sortSelectionne).getCustom2();
+            editorProjCustom2.GetComponent<Dropdown>().captionText = editorProjCustom2.GetComponent<Dropdown>().captionText;
+
             //bonus
+            editorProjBonusCustom1.GetComponent<Text>().text = structSortDeJetEnEdition.pointsInCustom1.ToString();
+            editorProjBonusCustom2.GetComponent<Text>().text = structSortDeJetEnEdition.pointsInCustom2.ToString();
             editorProjBonusVitesse.GetComponent<Text>().text = structSortDeJetEnEdition.pointsInVitesse.ToString();
             editorProjBonusCooldown.GetComponent<Text>().text = structSortDeJetEnEdition.pointsInCooldown.ToString();
             editorProjBonusDegats.GetComponent<Text>().text = structSortDeJetEnEdition.pointsInDegats.ToString();
+
+            //Points restants
+            editorProjPointsRestants.GetComponent<Text>().text = structSortDeJetEnEdition.nbPointsDispo.ToString();
 
             //ProgressBar and Lvl
             editorProgressBar.GetComponent<Image>().fillAmount = structSortDeJetEnEdition.xpActuel / caracSorts.GetComponent<CaracProjectiles>().xpToLvlUp * Mathf.Pow(caracSorts.GetComponent<CaracProjectiles>().multXpByLvl, sortDeJetEnConstruction.getLvl());
@@ -808,6 +851,8 @@ public class MenuManagerInGame : MonoBehaviour
             //Nom
             String newName = editorProjNom.GetComponent<InputField>().text;
             sortSelectionne.setPseudoSort(newName);
+            ((SortDeJet)sortSelectionne).setCustom1((EnumScript.CustomProj1)editorProjCustom1.GetComponent<Dropdown>().value);
+            ((SortDeJet)sortSelectionne).setCustom2((EnumScript.CustomProj2)editorProjCustom2.GetComponent<Dropdown>().value);
 
             caracSorts.GetComponent<CaracProjectiles>().setStruct(structSortDeJetEnEdition);
         }
@@ -820,6 +865,9 @@ public class MenuManagerInGame : MonoBehaviour
             String newName = editorZoneNom.GetComponent<InputField>().text;
             sortSelectionne.setPseudoSort(newName);
         }
+
+        GameObject.FindWithTag("Player").GetComponent<Player>().majAllSort();
+
         majCaracSortClicked();
         resetClassChooser();
         fillClassChooserTable();
@@ -881,6 +929,46 @@ public class MenuManagerInGame : MonoBehaviour
             {
                 structSortDeJetEnEdition.pointsInDegats--;
                 structSortDeJetEnEdition.nbPointsDispo++;
+            }
+        }
+        setEditorCanvas(false);
+    }
+    public void editerProjCustom1(int point)
+    {
+        if (point == 1)
+        {
+            if (structSortDeJetEnEdition.nbPointsDispo > 4)
+            {
+                structSortDeJetEnEdition.pointsInCustom1++;
+                structSortDeJetEnEdition.nbPointsDispo -= 5;
+            }
+        }
+        else if (point == -1)
+        {
+            if (structSortDeJetEnEdition.pointsInCustom1 > 0)
+            {
+                structSortDeJetEnEdition.pointsInCustom1--;
+                structSortDeJetEnEdition.nbPointsDispo+=5;
+            }
+        }
+        setEditorCanvas(false);
+    }
+    public void editerProjCustom2(int point)
+    {
+        if (point == 1)
+        {
+            if (structSortDeJetEnEdition.nbPointsDispo > 4)
+            {
+                structSortDeJetEnEdition.pointsInCustom2++;
+                structSortDeJetEnEdition.nbPointsDispo-=5;
+            }
+        }
+        else if (point == -1)
+        {
+            if (structSortDeJetEnEdition.pointsInCustom2 > 0)
+            {
+                structSortDeJetEnEdition.pointsInCustom2--;
+                structSortDeJetEnEdition.nbPointsDispo += 5;
             }
         }
         setEditorCanvas(false);
