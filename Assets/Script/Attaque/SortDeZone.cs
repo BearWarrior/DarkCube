@@ -89,7 +89,7 @@ public class SortDeZone : Attaque
         //Inversion (on avoir la detection de tout SAUF du joueur et des projectiles)
         layerValue = ~layerValue;
 
-        Vector3 direction = new Vector3(0, 0, 0);
+        //Vector3 direction = new Vector3(0, 0, 0); //assigned but never used
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerValue))
         {
             Quaternion quat = Quaternion.LookRotation(new Vector3(0, GameObject.FindWithTag("Player").transform.eulerAngles.y, 0), Vector3.up);

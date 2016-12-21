@@ -113,7 +113,6 @@ public class CaracZones : MonoBehaviour
             string save = tabSort[i].nomParticle + ";" + tabSort[i].lvl + ";" + tabSort[i].xpActuel + ";" + tabSort[i].nbPointsDispo + ";" +
                           tabSort[i].pointsInDuree + ";" + tabSort[i].pointsInCooldown + ";" + tabSort[i].pointsInDegats; ;
             PlayerPrefs.SetString("CaracZones" + i, save);
-            print(save);
         }
     }
 

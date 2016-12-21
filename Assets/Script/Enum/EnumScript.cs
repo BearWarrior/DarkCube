@@ -10,6 +10,9 @@ public class EnumScript
 	public enum DispersionProjectile{ cone, droit, obus, rafale };
     public enum PatternSortDeJet { Unique, Rafale, SimultaneLigne, SimultaneTriangle, SimultaneCarre };
 
+    public enum CustomProj1 { Normal/*, Courbe, Marqueur*/ };
+    public enum CustomProj2 { Normal, MultiProj};
+
     public enum GabaritSortDeZone { Cercle, Ligne, Cone};
 
     public enum Character { Player, Enemy};
@@ -28,6 +31,30 @@ public class EnumScript
                 return Element.Toxic;
             default:
                 return Element.Eau;
+        }
+    }
+
+    public static CustomProj1 getCustom1FromString(string nom)
+    {
+        switch (nom)
+        {
+            case "Normal":
+                return CustomProj1.Normal;
+            default:
+                return CustomProj1.Normal;
+        }
+    }
+
+    public static CustomProj2 getCustom2FromString(string nom)
+    {
+        switch (nom)
+        {
+            case "Normal":
+                return CustomProj2.Normal;
+            case "MultiProj":
+                return CustomProj2.MultiProj;
+            default:
+                return CustomProj2.Normal;
         }
     }
 }

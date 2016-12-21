@@ -3,35 +3,44 @@ using System.Collections;
 
 public class accessMenu : MonoBehaviour
 {
-    bool inMenu;
-
     public GameObject menu;
     public GameObject menuActif;
-    public GameObject posCamera;
-    private GameObject lookAt;
-    private GameObject player;
+    public GameObject playerLookAt;
+    public GameObject lookAt;
 
+    private GameObject player;
+    private bool inMenu;
+
+    //Center Cube
+    private float centerStartTime;
+    private float centerSpeed;
+    private float centerJourneyLength;
+    private Vector3 centerFrom;
+    private Vector3 centerTo;
+    private Vector3 centerOldPlayer;
+
+    //Used en MenuManagerInGame to exit or not the menu when escape pressed
+    private bool menuReady;
 
 	// Use this for initialization
 	void Start () 
     {
         inMenu = false;
-
-        lookAt = new GameObject(); //Ne pas supprimer (voir ligne 34)
+        menuReady = false;
+        
+        centerSpeed = .5f;
     }
 	
     void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Player")
-        {
-            lookAt.transform.position = GameObject.FindWithTag("CameraLookAt").transform.position;
             player = other.gameObject;
-        }
     }
 
     void OnTriggerExit(Collider other)
     {
-        player = null;
+        if (other.tag == "Player")
+            player = null;
     }
 
     void OnTriggerStay(Collider other)
@@ -43,41 +52,38 @@ public class accessMenu : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.E))
                 {
                     inMenu = true;
-                    //On retire le control du joueur
-                    other.GetComponent<PlayerController>().setControllable(false);
-                    Cursor.visible = true;
-                    Cursor.lockState = CursorLockMode.None;
-                    other.transform.parent = this.transform;
-
-                    Camera.main.GetComponent<CameraController>().playerInMenu = true;
-
-                    //On enleve le crossHair
-                    Camera.main.GetComponent<Crosshair>().display = false;
+                    //On centre le cube sur la platform
+                    centerStartTime = Time.time;
+                    centerFrom = new Vector3(other.transform.position.x, 0, other.transform.position.z);
+                    centerTo = new Vector3(this.GetComponent<BoxCollider>().transform.TransformPoint(Vector3.zero).x, 0, this.GetComponent<BoxCollider>().transform.TransformPoint(Vector3.zero).z);
+                    centerOldPlayer = other.transform.position;
+                    centerJourneyLength = Vector3.Distance(centerFrom, centerTo);
+                    StartCoroutine(centerCube(other.gameObject));
+                    //On lance le mvt de camera pour regarder le menu (+ toutes les actions anneces
+                    Camera.main.GetComponent<CameraController>().launchMenu();
                 }
             }
-
             if(inMenu)
             {
-                //On le tourne vers (0, 45, 0)
-                Quaternion quat = new Quaternion(0, 0.4f, 0, 0.9f); //(0, 45, 0)
-                if (Quaternion.Angle(other.transform.localRotation, quat) > .2f)
-                    other.transform.localRotation = Quaternion.Lerp(other.transform.localRotation, quat, 5 * Time.deltaTime);
-
-                //On le déplace au centre (en le laissant au sol)
-                Vector3 from = new Vector3(other.transform.localPosition.x, 0, other.transform.localPosition.z);
-                Vector3 to = new Vector3(this.GetComponent<BoxCollider>().center.x, 0, this.GetComponent<BoxCollider>().center.z);
-                Vector3 oldPlayer = other.transform.localPosition;
-                if (Vector3.Distance(from, to) > .1f)
-                    other.transform.localPosition = Vector3.Lerp(other.transform.localPosition, this.GetComponent<BoxCollider>().center, 3 * Time.deltaTime);
-                other.transform.localPosition = new Vector3(other.transform.localPosition.x, oldPlayer.y, other.transform.localPosition.z);
-
-                //Camera
-                lookAt.transform.position = Vector3.Lerp(lookAt.transform.position, menuActif.transform.position, .05f);
+                //look straight
+                player.transform.LookAt(playerLookAt.transform);
                 Camera.main.GetComponent<CameraController>().cameraLookAtMenuTR = lookAt.transform.position;
-
-                Camera.main.GetComponent<CameraController>().changeTarget(posCamera);
             }        
         }
+    }
+
+    public IEnumerator centerCube(GameObject other)
+    {
+        float distCovered = (Time.time - centerStartTime) * centerSpeed;
+        float fracJourney = distCovered / centerJourneyLength;
+        while (fracJourney < 1)
+        {
+            distCovered = (Time.time - centerStartTime) * centerSpeed;
+            fracJourney = distCovered / centerJourneyLength;
+            other.transform.position = Vector3.Lerp(new Vector3(centerFrom.x, centerOldPlayer.y, centerFrom.z), new Vector3(centerTo.x, centerOldPlayer.y, centerTo.z), fracJourney);
+            yield return new WaitForEndOfFrame();
+        }
+        GetComponent<MecaArm>().launchMenu();
     }
 
     public void exitMenu()
@@ -85,18 +91,60 @@ public class accessMenu : MonoBehaviour
         if(player != null)
         {
             inMenu = false;
-            //On redonne le control au joueur
-            player.GetComponent<PlayerController>().setControllable(true);
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
-            player.transform.parent = null;
-            //On change le point de vue de la caméra
-            Camera.main.GetComponent<CameraController>().playerInMenu = false;
-            Camera.main.GetComponent<CameraController>().resetTarget();
-            //On remet le crossHair
-            Camera.main.GetComponent<Crosshair>().display = true;
             //On actualise le sort qu'il avait en main
             player.GetComponent<Player>().cubeFaceChanged(player.GetComponent<Player>().getCubeFace());
+            //On sort du menu (camera)
+            Camera.main.GetComponent<CameraController>().exitMenu();
+            //On remet le MecaArm en posInit
+            GetComponent<MecaArm>().quitMenu();
         }
     }
+
+    public bool isReady()
+    {
+        return menuReady;
+    }
+    public void setReady(bool p_menuReady)
+    {
+        menuReady = p_menuReady;
+    }
 }
+
+//Place camera
+/*cameraStartTime = Time.time;
+cameraFrom = Camera.main.transform.position;
+cameraTo = posCamera.transform.position;
+cameraJourneyLength = Vector3.Distance(cameraFrom, cameraTo);
+StartCoroutine(placeCamera());*/
+/*  public IEnumerator placeCamera()
+  {
+      float distCovered = (Time.time - cameraStartTime) * cameraSpeed;
+      float fracJourney = distCovered / cameraJourneyLength;
+      while (fracJourney < 1)
+      {
+          distCovered = (Time.time - cameraStartTime) * cameraSpeed;
+          fracJourney = distCovered / cameraJourneyLength;
+          Camera.main.transform.position = Vector3.Lerp(cameraFrom, cameraTo, fracJourney);
+          yield return new WaitForEndOfFrame();
+      }
+  }*/
+
+//ResetCamera
+/*cameraStartTime = Time.time;
+cameraFrom = Camera.main.transform.position;
+cameraTo = GameObject.FindWithTag("CameraTarget").transform.position;
+cameraJourneyLength = Vector3.Distance(cameraFrom, cameraTo);
+StartCoroutine(resetCamera());*/
+/* public IEnumerator resetCamera()
+ {
+     float distCovered = (Time.time - cameraStartTime) * cameraSpeed;
+     float fracJourney = distCovered / cameraJourneyLength;
+     while (fracJourney < 1)
+     {
+         distCovered = (Time.time - cameraStartTime) * cameraSpeed;
+         fracJourney = distCovered / cameraJourneyLength;
+         Camera.main.transform.position = Vector3.Lerp(cameraFrom, cameraTo, fracJourney);
+         yield return new WaitForEndOfFrame();
+     }
+     Camera.main.GetComponent<CameraController>().playerInMenu = false;
+ }*/

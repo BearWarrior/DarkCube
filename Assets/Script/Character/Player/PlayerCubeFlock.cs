@@ -101,8 +101,8 @@ public class PlayerCubeFlock : MonoBehaviour
             {
                 GameObject.FindWithTag("Player").GetComponent<BoxCollider>().isTrigger = true;
                 GameObject.FindWithTag("Player").GetComponent<Rigidbody>().useGravity = false;
-                Rigidbody rb = cubes.transform.GetChild(i).gameObject.AddComponent<Rigidbody>();
-                BoxCollider bc = cubes.transform.GetChild(i).gameObject.AddComponent<BoxCollider>();
+                cubes.transform.GetChild(i).gameObject.AddComponent<Rigidbody>();
+                cubes.transform.GetChild(i).gameObject.AddComponent<BoxCollider>();
 
                 if(i == cubes.transform.childCount-1)
                 {
