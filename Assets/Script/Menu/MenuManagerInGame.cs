@@ -244,7 +244,9 @@ public class MenuManagerInGame : MonoBehaviour
             if (canvasType == 1)
             {
                 if (accessMenu.GetComponent<accessMenu>().isReady())
+                {
                     accessMenu.GetComponent<accessMenu>().exitMenu();
+                }
             }
             else
                 changeCanvas(1);
@@ -420,6 +422,9 @@ public class MenuManagerInGame : MonoBehaviour
             creatorProjElement.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(elem.ToString()));
         creatorProjElement.GetComponent<Dropdown>().value = 0;
         creatorProjElement.GetComponent<Dropdown>().captionText = creatorProjElement.GetComponent<Dropdown>().captionText;
+
+        //On change l'élément par le premier de la liste
+        sortDeJetEnConstruction.setElement(caracSorts.GetComponent<CaracProjectiles>().getElemFromProj(sortDeJetEnConstruction.getNameParticle())[creatorProjElement.GetComponent<Dropdown>().value]);
 
         //Mise a jour des carac + affichage
         majCaracSortEnConstr();
@@ -793,7 +798,8 @@ public class MenuManagerInGame : MonoBehaviour
             editorProjPointsRestants.GetComponent<Text>().text = (structSortDeJetEnEdition.nbPointsDispo - ((SortDeJet)sortSelectionne).nbDePointsTot).ToString();
 
             //ProgressBar and Lvl
-            editorProgressBar.GetComponent<Image>().fillAmount = structSortDeJetEnEdition.xpActuel / caracSorts.GetComponent<CaracProjectiles>().xpToLvlUp * Mathf.Pow(caracSorts.GetComponent<CaracProjectiles>().multXpByLvl, sortDeJetEnConstruction.getLvl());
+            print(structSortDeJetEnEdition.xpActuel / (caracSorts.GetComponent<CaracProjectiles>().xpToLvlUp * Mathf.Pow(caracSorts.GetComponent<CaracProjectiles>().multXpByLvl, structSortDeJetEnEdition.lvl)));
+            editorProgressBar.GetComponent<Image>().fillAmount = structSortDeJetEnEdition.xpActuel / (caracSorts.GetComponent<CaracProjectiles>().xpToLvlUp * Mathf.Pow(caracSorts.GetComponent<CaracProjectiles>().multXpByLvl, structSortDeJetEnEdition.lvl));
             editorLvl.GetComponent<Text>().text = structSortDeJetEnEdition.lvl.ToString();
         }
         else if (type == 2) //Sort de zone

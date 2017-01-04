@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 9c82ba795bfdd924db78dbb07fe13f06
-timeCreated: 1481377926
+guid: 17df4dc1cf13d444db68c3b700adc90f
+timeCreated: 1483098871
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
@@ -26,32 +26,34 @@ ModelImporter:
     100036: Bone.010_end
     100038: Bone.011
     100040: Bone.011_end
-    100042: Circle
-    100044: Cube
-    100046: Cylinder
-    100048: Cylinder.001
-    100050: Cylinder.002
-    100052: light
-    100054: light.001
-    100056: light.002
-    100058: light.003
-    100060: light.004
-    100062: light.005
-    100064: light.006
-    100066: light.007
-    100068: light.008
-    100070: platformeCube
-    100072: platformeCube.001
-    100074: platformeCubeHaut
-    100076: platformeSquare
-    100078: Robot Head__Axis_1_ Arm_1__Axis_2_ Arm_2__Axis_3_ Arm_3__Ax.000
-    100080: Robot Head__Axis_1_ Arm_1__Axis_2_ Arm_2__Axis_3_ Arm_3__Ax.002
-    100082: Robot Head__Axis_1_ Arm_1__Axis_2_ Arm_2__Axis_3_ Arm_3__Axis_4
-    100084: RotateAxeX
-    100086: rotateAxeZ
-    100088: socleBas0
-    100090: tige
-    100092: //RootNode
+    100042: Camera
+    100044: Circle
+    100046: Cube
+    100048: Cylinder
+    100050: Cylinder.001
+    100052: Cylinder.002
+    100054: Lamp
+    100056: light
+    100058: light.001
+    100060: light.002
+    100062: light.003
+    100064: light.004
+    100066: light.005
+    100068: light.006
+    100070: light.007
+    100072: light.008
+    100074: //RootNode
+    100076: platformeCube
+    100078: platformeCube.001
+    100080: platformeCubeHaut
+    100082: platformeSquare
+    100084: Robot Head__Axis_1_ Arm_1__Axis_2_ Arm_2__Axis_3_ Arm_3__Ax.000
+    100086: Robot Head__Axis_1_ Arm_1__Axis_2_ Arm_2__Axis_3_ Arm_3__Ax.002
+    100088: Robot Head__Axis_1_ Arm_1__Axis_2_ Arm_2__Axis_3_ Arm_3__Axis_4
+    100090: RotateAxeX
+    100092: rotateAxeZ
+    100094: socleBas0
+    100096: tige
     400000: Armature
     400002: ArmRotatePlatform
     400004: ArmRotatePlatform.001
@@ -73,32 +75,34 @@ ModelImporter:
     400036: Bone.010_end
     400038: Bone.011
     400040: Bone.011_end
-    400042: Circle
-    400044: Cube
-    400046: Cylinder
-    400048: Cylinder.001
-    400050: Cylinder.002
-    400052: light
-    400054: light.001
-    400056: light.002
-    400058: light.003
-    400060: light.004
-    400062: light.005
-    400064: light.006
-    400066: light.007
-    400068: light.008
-    400070: platformeCube
-    400072: platformeCube.001
-    400074: platformeCubeHaut
-    400076: platformeSquare
-    400078: Robot Head__Axis_1_ Arm_1__Axis_2_ Arm_2__Axis_3_ Arm_3__Ax.000
-    400080: Robot Head__Axis_1_ Arm_1__Axis_2_ Arm_2__Axis_3_ Arm_3__Ax.002
-    400082: Robot Head__Axis_1_ Arm_1__Axis_2_ Arm_2__Axis_3_ Arm_3__Axis_4
-    400084: RotateAxeX
-    400086: rotateAxeZ
-    400088: socleBas0
-    400090: tige
-    400092: //RootNode
+    400042: Camera
+    400044: Circle
+    400046: Cube
+    400048: Cylinder
+    400050: Cylinder.001
+    400052: Cylinder.002
+    400054: Lamp
+    400056: light
+    400058: light.001
+    400060: light.002
+    400062: light.003
+    400064: light.004
+    400066: light.005
+    400068: light.006
+    400070: light.007
+    400072: light.008
+    400074: //RootNode
+    400076: platformeCube
+    400078: platformeCube.001
+    400080: platformeCubeHaut
+    400082: platformeSquare
+    400084: Robot Head__Axis_1_ Arm_1__Axis_2_ Arm_2__Axis_3_ Arm_3__Ax.000
+    400086: Robot Head__Axis_1_ Arm_1__Axis_2_ Arm_2__Axis_3_ Arm_3__Ax.002
+    400088: Robot Head__Axis_1_ Arm_1__Axis_2_ Arm_2__Axis_3_ Arm_3__Axis_4
+    400090: RotateAxeX
+    400092: rotateAxeZ
+    400094: socleBas0
+    400096: tige
     2300000: ArmRotatePlatform.001
     2300002: ArmSlide
     2300004: bas1
@@ -194,11 +198,12 @@ ModelImporter:
     4300060: light.007
     4300062: light.008
     7400000: Mvt1.001
-    7400002: Armature|Mvt1
-    7400004: Armature|Mvt2
-    7400006: Armature|Mvt2.002
+    7400002: Armature|Idle
+    7400004: Armature|Mvt1
+    7400006: Armature|Mvt2
     7400008: Armature|Mvt3
-    7400010: Armature|Mvt3.001
+    7400010: Armature|Mvt4
+    7400012: Armature|Mvt5
     9500000: //RootNode
     13700000: ArmRotatePlatform
   materials:

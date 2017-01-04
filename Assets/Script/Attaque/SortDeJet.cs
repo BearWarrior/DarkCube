@@ -143,6 +143,7 @@ public class SortDeJet : Attaque
         //CUSTOM2
         proj = new GameObject("projComplexe");
         proj.transform.position = spawnPoint;
+        Debug.Log(partToLoad);
         GameObject projPrin = GameObject.Instantiate(Resources.Load(partToLoad), spawnPoint, new Quaternion(0, 0, 0, 0)) as GameObject;
         projPrin.transform.parent = null;
         projPrin.transform.SetParent(proj.transform);

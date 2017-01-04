@@ -30,6 +30,11 @@ public class accessMenu : MonoBehaviour
         
         centerSpeed = .5f;
     }
+
+    /*void Update ()
+    {
+        print(menuReady);
+    }*/
 	
     void OnTriggerEnter(Collider other)
     {
@@ -97,6 +102,9 @@ public class accessMenu : MonoBehaviour
             Camera.main.GetComponent<CameraController>().exitMenu();
             //On remet le MecaArm en posInit
             GetComponent<MecaArm>().quitMenu();
+            //On sauve les sorts équipé et dans l'inventaire
+            player.GetComponent<Player>().sauvegarderSorts();
+            GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().sauvegarder();
         }
     }
 

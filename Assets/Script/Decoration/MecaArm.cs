@@ -44,7 +44,7 @@ public class MecaArm : MonoBehaviour
     {
         if(animator.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
         {
-            animator.SetInteger("RandomAnim", Random.Range(1, 4));
+            animator.SetInteger("RandomAnim", Random.Range(1, 6));
         }
     }
 
@@ -112,6 +112,7 @@ public class MecaArm : MonoBehaviour
         journeyLengthL = Vector3.Distance(lightsUpPos, lightsDownPos);
         StartCoroutine(upPlatform());
         StartCoroutine(downLights());
+        animator.SetBool("ExitAnim", false); //To exit the actual animation and return to Idle
     }
 
     public void quitMenu()
@@ -125,9 +126,7 @@ public class MecaArm : MonoBehaviour
             journeyLengthL = Vector3.Distance(lightsDownPos, lightsUpPos);
             StartCoroutine(downPlatform());
             StartCoroutine(upLights());
-            animator.SetBool("ExitAnim", true);
-            animator.Play("test");
-
+            animator.SetBool("ExitAnim", true); //To exit the actual animation and return to Idle
         }
     }
 }
