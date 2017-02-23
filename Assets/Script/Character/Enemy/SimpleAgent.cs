@@ -9,7 +9,7 @@ public class SimpleAgent : MonoBehaviour
 
     public  GameObject target;
     public bool playerDetected;
-    private NavMeshAgent agent;
+    private UnityEngine.AI.NavMeshAgent agent;
 
     private float timeBetweenShots;
     private float timeBetweenShotsAct;
@@ -18,7 +18,7 @@ public class SimpleAgent : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
+        agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (GameObject.FindWithTag("Player") != null)
         {
             target = GameObject.FindWithTag("Player");
