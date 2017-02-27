@@ -30,7 +30,8 @@ public class MecaArm : MonoBehaviour
         animator = GetComponent<Animator>();
 
         groundUpPos = ground.transform.localPosition;
-        groundDownPos = new Vector3(0, -0.03f, 0);
+        //groundDownPos = new Vector3(0, -0.03f, 0);
+        groundDownPos = new Vector3(0, 0.36f, 0);
         ground.transform.localPosition = groundDownPos;
         speedG = 0.5f;
 
@@ -110,7 +111,7 @@ public class MecaArm : MonoBehaviour
         startTime = Time.time;
         journeyLengthG = Vector3.Distance(groundDownPos, groundUpPos);
         journeyLengthL = Vector3.Distance(lightsUpPos, lightsDownPos);
-        StartCoroutine(upPlatform());
+        //StartCoroutine(upPlatform());
         StartCoroutine(downLights());
         animator.SetBool("ExitAnim", false); //To exit the actual animation and return to Idle
     }
@@ -124,7 +125,7 @@ public class MecaArm : MonoBehaviour
             startTime = Time.time;
             journeyLengthG = Vector3.Distance(groundUpPos, groundDownPos);
             journeyLengthL = Vector3.Distance(lightsDownPos, lightsUpPos);
-            StartCoroutine(downPlatform());
+            //StartCoroutine(downPlatform());
             StartCoroutine(upLights());
             animator.SetBool("ExitAnim", true); //To exit the actual animation and return to Idle
         }

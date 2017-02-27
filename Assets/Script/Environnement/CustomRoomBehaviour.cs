@@ -6,13 +6,14 @@ public class CustomRoomBehaviour : MonoBehaviour
     public GameObject player;
     public GameObject cam;
     public GameObject projector;
+    public GameObject spawnPlayer;
 
     
 
     // Use this for initialization
     void Start ()
     {
-        Instantiate(player, new Vector3(0, 1, 0), new Quaternion(0, 0, 0, 0));
+        Instantiate(player, spawnPlayer.transform.position, new Quaternion(0, 0, 0, 0));
         Instantiate(cam);
         GameObject proj = Instantiate(projector);
 
