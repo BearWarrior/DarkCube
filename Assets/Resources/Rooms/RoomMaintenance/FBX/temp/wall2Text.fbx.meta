@@ -11,29 +11,34 @@ ModelImporter:
     100006: //RootNode
     100008: wallHeight
     100010: Cube.001
+    100012: pillier.002
     400000: Glass
     400002: pillier
     400004: pillier.001
     400006: //RootNode
     400008: wallHeight
     400010: Cube.001
+    400012: pillier.002
     2300000: Glass
     2300002: pillier
     2300004: pillier.001
     2300006: //RootNode
     2300008: wallHeight
     2300010: Cube.001
+    2300012: pillier.002
     3300000: Glass
     3300002: pillier
     3300004: pillier.001
     3300006: //RootNode
     3300008: wallHeight
     3300010: Cube.001
+    3300012: pillier.002
     4300000: Cube.001
     4300002: Glass
     4300004: wallHeight
     4300006: pillier
     4300008: pillier.001
+    4300010: pillier.002
   materials:
     importMaterials: 1
     materialName: 0

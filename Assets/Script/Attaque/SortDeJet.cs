@@ -103,6 +103,16 @@ public class SortDeJet : Attaque
         nbProjSec = GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().nbMultiProjBase + pointsInCustom2;
     }
 
+    public override void AttackFromTestWeapons(Vector3 spawnPoint)
+    {
+        if (canShoot)
+        {
+            launchProjTestWeapons(spawnPoint);
+            lastShot = Time.time;
+            canShoot = false;
+        }
+    }
+
     public override void AttackFromPlayer(Vector3 spawnPoint)
     { 
         if (canShoot)
@@ -121,6 +131,85 @@ public class SortDeJet : Attaque
             lastShot = Time.time;
             canShoot = false;
         }
+    }
+
+    public void launchProjTestWeapons(Vector3 spawnPoint)
+    {
+        string partToLoad = "Particle/Prefabs/SortsDeJet/" + nameParticle + element.ToString();
+
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(new Vector2(Screen.width / 2, Screen.height / 2 + 0.08f * Screen.height));
+        //Recuperation du layerMask Player et Projectile
+        LayerMask layerPlayer = LayerMask.GetMask("Player");
+        LayerMask layerProj = LayerMask.GetMask("Projectile");
+        int layerValue = layerPlayer.value | layerProj.value;
+        //Inversion (on avoir la detection de tout SAUF du joueur et des projectiles)
+        layerValue = ~layerValue;
+
+        /* Vector3 direction = new Vector3(0, 0, 0);
+         if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerValue))
+             direction = (hit.point - spawnPoint) / Vector3.Distance(hit.point, spawnPoint);*/
+        Vector3 direction = new Vector3(1, 0, 0);
+
+        //CUSTOM2
+        proj = new GameObject("projComplexe");
+        proj.transform.position = spawnPoint;
+        Debug.Log(partToLoad);
+        GameObject projPrin = GameObject.Instantiate(Resources.Load(partToLoad), spawnPoint, new Quaternion(0, 0, 0, 0)) as GameObject;
+        projPrin.transform.parent = null;
+        projPrin.transform.SetParent(proj.transform);
+        projPrin.GetComponent<Rigidbody>().velocity = 75 * direction * Time.deltaTime * vitesseProj;
+        if (custom2 == EnumScript.CustomProj2.MultiProj)
+        {
+            int interval = 360 / nbProjSec;
+            float angle = 0;
+            float rayon = 0.3f;
+            
+            for(int i = 0; i < nbProjSec; i++)
+            {
+                angle = i * interval;
+                angle = (float)(angle * Mathf.PI / 180.0);
+                float z, y;
+                if(angle  > 3.0 * Mathf.PI / 2.0) //3Pi/4
+                {
+                    angle -= (float) (3.0 * Mathf.PI / 2.0);
+                    z = Mathf.Sin(angle) * rayon;
+                    y = - Mathf.Cos(angle) * rayon;
+                }
+                else if(angle >  Mathf.PI) //2PI/4
+                {
+                    angle -= (float)( Mathf.PI);
+                    z = - Mathf.Cos(angle) * rayon;
+                    y = - Mathf.Sin(angle) * rayon;
+                }
+                else if(angle > Mathf.PI / 2.0) //Pi/4
+                {
+                    angle -= (float)(Mathf.PI / 2.0);
+                    z = - Mathf.Sin(angle) * rayon;
+                    y = Mathf.Cos(angle) * rayon;
+                }
+                else
+                {
+                    z = Mathf.Cos(angle) * rayon;
+                    y = Mathf.Sin(angle) * rayon;
+                }
+                GameObject projSec = GameObject.Instantiate(Resources.Load(partToLoad), spawnPoint + new Vector3(0, y, z), new Quaternion(0, 0, 0, 0)) as GameObject;
+                projSec.transform.SetParent(proj.transform);
+                projSec.transform.localScale = new Vector3(.5f, .5f, .5f);
+                Vector3 newDirection = Quaternion.Euler(0, 0, 0) * new Vector3(0, y, z);
+                projSec.GetComponent<Rigidbody>().velocity = 75 * (direction + 0.5f*newDirection) * Time.deltaTime * vitesseProj;
+            }
+        }
+
+
+
+        proj.AddComponent<DestroyIfNoChildren>();
+
+        proj.transform.eulerAngles = new Vector3(0, GameObject.FindWithTag("Player").transform.eulerAngles.y, 0);
+
+        proj.transform.tag = "AttaquePlayer";
+        setAllTagsAndAddVelocityAndEmitter("AttaquePlayer", proj, 75 * direction * Time.deltaTime * vitesseProj, EnumScript.Character.Player);
+        setAllProjData(proj, degats, element, 1, nameParticle);
     }
 
     public void launchProjPlayer(Vector3 spawnPoint)

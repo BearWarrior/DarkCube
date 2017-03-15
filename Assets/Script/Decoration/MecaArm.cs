@@ -4,7 +4,7 @@ using System.Collections;
 //TODO add more animations
 //TODO make an Idle animation of 50 frame without moving to make the exit transition
 
-public class MecaArm : MonoBehaviour
+public class MecaArm : MonoBehaviour, IMenuAccessible
 {
     private Animator animator;
 

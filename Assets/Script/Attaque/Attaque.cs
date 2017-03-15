@@ -18,6 +18,7 @@ public abstract class Attaque
     protected EnumScript.EffetPhysique effetPhysique;
 
 
+    public abstract void AttackFromTestWeapons(Vector3 spawnPoint);
     public abstract void AttackFromPlayer(Vector3 spawnPoint);
     public abstract void AttackFromEnemy(RaycastHit hit, Vector3 spawnPoint);
 

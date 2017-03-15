@@ -6,10 +6,16 @@ public class accessMenu : MonoBehaviour
     public GameObject menu;
     public GameObject menuActif;
     public GameObject playerLookAt;
-    public GameObject lookAt;
+    public GameObject cameraLookAt;
 
     private GameObject player;
     private bool inMenu;
+
+    public GameObject menuAssociatedWith; 
+    
+    //Camera
+    public GameObject posCameraMenu;
+    public float cameraToMenuSpeed;
 
     //Center Cube
     private float centerStartTime;
@@ -30,11 +36,6 @@ public class accessMenu : MonoBehaviour
         
         centerSpeed = .5f;
     }
-
-    /*void Update ()
-    {
-        print(menuReady);
-    }*/
 	
     void OnTriggerEnter(Collider other)
     {
@@ -65,14 +66,19 @@ public class accessMenu : MonoBehaviour
                     centerJourneyLength = Vector3.Distance(centerFrom, centerTo);
                     StartCoroutine(centerCube(other.gameObject));
                     //On lance le mvt de camera pour regarder le menu (+ toutes les actions anneces
+                    Camera.main.GetComponent<CameraController>().posCameraMenu = posCameraMenu;
+                    Camera.main.GetComponent<CameraController>().cameraToMenuSpeed = cameraToMenuSpeed;
+                    Camera.main.GetComponent<CameraController>().menuAssociatedWith = menuAssociatedWith;
                     Camera.main.GetComponent<CameraController>().launchMenu();
+
+                    GameObject.FindWithTag("Lights").GetComponent<LightManager>().fadeOutLight(cameraToMenuSpeed/2);
                 }
             }
             if(inMenu)
             {
                 //look straight
                 player.transform.LookAt(playerLookAt.transform);
-                Camera.main.GetComponent<CameraController>().cameraLookAtMenuTR = lookAt.transform.position;
+                Camera.main.GetComponent<CameraController>().cameraLookAtMenuTR = cameraLookAt.transform.position;
             }        
         }
     }
@@ -88,7 +94,7 @@ public class accessMenu : MonoBehaviour
             other.transform.position = Vector3.Lerp(new Vector3(centerFrom.x, centerOldPlayer.y, centerFrom.z), new Vector3(centerTo.x, centerOldPlayer.y, centerTo.z), fracJourney);
             yield return new WaitForEndOfFrame();
         }
-        GetComponent<MecaArm>().launchMenu();
+        gameObject.SendMessage("launchMenu");
     }
 
     public void exitMenu()
@@ -100,8 +106,9 @@ public class accessMenu : MonoBehaviour
             player.GetComponent<Player>().cubeFaceChanged(player.GetComponent<Player>().getCubeFace());
             //On sort du menu (camera)
             Camera.main.GetComponent<CameraController>().exitMenu();
+            GameObject.FindWithTag("Lights").GetComponent<LightManager>().fadeInLight(cameraToMenuSpeed/2);
             //On remet le MecaArm en posInit
-            GetComponent<MecaArm>().quitMenu();
+            gameObject.SendMessage("quitMenu");
             //On sauve les sorts équipé et dans l'inventaire
             player.GetComponent<Player>().sauvegarderSorts();
             GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().sauvegarder();
@@ -117,42 +124,3 @@ public class accessMenu : MonoBehaviour
         menuReady = p_menuReady;
     }
 }
-
-//Place camera
-/*cameraStartTime = Time.time;
-cameraFrom = Camera.main.transform.position;
-cameraTo = posCamera.transform.position;
-cameraJourneyLength = Vector3.Distance(cameraFrom, cameraTo);
-StartCoroutine(placeCamera());*/
-/*  public IEnumerator placeCamera()
-  {
-      float distCovered = (Time.time - cameraStartTime) * cameraSpeed;
-      float fracJourney = distCovered / cameraJourneyLength;
-      while (fracJourney < 1)
-      {
-          distCovered = (Time.time - cameraStartTime) * cameraSpeed;
-          fracJourney = distCovered / cameraJourneyLength;
-          Camera.main.transform.position = Vector3.Lerp(cameraFrom, cameraTo, fracJourney);
-          yield return new WaitForEndOfFrame();
-      }
-  }*/
-
-//ResetCamera
-/*cameraStartTime = Time.time;
-cameraFrom = Camera.main.transform.position;
-cameraTo = GameObject.FindWithTag("CameraTarget").transform.position;
-cameraJourneyLength = Vector3.Distance(cameraFrom, cameraTo);
-StartCoroutine(resetCamera());*/
-/* public IEnumerator resetCamera()
- {
-     float distCovered = (Time.time - cameraStartTime) * cameraSpeed;
-     float fracJourney = distCovered / cameraJourneyLength;
-     while (fracJourney < 1)
-     {
-         distCovered = (Time.time - cameraStartTime) * cameraSpeed;
-         fracJourney = distCovered / cameraJourneyLength;
-         Camera.main.transform.position = Vector3.Lerp(cameraFrom, cameraTo, fracJourney);
-         yield return new WaitForEndOfFrame();
-     }
-     Camera.main.GetComponent<CameraController>().playerInMenu = false;
- }*/

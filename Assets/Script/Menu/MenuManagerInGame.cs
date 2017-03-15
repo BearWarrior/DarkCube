@@ -4,13 +4,15 @@ using System.Collections;
 using System;
 
 
-public class MenuManagerInGame : MonoBehaviour
+public class MenuManagerInGame : MonoBehaviour, IDisplayable
 {
+    private GameObject player;
+
     public GameObject accessMenu;
     [Space(15)]
-    public GameObject player;
+    
+    public TestWeapons testWeapon;
     [Space(15)]
-
     public Sprite buttonNotPressed;
     public Sprite buttonPressed;
 
@@ -226,6 +228,9 @@ public class MenuManagerInGame : MonoBehaviour
         classCreator.transform.position = menuTop.transform.position;
         classEditor.transform.position = menuTop.transform.position + new Vector3(0, 0, .25f);
 
+        classEditor.GetComponent<CanvasGroup>().alpha = .2f;
+        classCreator.GetComponent<CanvasGroup>().alpha = .2f;
+
         //EDITOR
         editorProjCustom1.GetComponent<Dropdown>().options.Clear();
         foreach (EnumScript.CustomProj1 cust in EnumScript.CustomProj1.GetValues(typeof(EnumScript.CustomProj1)))
@@ -233,13 +238,15 @@ public class MenuManagerInGame : MonoBehaviour
         editorProjCustom2.GetComponent<Dropdown>().options.Clear();
         foreach (EnumScript.CustomProj2 cust in EnumScript.CustomProj2.GetValues(typeof(EnumScript.CustomProj2)))
             editorProjCustom2.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(cust.ToString()));
+
+        hide();
     }
 
     // Update is called once per frame
     void Update()
     {
         if (lerpingCanvas) lerpCanvas();
-        if(Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (canvasType == 1)
             {
@@ -253,6 +260,20 @@ public class MenuManagerInGame : MonoBehaviour
         }
     }
 
+    public void show()
+    {
+        classChooser.GetComponent<Canvas>().enabled = true;
+        classEditor.GetComponent<Canvas>().enabled = true;
+        classCreator.GetComponent<Canvas>().enabled = true;
+    }
+
+    public void hide()
+    {
+        classChooser.GetComponent<Canvas>().enabled = false;
+        classEditor.GetComponent<Canvas>().enabled = false;
+        classCreator.GetComponent<Canvas>().enabled = false;
+    }
+
     public void changeCanvas(int can)
     {
         if (can != canvasType)
@@ -261,18 +282,24 @@ public class MenuManagerInGame : MonoBehaviour
             {
                 //On passe le chooser en actif
                 classChooser.GetComponent<CanvasGroup>().interactable = true;
+                classChooser.GetComponent<CanvasGroup>().blocksRaycasts = true;
                 classChooser.GetComponent<CanvasGroup>().alpha = 1f;
                 classChooser.GetComponent<RectTransform>().localScale = new Vector3(0.03f, 0.03f, 0.03f);
 
                 //On passe le creator en top
                 classCreator.GetComponent<CanvasGroup>().interactable = false;
-                classCreator.GetComponent<CanvasGroup>().alpha = .5f;
+                classCreator.GetComponent<CanvasGroup>().blocksRaycasts = false;
+                classCreator.GetComponent<CanvasGroup>().alpha = .2f;
                 classCreator.GetComponent<RectTransform>().localScale = new Vector3(0.027f, 0.027f, 0.027f);
 
                 //On passe le creator en top
                 classEditor.GetComponent<CanvasGroup>().interactable = false;
+                classEditor.GetComponent<CanvasGroup>().blocksRaycasts = false;
                 classEditor.GetComponent<CanvasGroup>().alpha = .5f;
                 classEditor.GetComponent<RectTransform>().localScale = new Vector3(0.027f, 0.027f, 0.027f);
+
+                //On désactive testWeapons
+                testWeapon.setAttaque(null);
 
                 lerpingCanvas = true;
 
@@ -282,15 +309,24 @@ public class MenuManagerInGame : MonoBehaviour
             {
                 //On passe le chooser en bottom
                 classChooser.GetComponent<CanvasGroup>().interactable = false;
-                classChooser.GetComponent<CanvasGroup>().alpha = 0.5f;
+                classChooser.GetComponent<CanvasGroup>().blocksRaycasts = false;
+                classChooser.GetComponent<CanvasGroup>().alpha = 0.2f;
                 classChooser.GetComponent<RectTransform>().localScale = new Vector3(0.027f, 0.027f, 0.027f);
 
                 //On passe le creator en actif
                 classCreator.GetComponent<CanvasGroup>().interactable = true;
+                classCreator.GetComponent<CanvasGroup>().blocksRaycasts = true;
                 classCreator.GetComponent<CanvasGroup>().alpha = 1;
                 classCreator.GetComponent<RectTransform>().localScale = new Vector3(0.03f, 0.03f, 0.03f);
 
+                classEditor.GetComponent<CanvasGroup>().interactable = false;
+                classEditor.GetComponent<CanvasGroup>().blocksRaycasts = false;
+
                 lerpingCanvas = true;
+
+                //On active testWeapons avec le sort en construction
+                //TODO prévoir sort de zone
+                testWeapon.setAttaque(sortDeJetEnConstruction);
 
                 canvasType = can;
             }
@@ -300,15 +336,24 @@ public class MenuManagerInGame : MonoBehaviour
                 {
                     //On passe le chooser en bottom
                     classChooser.GetComponent<CanvasGroup>().interactable = false;
-                    classChooser.GetComponent<CanvasGroup>().alpha = 0.5f;
+                    classChooser.GetComponent<CanvasGroup>().blocksRaycasts = false;
+                    classChooser.GetComponent<CanvasGroup>().alpha = 0.2f;
                     classChooser.GetComponent<RectTransform>().localScale = new Vector3(0.027f, 0.027f, 0.027f);
 
                     //On passe le editor en actif
                     classEditor.GetComponent<CanvasGroup>().interactable = true;
+                    classEditor.GetComponent<CanvasGroup>().blocksRaycasts = true;
                     classEditor.GetComponent<CanvasGroup>().alpha = 1;
                     classEditor.GetComponent<RectTransform>().localScale = new Vector3(0.03f, 0.03f, 0.03f);
 
+                    classCreator.GetComponent<CanvasGroup>().interactable = false;
+                    classCreator.GetComponent<CanvasGroup>().blocksRaycasts = false;
+
                     setEditorCanvas(true);
+
+                    //On active testWeapons avec le sort en édition
+                    //TODO prévoir sort de zone
+                    testWeapon.setAttaque(sortSelectionne);
 
                     lerpingCanvas = true;
 
@@ -445,6 +490,13 @@ public class MenuManagerInGame : MonoBehaviour
 
         //Mise a jour des carac + affichage
         majCaracSortEnConstr();
+    }
+
+    public void creatorCustomChanged()
+    {
+        Debug.Log("lolo");
+        sortDeJetEnConstruction.setCustom1((EnumScript.CustomProj1)creatorProjCustom1.GetComponent<Dropdown>().value);
+        sortDeJetEnConstruction.setCustom2((EnumScript.CustomProj2)creatorProjCustom2.GetComponent<Dropdown>().value);
     }
 
     public void supprimerClassDel()
