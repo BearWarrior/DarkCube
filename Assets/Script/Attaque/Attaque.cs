@@ -6,7 +6,7 @@ public abstract class Attaque
     public int type; //1-Jet   2-Zone   3-Support
     protected int lvl;
     protected int nbXpPerShot;
-	protected float cooldown;
+    protected float cooldown;
     protected float lastShot;
     protected bool canShoot = true;
     protected float degats;
@@ -17,20 +17,24 @@ public abstract class Attaque
 
     protected EnumScript.EffetPhysique effetPhysique;
 
-
     public abstract void AttackFromTestWeapons(Vector3 spawnPoint);
     public abstract void AttackFromPlayer(Vector3 spawnPoint);
     public abstract void AttackFromEnemy(RaycastHit hit, Vector3 spawnPoint);
 
-    public void reload()
+    //return the time to finish the cooldown
+    public float reload()
     {
-        if (lastShot + cooldown < Time.time )
+        if (lastShot + cooldown < Time.time)
             canShoot = true;
+        if (!canShoot)
+            return (lastShot + cooldown - Time.time);
+        else
+            return 0;
     }
 
     public virtual void majSort()
     {
-        Debug.Log("mother");
+       // Debug.Log("mother");
     }
 
     public void setAllTagsAndAddVelocityAndEmitter(string tag, GameObject go, Vector3 velocity, EnumScript.Character emitter)
@@ -131,5 +135,5 @@ public abstract class Attaque
     {
         lvl = p_lvl;
     }
-    
+
 }

@@ -142,7 +142,8 @@ public class SortDeJet : Attaque
         //Recuperation du layerMask Player et Projectile
         LayerMask layerPlayer = LayerMask.GetMask("Player");
         LayerMask layerProj = LayerMask.GetMask("Projectile");
-        int layerValue = layerPlayer.value | layerProj.value;
+        LayerMask layerIgnore = LayerMask.GetMask("Ignore Aim");
+        int layerValue = layerPlayer.value | layerProj.value | layerIgnore.value;
         //Inversion (on avoir la detection de tout SAUF du joueur et des projectiles)
         layerValue = ~layerValue;
 
@@ -154,7 +155,6 @@ public class SortDeJet : Attaque
         //CUSTOM2
         proj = new GameObject("projComplexe");
         proj.transform.position = spawnPoint;
-        Debug.Log(partToLoad);
         GameObject projPrin = GameObject.Instantiate(Resources.Load(partToLoad), spawnPoint, new Quaternion(0, 0, 0, 0)) as GameObject;
         projPrin.transform.parent = null;
         projPrin.transform.SetParent(proj.transform);
@@ -221,7 +221,8 @@ public class SortDeJet : Attaque
         //Recuperation du layerMask Player et Projectile
         LayerMask layerPlayer = LayerMask.GetMask("Player");
         LayerMask layerProj = LayerMask.GetMask("Projectile");
-        int layerValue = layerPlayer.value | layerProj.value;
+        LayerMask layerIgnore = LayerMask.GetMask("Ignore Aim");
+        int layerValue = layerPlayer.value | layerProj.value | layerIgnore.value;
         //Inversion (on avoir la detection de tout SAUF du joueur et des projectiles)
         layerValue = ~layerValue;
 
@@ -299,8 +300,7 @@ public class SortDeJet : Attaque
 
     public void launchProjEnemy(RaycastHit hit, Vector3 spawnPoint)
     {
-        string lvlPart = (lvl < 3) ? "1" : (lvl < 6) ? "2" : "3";
-        string partToLoad = "Particle/Prefabs/SortsDeJet/" + nameParticle + element.ToString() + lvlPart;
+        string partToLoad = "Particle/Prefabs/SortsDeJet/" + nameParticle + element.ToString();
         proj = GameObject.Instantiate(Resources.Load(partToLoad), spawnPoint, new Quaternion(0, 0, 0, 0)) as GameObject;
         proj.transform.parent = null;
         Vector3 direction = (hit.point - spawnPoint) / Vector3.Distance(hit.point, spawnPoint);

@@ -66,6 +66,6 @@ public class MenuDeath : MonoBehaviour
         //Sauvegarde + retour CustomRoom
         GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().sauvegarder();
         GameObject.FindWithTag("CaracSorts").GetComponent<CaracZones>().sauvegarder();
-        SceneManager.LoadScene("CustomRoom");
+        SceneManager.LoadScene("RoomMaintenance");
     }
 }

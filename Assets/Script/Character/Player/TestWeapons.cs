@@ -7,18 +7,15 @@ public class TestWeapons : Character
     public GameObject spawnProjectile;
 
     // Use this for initialization
-    void Start ()
+    void Start()
     {
         listAttaque = new Attaque[1];
         listAttaque[0] = null;
     }
-	
-	void Update ()
+
+    void Update()
     {
         if (listAttaque[0] != null)
-            Debug.Log(((SortDeJet)listAttaque[0]).getCustom1().ToString());
-
-            if (listAttaque[0] != null)
             listAttaque[0].AttackFromTestWeapons(spawnProjectile.transform.position);
 
         //cooldowns

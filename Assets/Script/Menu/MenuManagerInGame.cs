@@ -252,6 +252,7 @@ public class MenuManagerInGame : MonoBehaviour, IDisplayable
             {
                 if (accessMenu.GetComponent<accessMenu>().isReady())
                 {
+                    exitMenu();
                     accessMenu.GetComponent<accessMenu>().exitMenu();
                 }
             }
@@ -923,6 +924,18 @@ public class MenuManagerInGame : MonoBehaviour, IDisplayable
         fillClassChooserTable();
     }
 
+    public void editorCustomChanged()
+    {
+        ((SortDeJet)sortSelectionne).setCustom1((EnumScript.CustomProj1)editorProjCustom1.GetComponent<Dropdown>().value);
+        ((SortDeJet)sortSelectionne).setCustom2((EnumScript.CustomProj2)editorProjCustom2.GetComponent<Dropdown>().value);
+    }
+
+    public void editorElementChanged()
+    {
+        EnumScript.Element newElem = caracSorts.GetComponent<CaracProjectiles>().getElemFromProj(sortSelectionne.getNameParticle())[editorProjElement.GetComponent<Dropdown>().value];
+        sortSelectionne.setElement(newElem);
+    }
+
     public void editerProjVitesse(int point)
     {
         if (point == 1)
@@ -987,7 +1000,7 @@ public class MenuManagerInGame : MonoBehaviour, IDisplayable
     {
         if (point == 1)
         {
-            if (structSortDeJetEnEdition.nbPointsDispo - ((SortDeJet)sortSelectionne).nbDePointsTot > 9)
+            if (structSortDeJetEnEdition.nbPointsDispo - ((SortDeJet)sortSelectionne).nbDePointsTot > 4)
             {
                 ((SortDeJet)sortSelectionne).pointsInCustom1++;
                 ((SortDeJet)sortSelectionne).nbDePointsTot += 5;
@@ -1001,13 +1014,14 @@ public class MenuManagerInGame : MonoBehaviour, IDisplayable
                 ((SortDeJet)sortSelectionne).nbDePointsTot -=5;
             }
         }
+        editerSort();
         setEditorCanvas(false);
     }
     public void editerProjCustom2(int point) //TODO METTRE 10
     {
         if (point == 1)
         {
-            if (structSortDeJetEnEdition.nbPointsDispo - ((SortDeJet)sortSelectionne).nbDePointsTot > 9 )
+            if (structSortDeJetEnEdition.nbPointsDispo - ((SortDeJet)sortSelectionne).nbDePointsTot > 4 )
             {
                 ((SortDeJet)sortSelectionne).pointsInCustom2++;
                 ((SortDeJet)sortSelectionne).nbDePointsTot += 5;
@@ -1021,6 +1035,7 @@ public class MenuManagerInGame : MonoBehaviour, IDisplayable
                 ((SortDeJet)sortSelectionne).nbDePointsTot -= 5;
             }
         }
+        editerSort();
         setEditorCanvas(false);
     }
 
@@ -1067,6 +1082,7 @@ public class MenuManagerInGame : MonoBehaviour, IDisplayable
 
     public void exitMenu()
     {
+        GameObject.FindWithTag("Player").GetComponent<Player>().sauvegarderSorts();
         GameObject.FindWithTag("Player").GetComponent<Player>().sauvegarderSorts();
         accessMenu.GetComponent<accessMenu>().exitMenu();
     }

@@ -5,9 +5,11 @@ using System.Collections.Generic;
 public class Enemy : Character
 {
 
-    public GameObject spawnPoint;
+    public List<GameObject> spawnPoints;
     public int numRoom;
     private GameObject caracSorts;
+
+    private int spawnPointAct;
 
 	// Use this for initialization
 	void Start ()
@@ -19,6 +21,8 @@ public class Enemy : Character
 
         caracSorts = GameObject.FindWithTag("CaracSorts");
         GetComponent<ListSorts>().initSort();
+
+        spawnPointAct = 0;
     }
 	
 	// Update is called once per frame
@@ -51,6 +55,9 @@ public class Enemy : Character
 
     public void shoot(RaycastHit hit)
     {
-        GetComponent<ListSorts>().getAttaqueEquiped().AttackFromEnemy(hit, this.spawnPoint.transform.position);
+        GetComponent<ListSorts>().getAttaqueEquiped().AttackFromEnemy(hit, this.spawnPoints[spawnPointAct].transform.position);
+        spawnPointAct++;
+        if (spawnPointAct > spawnPoints.Count -1)
+            spawnPointAct = 0;
     }
 }

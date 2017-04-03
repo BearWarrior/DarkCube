@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class MenuUnivers : MonoBehaviour, IDisplayable
 {
@@ -44,6 +45,13 @@ public class MenuUnivers : MonoBehaviour, IDisplayable
     private List<Vector3> listInitStellarSystem;
 
     private bool isMenuActive;
+
+    public GameObject arrow;
+
+    public GameObject destinationTP;
+    public GameObject lookAtTP;
+
+    public GameObject teleporter;
 
     private List<string> listNameStellarSystem = new List<string>
     {
@@ -216,7 +224,7 @@ public class MenuUnivers : MonoBehaviour, IDisplayable
         for (int i = 0; i < listPanels.Count; i++)
             listPanels[i].gameObject.SetActive(false);
         missionChooser[activeStellarSystem].show();
-
+        arrow.SetActive(false);
     }
 
     public void fromStellarSystemToGalaxy()
@@ -226,33 +234,53 @@ public class MenuUnivers : MonoBehaviour, IDisplayable
         for (int i = 0; i < listPanels.Count; i++)
             listPanels[i].gameObject.SetActive(true);
         missionChooser[activeStellarSystem].hide();
+        arrow.SetActive(true);
     }
 
     public void oK()
     {
-        if (panelAct == 0)
+        if (!isUnCentering && !isUnScaling)
         {
-            chooseSS();
-            fromGalaxyToStellarSystem();
+            if (panelAct == 0)
+            {
+                chooseSS();
+                fromGalaxyToStellarSystem();
+            }
+            else if (panelAct == 1)
+            {
+                Destroy(Camera.main.GetComponent<CameraController>());
+                CameraTeleporter cameraTp = Camera.main.gameObject.AddComponent<CameraTeleporter>();
+                cameraTp.newDest(destinationTP.transform.position, lookAtTP.transform.position);
+                teleporter.GetComponent<Teleporter>().startTP();
+                GameObject.FindWithTag("Player").GetComponent<PlayerController>().showCanvas(false);
+
+                StartCoroutine(launchLvlInSec(4.5f));
+            }
         }
-        else if (panelAct == 1)
-        {
-            //TODO 
-            //LAUNCH MISSION
-        }
+    }
+
+    public IEnumerator launchLvlInSec(float sec)
+    {
+        yield return new WaitForSeconds(sec);
+        SceneManager.LoadScene("ProceduralRoom");
     }
 
     public void back()
     {
-        if (panelAct == 0)
+        if (!isCentering && !isScaling)
         {
-            if (accessMenu.GetComponent<accessMenu>().isReady())
-                accessMenu.exitMenu();
-        }
-        else if (panelAct == 1)
-        {
-            returnToGalaxy();
-            fromStellarSystemToGalaxy();
+            if (panelAct == 0)
+            {
+               /* if (accessMenu.GetComponent<accessMenu>().isReady())
+                {*/
+                    accessMenu.exitMenu();
+               /*}*/
+            }
+            else if (panelAct == 1)
+            {
+                returnToGalaxy();
+                fromStellarSystemToGalaxy();
+            }
         }
     }
 

@@ -2,9 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class SortChooser : MonoBehaviour
+public class SortChooser : MonoBehaviour, IInputsObservable
 {
-    public int cubeFace;
+    private int cubeFace = 1;
     private GameObject posAllCubes;
 
     private Quaternion f1;
@@ -14,26 +14,33 @@ public class SortChooser : MonoBehaviour
     private Quaternion f5;
     private Quaternion f6;
     private Quaternion fdefault;
+    private Quaternion fActualCanvas;
 
-    public bool changingFaceV;
-    public bool changingFaceH;
+    private bool changingFaceV = false;
+    private bool changingFaceH = false;
 
-    public List<List<GameObject>> horizFaces = new List<List<GameObject>>();
-    public List<GameObject> vertFaces = new List<GameObject>();
+    private List<List<GameObject>> horizFaces = new List<List<GameObject>>();
+    private List<GameObject> vertFaces = new List<GameObject>();
 
-    public bool rotHFinished = true;
-    public bool rotVFinished = true;
+    private bool rotHFinished = true;
+    private bool rotVFinished = true;
 
     private bool canShoot = true;
+
+    private Dictionary<string, KeyCode> keys = new Dictionary<string, KeyCode>();
+
+    public GameObject canvasCubeFace;
+
+    private bool canvasRotating = false;
+    private float startTimeRotatingCanvas;
+    private float speedRotatingCanvas = 4;
+    private float journeyLengthRotatingCanvas = 1;
 
     // Use this for initialization
     void Start()
     {
-        changingFaceV = false;
-        changingFaceH = false;
+        keys = GameObject.FindWithTag("InputsLoader").GetComponent<InputsLoader>().lookAtInputs(this.gameObject);
 
-        cubeFace = 1;
-        //posAllCubes = GameObject.FindWithTag("Armature");
         posAllCubes = this.transform.GetChild(5).gameObject;
 
         f1 = Quaternion.Euler(new Vector3(0, 0, 0));
@@ -43,13 +50,14 @@ public class SortChooser : MonoBehaviour
         f5 = Quaternion.Euler(new Vector3(90, 0, 0));
         f6 = Quaternion.Euler(new Vector3(-90, 0, 0));
         fdefault = Quaternion.Euler(new Vector3(0, 0, 0));
+        fActualCanvas = fdefault;
     }
 
     public void Update()
     {
         int oldCubeFace = cubeFace;
- 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        
+        if (Input.GetKeyDown(keys["Face1"]))
         {
             if (rotHFinished && rotVFinished)
             {
@@ -58,9 +66,12 @@ public class SortChooser : MonoBehaviour
                     StartCoroutine(coroutineRotationVH(f1, fdefault, 1));
                 else
                     StartCoroutine(coroutineRotationHV(f1, fdefault, 1));
+
+                startTimeRotatingCanvas = Time.time;
+                StartCoroutine(coroutineRotationCanvas(fActualCanvas, f1));
             }
         }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        if (Input.GetKeyDown(keys["Face2"]))
         {
             if (rotHFinished && rotVFinished)
             {
@@ -69,9 +80,12 @@ public class SortChooser : MonoBehaviour
                     StartCoroutine(coroutineRotationVH(f2, fdefault, 2));
                 else
                     StartCoroutine(coroutineRotationHV(f2, fdefault, 2));
+
+                startTimeRotatingCanvas = Time.time;
+                StartCoroutine(coroutineRotationCanvas(fActualCanvas, f2));
             }
         }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        if (Input.GetKeyDown(keys["Face3"]))
         {
             if (rotHFinished && rotVFinished)
             {
@@ -80,9 +94,12 @@ public class SortChooser : MonoBehaviour
                     StartCoroutine(coroutineRotationVH(f3, fdefault, 3));
                 else
                     StartCoroutine(coroutineRotationHV(f3, fdefault, 3));
+
+                startTimeRotatingCanvas = Time.time;
+                StartCoroutine(coroutineRotationCanvas(fActualCanvas, f3));
             }
         }
-        if (Input.GetKeyDown(KeyCode.Alpha4))
+        if (Input.GetKeyDown(keys["Face4"]))
         {
             if (rotHFinished && rotVFinished)
             {
@@ -91,9 +108,12 @@ public class SortChooser : MonoBehaviour
                     StartCoroutine(coroutineRotationVH(f4, fdefault, 4));
                 else
                     StartCoroutine(coroutineRotationHV(f4, fdefault, 4));
+
+                startTimeRotatingCanvas = Time.time;
+                StartCoroutine(coroutineRotationCanvas(fActualCanvas, f4));
             }
         }
-        if (Input.GetKeyDown(KeyCode.Alpha5))
+        if (Input.GetKeyDown(keys["Face5"]))
         {
             if (rotHFinished && rotVFinished)
             {
@@ -102,9 +122,12 @@ public class SortChooser : MonoBehaviour
                     StartCoroutine(coroutineRotationVH(f1, f5, 5));
                 else
                     StartCoroutine(coroutineRotationHV(f1, f5, 5));
+
+                startTimeRotatingCanvas = Time.time;
+                StartCoroutine(coroutineRotationCanvas(fActualCanvas, f5));
             }
         }
-        if (Input.GetKeyDown(KeyCode.Alpha6))
+        if (Input.GetKeyDown(keys["Face6"]))
         {
             if (rotHFinished && rotVFinished)
             {
@@ -113,10 +136,32 @@ public class SortChooser : MonoBehaviour
                     StartCoroutine(coroutineRotationVH(f1, f6, 6));
                 else
                     StartCoroutine(coroutineRotationHV(f1, f6, 6));
+
+                startTimeRotatingCanvas = Time.time;
+                StartCoroutine(coroutineRotationCanvas(fActualCanvas, f6));
             }
         }
 
         canShoot = rotVFinished & rotHFinished;
+    }
+
+    public void keysChanged(Dictionary<string, KeyCode> keys)
+    {
+        this.keys = keys;
+    }
+
+    public IEnumerator coroutineRotationCanvas(Quaternion from, Quaternion to)
+    {
+        float distCovered = (Time.time - startTimeRotatingCanvas) * speedRotatingCanvas;
+        float fracJourney = distCovered / journeyLengthRotatingCanvas;
+        while (fracJourney < 1)
+        {
+            distCovered = (Time.time - startTimeRotatingCanvas) * speedRotatingCanvas;
+            fracJourney = distCovered / journeyLengthRotatingCanvas;
+            canvasCubeFace.transform.localRotation = Quaternion.Lerp(from, to, fracJourney);
+            yield return new WaitForEndOfFrame();
+        }
+        fActualCanvas = to;
     }
 
     public IEnumerator coroutineRotationHV(Quaternion fH, Quaternion fV, int newCubeFace)
@@ -271,5 +316,10 @@ public class SortChooser : MonoBehaviour
     {
         horizFaces = horiz;
         posAllCubes = posAC;
+    }
+
+    public void setCanvas(GameObject can)
+    {
+        canvasCubeFace = can;
     }
 }

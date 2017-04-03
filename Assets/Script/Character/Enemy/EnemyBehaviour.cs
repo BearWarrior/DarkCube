@@ -26,7 +26,8 @@ public class EnemyBehaviour : MonoBehaviour
                             {
                                 if (valActuel == ratio)
                                 {
-                                    GameObject enemy = (GameObject)Instantiate(Resources.Load("Enemy/Agent"), tiles[wid][leng].transform.GetChild(enf).GetChild(i).transform.position, Quaternion.Euler(0, 0, 0));
+                                    //GameObject enemy = (GameObject)Instantiate(Resources.Load("Enemy/Agent"), tiles[wid][leng].transform.GetChild(enf).GetChild(i).transform.position, Quaternion.Euler(0, 0, 0));
+                                    GameObject enemy = (GameObject)Instantiate(Resources.Load("Enemy/DroneRoue"), tiles[wid][leng].transform.GetChild(enf).GetChild(i).transform.position, Quaternion.Euler(0, 0, 0));
                                     enemy.transform.SetParent(roomGO.transform);
                                     enemy.transform.tag = "Enemy";
                                     valActuel = 1;
@@ -53,16 +54,20 @@ public class EnemyBehaviour : MonoBehaviour
         int i = 0;
         listEnemy[en.GetComponent<Enemy>().numRoom].Remove(en);
 
-        foreach(List<GameObject> list in listEnemy)
+        if (listEnemy[en.GetComponent<Enemy>().numRoom].Count == 0) //Si la salle n'a plus d'enemy, on active le TP
         {
-            //print(i + "   " + list.Count);
-            if (list.Count == 0) //Si une salle n'a plus d'enemy, on active le TP
-            {
-                GetComponent<WorldBehaviour>().activePortalEnd(i);
-            }
-            i++;
+            GetComponent<WorldBehaviour>().activePortalEnd(en.GetComponent<Enemy>().numRoom);
         }
     }
 
-
+    public void resetAllEnemies()
+    {
+        foreach(List<GameObject> list in listEnemy)
+        {
+            foreach (GameObject go in list)
+            {
+                go.SendMessage("playerIsDead", SendMessageOptions.DontRequireReceiver);
+            }
+        }
+    }
 }

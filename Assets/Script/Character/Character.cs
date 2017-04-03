@@ -39,7 +39,7 @@ public class Character : MonoBehaviour
 
 
 
-    public void equipeAttaqueAt(int face, int indexInList)
+    public virtual void equipeAttaqueAt(int face, int indexInList)
     {
         if(listAttaque[face-1] != null)
             listAttaqueInventaire.Add(listAttaque[face - 1]);
@@ -49,7 +49,6 @@ public class Character : MonoBehaviour
 
     public void desequipeAttaque(int face)
     {
-        print(listAttaqueInventaire.Count);
         listAttaqueInventaire.Add(listAttaque[face - 1]);
         print(listAttaqueInventaire.Count);
         listAttaque[face - 1] = null;

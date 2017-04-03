@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System;
 
-public class Player : Character
+public class Player : Character, IInputsObservable
 {
     public GameObject sphere;
     public GameObject armature;
@@ -13,11 +14,27 @@ public class Player : Character
     private bool isTransparent = false;
     private float alpha = 0.15f;
 
-    private int cubeFace;
+    private int cubeFace = 1;
 
     public GameObject spawnProjectile;
+    [Space(15)]
+    public Image lifeBar;
+    public Text lifeDisplay;
 
-    private bool dead;
+    private bool dead = false;
+
+    private Dictionary<string, KeyCode> keys = new Dictionary<string, KeyCode>();
+
+    public List<GameObject> listLogosSorts;
+    public List<Image> listCooldownDisplay;
+
+    private Texture textureCubes;
+    private string textureCubesStr;
+
+    void Awake()
+    {
+         keys = GameObject.FindWithTag("InputsLoader").GetComponent<InputsLoader>().lookAtInputs(this.gameObject);
+    }
 
     // Use this for initialization
     void Start()
@@ -34,8 +51,11 @@ public class Player : Character
         armureMax = 10;
         armureActuel = armureMax;
 
-        cubeFace = 1;
-        dead = false;
+        lifeBar.fillAmount =1;
+        lifeDisplay.text = PDVmax.ToString();
+
+        loadSkin();
+        GetComponent<PlayerCubeFlock>().changeSkin(textureCubes);
     }
 
 
@@ -44,7 +64,7 @@ public class Player : Character
     {
         //Clic gauche 
         if (GetComponent<PlayerController>().getControllable())
-            if (Input.GetMouseButton(0) && GetComponent<PlayerController>().isAiming() && GetComponent<SortChooser>().playerCanShoot())
+            if (Input.GetKey(keys["Shoot"]) && GetComponent<PlayerController>().isAiming() && GetComponent<SortChooser>().playerCanShoot())
                 if (listAttaque[cubeFace - 1] != null)
                     listAttaque[cubeFace - 1].AttackFromPlayer(spawnProjectile.transform.position);
 
@@ -54,10 +74,16 @@ public class Player : Character
         else if (Vector3.Distance(transform.position, Camera.main.transform.position) > 1.5f && isTransparent)
             setTransparecy(false);
 
+        float[] cooldownRestant = new float[6];
         //cooldowns
         for (int i = 0; i < 6; i++)
             if (listAttaque[i] != null)
-                listAttaque[i].reload();
+                cooldownRestant[i] = listAttaque[i].reload();
+
+        //Display cooldown
+        for (int i = 0; i < 6; i++)
+            if (listAttaque[i] != null)
+                listCooldownDisplay[i].fillAmount = (listAttaque[i].getCooldown() - cooldownRestant[i])/(listAttaque[i].getCooldown());
 
         if (Input.GetKeyDown(KeyCode.P))
         {
@@ -67,6 +93,11 @@ public class Player : Character
         {
             PlayerPrefs.DeleteAll();
         }
+    }
+
+    public void keysChanged(Dictionary<string, KeyCode> keys)
+    {
+        this.keys = keys;
     }
 
     public void cubeFaceChanged(int face)
@@ -146,7 +177,6 @@ public class Player : Character
             {
                 save = "null";
             }
-            //print("save : " + save);
             PlayerPrefs.SetString("attaqueEquipe" + i.ToString(), save);
         }
 
@@ -163,7 +193,6 @@ public class Player : Character
                     save += ";" + ((SortDeJet) listAttaqueInventaire[i]).getCustom1().ToString() + ";" + ((SortDeJet)listAttaqueInventaire[i]).getCustom2().ToString();
                     break;
             }
-            //print("save : " + save);
             PlayerPrefs.SetString("attaqueInventaire" + i.ToString(), save);
         }
     }
@@ -232,7 +261,6 @@ public class Player : Character
                                 Int32.Parse(array[8]),
                                 EnumScript.getCustom1FromString(array[9]), 
                                 EnumScript.getCustom2FromString(array[10])
-                                
                                 );
                             listAttaqueInventaire.Add(sortJ);
                             break;
@@ -244,6 +272,31 @@ public class Player : Character
                 }
             }
         }
+    }
+
+    public void saveSkin()
+    {
+        PlayerPrefs.SetString("skinCubes", textureCubesStr);
+    }
+
+    public void loadSkin()
+    {
+        textureCubesStr = PlayerPrefs.GetString("skinCubes", "none");
+        if (textureCubesStr == "none")
+            textureCubesStr = "hexRed";
+        textureCubes = Resources.Load("Player/Textures/" + textureCubesStr) as Texture;
+    }
+
+    public Texture getSkin()
+    {
+        return textureCubes;
+    }
+
+    public void setSkin(Texture texture, string name)
+    {
+        textureCubesStr = name;
+        textureCubes = texture;
+        saveSkin();
     }
 
     public void majSortsProjEquip(structSortJet s)
@@ -286,16 +339,17 @@ public class Player : Character
     {
         if (other.tag == "AttaqueEnemy")
         {
-            //print("ARGHH attaqueEnemy" + other.GetComponent<ProjectileData>().degats);
             takeDegats(other.GetComponent<ProjectileData>().degats);
             GetComponent<PlayerCubeFlock>().setShakiness(PDVactuel, PDVmax);
 
-            if(PDVactuel < 0)
+            lifeBar.fillAmount = PDVactuel / PDVmax;
+            lifeDisplay.text = PDVactuel.ToString();
+
+            if (PDVactuel <= 0)
             {
                 EndLvl(true);
             }
         }
-        //Debug.Log(PDVactuel);
     }
 
     public void EndLvl(bool dead)
@@ -303,6 +357,7 @@ public class Player : Character
         if (dead)
         {
             GetComponent<PlayerCubeFlock>().Die();
+            GameObject.FindWithTag("World").GetComponent<EnemyBehaviour>().resetAllEnemies();
         }
         
         GetComponent<PlayerController>().setControllable(false);
@@ -326,12 +381,17 @@ public class Player : Character
         }
 
         GameObject.Find("MenuDeath").GetComponent<MenuDeath>().displayResults(noms, nomsPart, types, dead);
-
     }
 
     public bool isDead()
     {
         return dead;
+    }
+
+    public override void equipeAttaqueAt(int face, int indexInList)
+    {
+        base.equipeAttaqueAt(face, indexInList);
+        listLogosSorts[face-1].GetComponent<RawImage>().texture = Resources.Load("Player/LogosSorts/" + listAttaque[face-1].getNameParticle()) as Texture;
     }
 
     //Player touch enemy
