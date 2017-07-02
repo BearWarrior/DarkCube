@@ -1,4 +1,6 @@
-Shader "Effects/AlphaBlended" {
+Shader "Effects/
+
+Blended" {
 	Properties {
 	_TintColor ("Tint Color", Color) = (0.5,0.5,0.5,1)
 	_ColorStrength ("Color strength", Float) = 1.0

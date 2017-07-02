@@ -39,7 +39,7 @@ public class CameraController : MonoBehaviour
         lookAtPlayer = true;
     }
 
-	void FixedUpdate () 
+	void FixedUpdate ( )
     {
 
         //Camera sur la cible et regarde le joueur si il n'est pas en menu
@@ -53,11 +53,17 @@ public class CameraController : MonoBehaviour
 
             int layerValue = ~(layerPlayer.value | layerProj.value);
 
-            //Si il y a un obstable entre la target et le point a regarder, on place la caméra sur le point de contact et on la décale par rapport a sa normale
+            //Si il y a un obstable entre la target et le point a regarder, on place la caméra sur le point de contact en restant à la hauteur initiale et on la décale par rapport a sa normale
             if (Physics.Raycast(ray, out hit, Vector3.Distance(player.transform.position, target.transform.position), layerValue))
             {
                 if (!hit.collider.isTrigger)
+                {
                     this.transform.position = hit.point + new Vector3(0.1f * hit.normal.x, 0.1f * hit.normal.y, 0.1f * hit.normal.z);
+                    /*if(!(hit.collider.gameObject.layer == LayerMask.NameToLayer("GroundAndCeiling")))
+                        this.transform.position = new Vector3(hit.point.x, this.transform.position.y, hit.point.z) + new Vector3(0.1f * hit.normal.x, 0.1f * hit.normal.y, 0.1f * hit.normal.z);
+                    else
+                        this.transform.position = hit.point + new Vector3(0.1f * hit.normal.x, 0.1f * hit.normal.y, 0.1f * hit.normal.z);*/
+                }
             }
 
             this.transform.LookAt(cameraLookAtPlayer.transform);

@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
-public class Character : MonoBehaviour
+public class Character : MonoBehaviour, ITakeDamages
 {
-    protected float PDVmax;
+    public float PDVmax;
     protected float PDVactuel;
     protected float armureMax;
     protected float armureActuel;
@@ -33,11 +34,6 @@ public class Character : MonoBehaviour
             p_function();
         }
     }
-
-
-
-
-
 
     public virtual void equipeAttaqueAt(int face, int indexInList)
     {
@@ -98,4 +94,8 @@ public class Character : MonoBehaviour
         return listAttaque[face - 1];
     }
 
+    public virtual void takeDamages(float damages)
+    {
+        //throw new NotImplementedException();
+    }
 }

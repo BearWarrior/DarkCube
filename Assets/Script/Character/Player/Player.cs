@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-public class Player : Character, IInputsObservable
+public class Player : Character, IInputsObservable, ITakeDamages
 {
     public GameObject sphere;
     public GameObject armature;
@@ -44,7 +44,7 @@ public class Player : Character, IInputsObservable
         for (int i = 0; i < 6; i++)
             listAttaque[i] = null;
         listAttaqueInventaire = new List<Attaque>();
-        chargerSorts();
+        LoadSorts();
 
         PDVmax = 100;
         PDVactuel = PDVmax;
@@ -54,7 +54,7 @@ public class Player : Character, IInputsObservable
         lifeBar.fillAmount =1;
         lifeDisplay.text = PDVmax.ToString();
 
-        loadSkin();
+        LoadSkin();
         GetComponent<PlayerCubeFlock>().changeSkin(textureCubes);
     }
 
@@ -87,7 +87,7 @@ public class Player : Character, IInputsObservable
 
         if (Input.GetKeyDown(KeyCode.P))
         {
-            sauvegarderSorts();
+            SaveSorts();
         }
         if(Input.GetKeyDown(KeyCode.N))
         {
@@ -138,9 +138,31 @@ public class Player : Character, IInputsObservable
         return cubeFace;
     }
 
-    public void takeDegats(float degats)
+    public override void takeDamages(float degats)
     {
         PDVactuel -= degats;
+        //shakiness
+        GetComponent<PlayerCubeFlock>().setShakiness(PDVactuel, PDVmax);
+        //lifebar
+        lifeBar.fillAmount = PDVactuel / PDVmax;
+        lifeDisplay.text = PDVactuel.ToString();
+        //dead ?
+        if (PDVactuel <= 0)
+            EndLvl(true);
+    }
+
+    public void Save()
+    {
+        SaveSorts();
+        SaveSkin();
+        if (GameObject.Find("Saving") != null)
+            GameObject.Find("Saving").GetComponent<SavingLogo>().DisplayLogo();
+    }
+
+    public void Load()
+    {
+        LoadSorts();
+        LoadSkin();
     }
 
     //   SAUVEGARDE / CHARGEMENT
@@ -155,7 +177,7 @@ public class Player : Character, IInputsObservable
     *
     * xp et lvl stocké dans CaracProj et CaracZone
     */
-    public void sauvegarderSorts()
+    private void SaveSorts()
     {
         //Attaque equipé
         for (int i = 0; i < 6; i++)
@@ -197,7 +219,7 @@ public class Player : Character, IInputsObservable
         }
     }
 
-    public void chargerSorts()
+    private void LoadSorts()
     {
         //Attaque equipé
         for (int i = 0; i < 6; i++)
@@ -274,12 +296,12 @@ public class Player : Character, IInputsObservable
         }
     }
 
-    public void saveSkin()
+    private void SaveSkin()
     {
         PlayerPrefs.SetString("skinCubes", textureCubesStr);
     }
 
-    public void loadSkin()
+    private void LoadSkin()
     {
         textureCubesStr = PlayerPrefs.GetString("skinCubes", "none");
         if (textureCubesStr == "none")
@@ -296,13 +318,11 @@ public class Player : Character, IInputsObservable
     {
         textureCubesStr = name;
         textureCubes = texture;
-        saveSkin();
+        SaveSkin();
     }
 
     public void majSortsProjEquip(structSortJet s)
     {
-        print(s.nomParticle);
-        print(listAttaque[0].getNameParticle());
         for(int i = 0; i < 6; i++)
         { 
             if(listAttaque[i] != null && (listAttaque[i].getNameParticle() == s.nomParticle))
@@ -335,7 +355,7 @@ public class Player : Character, IInputsObservable
     }
 
     //Player shot 
-    void OnTriggerEnter(Collider other)
+    /*void OnTriggerEnter(Collider other)
     {
         if (other.tag == "AttaqueEnemy")
         {
@@ -350,7 +370,7 @@ public class Player : Character, IInputsObservable
                 EndLvl(true);
             }
         }
-    }
+    }*/
 
     public void EndLvl(bool dead)
     {

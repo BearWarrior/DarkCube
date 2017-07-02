@@ -7,4 +7,5 @@ public class ProjectileData : MonoBehaviour
     public float degats;
     public EnumScript.Element element;
     public int type;
+    public int nbProj;
 }

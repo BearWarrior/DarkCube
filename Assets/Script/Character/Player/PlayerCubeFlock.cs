@@ -19,7 +19,7 @@ public class PlayerCubeFlock : MonoBehaviour
     private bool deathApplied;
 
     //SHADER DISSOLVE
-    private bool dissolving;
+    private bool dissolving = false;
     private float from = 0.2f;
     private float to = .8f;
     private float startTime;
@@ -29,8 +29,6 @@ public class PlayerCubeFlock : MonoBehaviour
     // Use this for initialization
     void Start ()
     {
-        dissolving = false;
-
         nbCube = cubes.transform.childCount;
 
         distance = new List<float>();
@@ -60,23 +58,15 @@ public class PlayerCubeFlock : MonoBehaviour
             float fracJourney = dissolveCovered / journeyLength;
 
             for (int i = 0; i < cubes.transform.childCount; i++)
-            {
                 if (i != cubes.transform.childCount - 1)
-                {
                     cubes.transform.GetChild(i).GetComponent<Renderer>().material.SetFloat("_SliceAmount", Mathf.Lerp(from, to, fracJourney));
-                }
-            }
 
             if (fracJourney > 1)
             {
                 dissolving = false;
                 for (int i = 0; i < cubes.transform.childCount; i++)
-                {
                     if (i != cubes.transform.childCount - 1)
-                    {
                         cubes.transform.GetChild(i).GetComponent<Renderer>().material.SetFloat("_SliceAmount", 1);
-                    }
-                }
             }
         }
 
@@ -90,7 +80,6 @@ public class PlayerCubeFlock : MonoBehaviour
             for (i = 0; i < nbCube; i++)
             {
                 distance[i] = Mathf.Sqrt(Vector3.Distance(directionPoint.transform.position, cubes.transform.GetChild(i).transform.position));
-
                 distMax = (distance[i] > distMax) ? distance[i] : distMax;
             }
             distMax -= 0.0f;
@@ -116,9 +105,7 @@ public class PlayerCubeFlock : MonoBehaviour
                     cubes.transform.GetChild(i).transform.position = Vector3.Lerp(cubes.transform.GetChild(i).transform.position, posToGo.transform.GetChild(cptFace).GetChild(j).transform.position, 1.4f - ((distance[i] / distMax)));
                     sortie += (distance[i] / distMax) * (distance[i] / distMax) + "\n";
                     cubes.transform.GetChild(i).transform.rotation = Quaternion.Lerp(cubes.transform.GetChild(i).transform.rotation, posToGo.transform.GetChild(cptFace).GetChild(j).transform.rotation, 1.4f - ((distance[i] / distMax)));
-
                     cubes.transform.GetChild(i).transform.position += Random.insideUnitSphere * shakiness;
-
                     i++;
                 }
             }
@@ -191,7 +178,6 @@ public class PlayerCubeFlock : MonoBehaviour
             if (i != cubes.transform.childCount - 1)
             {
                 cubes.transform.GetChild(i).GetComponent<Renderer>().material = dissolverMat;
-
                 cubes.transform.GetChild(i).GetComponent<Renderer>().material.SetTextureOffset("_Dissolver", new Vector2(Random.Range(0, 1.0f), Random.Range(0, 1.0f)));
             }
             else
@@ -220,10 +206,6 @@ public class PlayerCubeFlock : MonoBehaviour
                 cubes.transform.GetChild(i).GetComponent<Renderer>().material = changeSkin;
                 cubes.transform.GetChild(i).GetComponent<Renderer>().material.SetTextureOffset("_Dissolver", new Vector2(x, y));
                 cubes.transform.GetChild(i).GetComponent<Renderer>().material.SetTextureOffset("_DissolverOpposite", new Vector2(x, y));
-            }
-            else
-            {
-                cubes.transform.GetChild(i).gameObject.AddComponent<FadeOutParticl>();
             }
         }
     }

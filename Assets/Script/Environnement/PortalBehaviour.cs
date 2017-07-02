@@ -10,6 +10,7 @@ public class PortalBehaviour : MonoBehaviour, IInputsObservable
     public int direction;
     public WorldBehaviour wolrdBehaviour;
     public bool usable; //Seul les portals de début sont à false, il faut sortir du portail pour l'activer
+    private bool used = false;
     public List<GameObject> pillars;
     public GameObject center;
     public Text text;
@@ -78,6 +79,8 @@ public class PortalBehaviour : MonoBehaviour, IInputsObservable
 
             cubeCentered = false;
             pillarUp = false;
+
+            used = false;
         }
     }
 
@@ -142,13 +145,14 @@ public class PortalBehaviour : MonoBehaviour, IInputsObservable
         {
             if (!lastPortal)
             {
-                if (usable)
+                if (usable && !used)
                 {
                     if (Input.GetKeyDown(keys["Interact"]))
                     {
                         startTime = Time.time;
                         StartCoroutine(upPillarsCoroutine());
 
+                        other.GetComponent<PlayerController>().displayInteractionHelper(false);
                         //center
                         centerFrom = new Vector3(other.transform.position.x, 0, other.transform.position.z);
                         centerTo = new Vector3(this.GetComponent<BoxCollider>().transform.TransformPoint(Vector3.zero).x, 0, this.GetComponent<BoxCollider>().transform.TransformPoint(Vector3.zero).z);
@@ -158,16 +162,18 @@ public class PortalBehaviour : MonoBehaviour, IInputsObservable
                         //Camera
                         Camera.main.GetComponent<Crosshair>().display = false;
                         other.GetComponent<PlayerController>().setControllable(false);
+                        used = true;
                     }
                 }
             }
             else
             {
-                if (usable)
+                if (usable && !used)
                 {
                     if (Input.GetKeyDown(keys["Interact"]))
                     {
                         GameObject.FindWithTag("Player").GetComponent<Player>().EndLvl(false);
+                        used = true;
                     }
                 }
             }
@@ -210,7 +216,7 @@ public class PortalBehaviour : MonoBehaviour, IInputsObservable
 
     IEnumerator downPillarsCoroutine()
     {
-
+        used = true;
         float distCovered = (Time.time - startTime) * speedPillar;
         float fracJourney = distCovered / journeyLengthPillar;
 
@@ -227,59 +233,6 @@ public class PortalBehaviour : MonoBehaviour, IInputsObservable
         }
         Camera.main.GetComponent<Crosshair>().display = true;
         player.gameObject.GetComponent<PlayerController>().setControllable(true);
+        used = false;
     }
 }
-
-
-
-
-/*
-
-
-    using UnityEngine;
-using System.Collections;
-
-public class PortalBehaviour : MonoBehaviour 
-{
-    public bool lastPortal = false; //Si c'est le dernier portal, on ne TP pas
-    public int direction;
-    public WorldBehaviour wolrdBehaviour;
-    public bool usable; //Seul les portals de début sont à false, il faut sortir du portail pour l'activer
-
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.tag == "Player")
-        {
-            if (!lastPortal)
-            {
-                if (usable)
-                {
-                    wolrdBehaviour.changeRoom(direction); //changement de salle
-                }
-            }
-            else
-            {
-                //GameObject.FindWithTag("CanvasEndDungeon").transform.GetChild(0).transform.gameObject.SetActive(true);
-
-                //other.GetComponent<PlayerController>().setControllable(false);
-                //Cursor.visible = true;
-               // Cursor.lockState = CursorLockMode.None;
-
-GameObject.FindWithTag("Player").GetComponent<Player>().EndLvl(false);
-            }
-            usable = false;
-        }
-    }
-
-    void OnTriggerExit(Collider other)
-{
-    if (other.tag == "Player")
-    {
-        usable = true;
-    }
-}
-}
-
-
-
-*/

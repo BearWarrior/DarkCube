@@ -74,12 +74,12 @@ public class accessMenu : MonoBehaviour, IInputsObservable
         {
             if (!inMenu)
             {
-                //if (Input.GetKeyDown(KeyCode.E))
                 if (Input.GetKeyDown(keys["Interact"]))
                 {
                     if (player.GetComponent<PlayerController>().getControllable())
                     {
                         inMenu = true;
+                        other.GetComponent<PlayerController>().displayInteractionHelper(false);
                         //On centre le cube sur la platform
                         centerStartTime = Time.time;
                         centerFrom = new Vector3(other.transform.position.x, 0, other.transform.position.z);
@@ -135,8 +135,8 @@ public class accessMenu : MonoBehaviour, IInputsObservable
             //On remet le MecaArm en posInit
             gameObject.SendMessage("quitMenu", SendMessageOptions.DontRequireReceiver);
             //On sauve les sorts équipé et dans l'inventaire
-            player.GetComponent<Player>().sauvegarderSorts();
-            GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().sauvegarder();
+            player.GetComponent<Player>().Save();
+            GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().Save();
         }
     }
 

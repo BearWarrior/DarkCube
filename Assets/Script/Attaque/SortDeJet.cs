@@ -152,6 +152,8 @@ public class SortDeJet : Attaque
              direction = (hit.point - spawnPoint) / Vector3.Distance(hit.point, spawnPoint);*/
         Vector3 direction = new Vector3(1, 0, 0);
 
+        int nbProjTot = 1;
+
         //CUSTOM2
         proj = new GameObject("projComplexe");
         proj.transform.position = spawnPoint;
@@ -161,6 +163,7 @@ public class SortDeJet : Attaque
         projPrin.GetComponent<Rigidbody>().velocity = 75 * direction * Time.deltaTime * vitesseProj;
         if (custom2 == EnumScript.CustomProj2.MultiProj)
         {
+            nbProjTot += nbProjSec;
             int interval = 360 / nbProjSec;
             float angle = 0;
             float rayon = 0.3f;
@@ -168,6 +171,9 @@ public class SortDeJet : Attaque
             for(int i = 0; i < nbProjSec; i++)
             {
                 angle = i * interval;
+                if (nbProjSec == 3)
+                    angle -= 30;
+
                 angle = (float)(angle * Mathf.PI / 180.0);
                 float z, y;
                 if(angle  > 3.0 * Mathf.PI / 2.0) //3Pi/4
@@ -199,17 +205,24 @@ public class SortDeJet : Attaque
                 Vector3 newDirection = Quaternion.Euler(0, 0, 0) * new Vector3(0, y, z);
                 projSec.GetComponent<Rigidbody>().velocity = 75 * (direction + 0.5f*newDirection) * Time.deltaTime * vitesseProj;
             }
+
+            if (nbProjSec == 3)
+            {
+                Debug.Log(proj.transform.eulerAngles);
+                proj.transform.Rotate(0, 0, -30);
+                Debug.Log(proj.transform.eulerAngles);
+            }
         }
 
 
 
         proj.AddComponent<DestroyIfNoChildren>();
 
-        proj.transform.eulerAngles = new Vector3(0, GameObject.FindWithTag("Player").transform.eulerAngles.y, 0);
+        proj.transform.eulerAngles = new Vector3(0, 90, 0);
 
         proj.transform.tag = "AttaquePlayer";
         setAllTagsAndAddVelocityAndEmitter("AttaquePlayer", proj, 75 * direction * Time.deltaTime * vitesseProj, EnumScript.Character.Player);
-        setAllProjData(proj, degats, element, 1, nameParticle);
+        setAllProjData(proj, degats, element, 1, nameParticle, nbProjTot);
     }
 
     public void launchProjPlayer(Vector3 spawnPoint)
@@ -230,6 +243,8 @@ public class SortDeJet : Attaque
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerValue))
             direction = (hit.point - spawnPoint) / Vector3.Distance(hit.point, spawnPoint);
 
+        int nbProjTot = 1;
+
         //CUSTOM2
         proj = new GameObject("projComplexe");
         proj.transform.position = spawnPoint;
@@ -240,6 +255,7 @@ public class SortDeJet : Attaque
         projPrin.GetComponent<Rigidbody>().velocity = 75 * direction * Time.deltaTime * vitesseProj;
         if (custom2 == EnumScript.CustomProj2.MultiProj)
         {
+            nbProjTot += nbProjSec;
             int interval = 360 / nbProjSec;
             float angle = 0;
             float rayon = 0.3f;
@@ -247,6 +263,9 @@ public class SortDeJet : Attaque
             for(int i = 0; i < nbProjSec; i++)
             {
                 angle = i * interval;
+                if (nbProjSec == 3)
+                    angle -= 30;
+
                 angle = (float)(angle * Mathf.PI / 180.0);
                 float x, y;
                 if(angle  > 3.0 * Mathf.PI / 2.0) //3Pi/4
@@ -280,7 +299,7 @@ public class SortDeJet : Attaque
             }
         }
 
-
+       
 
         proj.AddComponent<DestroyIfNoChildren>();
 
@@ -288,8 +307,7 @@ public class SortDeJet : Attaque
 
         proj.transform.tag = "AttaquePlayer";
         setAllTagsAndAddVelocityAndEmitter("AttaquePlayer", proj, 75 * direction * Time.deltaTime * vitesseProj, EnumScript.Character.Player);
-        setAllProjData(proj, degats, element, 1, nameParticle);
-
+        setAllProjData(proj, degats, element, 1, nameParticle, nbProjTot);
 
         //ProjectileData projData = proj.AddComponent<ProjectileData>();
         //projData.degats = degats;
@@ -309,10 +327,9 @@ public class SortDeJet : Attaque
         proj.transform.tag = "AttaqueEnemy";
         setAllTagsAndAddVelocityAndEmitter("AttaqueEnemy", proj, 75 * direction * Time.deltaTime * vitesseProj, EnumScript.Character.Enemy);
 
-        setAllProjData(proj, degats, element, 1, nameParticle);
+        setAllProjData(proj, degats, element, 1, nameParticle, nbProjSec+1);
     }
 
-    
     public EnumScript.CustomProj1 getCustom1()
     {
         return custom1;
@@ -330,70 +347,4 @@ public class SortDeJet : Attaque
     {
         custom2 = custom;
     }
-
-    //public void createProj(float offsetH, float offsetW)
-    //{
-
-
-    //    proj = GameObject.Instantiate(Resources.Load("Projectiles/" + nomProj), GameObject.Find("SpawnProjectile").transform.position + new Vector3(offsetW, offsetH, 0), new Quaternion(0, 0, 0, 0)) as GameObject;
-    //    proj.transform.parent = null;
-
-    //    if (listProjCreated == null)
-    //        listProjCreated = new List<GameObject>();
-
-    //    listProjCreated.Add(proj);
-
-    //}
-
-    //with old projectile (gravity etc)
-    //public void launchProj()
-    //{
-    //    Debug.Log("SHOOT : " + "Projectiles/" + nomProj + element.ToString() + "Anim");
-
-
-    //    RaycastHit hit;
-    //    Ray ray = Camera.main.ScreenPointToRay(new Vector2(Screen.width / 2, Screen.height / 2 + 0.08f * Screen.height));
-    //    //Recuperation du layerMask Player et Projectile
-    //    LayerMask layerPlayer = LayerMask.GetMask("Player");
-    //    LayerMask layerProj = LayerMask.GetMask("Projectile");
-    //    int layerValue = layerPlayer.value | layerProj.value;
-    //    //Inversion (on avoir la detection de tout SAUF du joueur et des projectiles
-    //    layerValue = ~layerValue;
-
-    //    Vector3 direction = new Vector3(0, 0, 0);
-    //    if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerValue))
-    //        direction = (hit.point - GameObject.Find("SpawnProjectile").transform.position) / Vector3.Distance(hit.point, GameObject.Find("SpawnProjectile").transform.position);
-
-
-    //    GameObject whole = new GameObject();
-    //    whole.transform.position = GameObject.Find("SpawnProjectile").transform.position;
-    //    foreach (GameObject go in listProjCreated)
-    //    {
-    //        go.transform.SetParent(whole.transform);
-    //    }
-
-    //    whole.transform.eulerAngles = new Vector3(0, GameObject.FindWithTag("Player").transform.eulerAngles.y, 0);
-
-
-
-    //    foreach (GameObject go in listProjCreated)
-    //    {
-    //        //Debug.Log("direction : " + direction);
-    //        //Debug.Log("vitesseProj : " + vitesseProj);
-    //        go.transform.parent = null;
-    //        go.GetComponent<Rigidbody>().velocity = 75 * direction * Time.deltaTime * vitesseProj;
-    //        go.GetComponent<Rigidbody>().useGravity = false;
-    //    }
-
-
-    //    listProjCreated.Clear();
-    //    GameObject.Destroy(whole.gameObject);
-    //}
-
-    //Appelé depuis le script Player (Coroutine)
-    //public void shootRafale()
-    //{
-    //    createProj(0, 0);
-    //    launchProj();
-    //}
 }

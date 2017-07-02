@@ -51,7 +51,6 @@ public class EnemyBehaviour : MonoBehaviour
 
     public void enemyDied(GameObject en)
     {
-        int i = 0;
         listEnemy[en.GetComponent<Enemy>().numRoom].Remove(en);
 
         if (listEnemy[en.GetComponent<Enemy>().numRoom].Count == 0) //Si la salle n'a plus d'enemy, on active le TP

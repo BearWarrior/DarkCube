@@ -86,7 +86,7 @@ public class MenuMain : MonoBehaviour
     void Awake()
     {
         //PlayerPrefs.DeleteKey("Inputs");
-        load();
+        Load();
     }
 
     void OnGUI()
@@ -105,7 +105,7 @@ public class MenuMain : MonoBehaviour
                     keys[changingKey.name] = e.keyCode;
                     changingKey.transform.GetChild(0).gameObject.GetComponent<Text>().text = e.keyCode.ToString();
                     changingKey = null;
-                    save();
+                    Save();
                 }
             }
             else if (e.isMouse)
@@ -113,7 +113,7 @@ public class MenuMain : MonoBehaviour
                 keys[changingKey.name] = (KeyCode)System.Enum.Parse(typeof(KeyCode), "mouse" + e.button, true);
                 changingKey.transform.GetChild(0).gameObject.GetComponent<Text>().text = keys[changingKey.name].ToString();
                 changingKey = null;
-                save();
+                Save();
             }
             else if(e.shift)
             {
@@ -122,24 +122,24 @@ public class MenuMain : MonoBehaviour
                     keys[changingKey.name] = KeyCode.LeftShift;
                     changingKey.transform.GetChild(0).gameObject.GetComponent<Text>().text = keys[changingKey.name].ToString();
                     changingKey = null;
-                    save();
+                    Save();
                 }
                 if (Input.GetKey(KeyCode.RightShift))
                 {
                     keys[changingKey.name] = KeyCode.RightShift;
                     changingKey.transform.GetChild(0).gameObject.GetComponent<Text>().text = keys[changingKey.name].ToString();
                     changingKey = null;
-                    save();
+                    Save();
                 }
             }
         }
     }
 
     //______________________SAVE____________________//
-    public void save()
+    public void Save()
     {
         //Graphics
-        PlayerPrefs.SetString("Graphics", fullScreen + "/" + resW + "/" + resW);
+        PlayerPrefs.SetString("Graphics", fullScreen + "/" + resW + "/" + resH);
         //Inputs
         string inputs = "";
         foreach (KeyValuePair<string, KeyCode> entry in keys)
@@ -147,9 +147,11 @@ public class MenuMain : MonoBehaviour
         inputs = inputs.Substring(0, inputs.Length - 1);
         Debug.Log("save : " + inputs);
         PlayerPrefs.SetString("Inputs", inputs);
+        if (GameObject.Find("Saving") != null)
+            GameObject.Find("Saving").GetComponent<SavingLogo>().DisplayLogo();
     }
 
-    public void load()
+    public void Load()
     {
         //GRAPHICS
         string data = PlayerPrefs.GetString("Graphics", "none");
@@ -165,13 +167,42 @@ public class MenuMain : MonoBehaviour
             if (!int.TryParse(array[1], out resW))
                 resW = 1600;
             if (!int.TryParse(array[2], out resH))
-                resW = 900;
+                resH = 900;
+            switch(resH)
+            {
+                case 1080:
+                    graphicDropDownResolution.GetComponent<Dropdown>().value = 0;
+                    graphicDropDownResolution.GetComponent<Dropdown>().captionText = graphicDropDownResolution.GetComponent<Dropdown>().captionText;
+                    break;
+                case 1200:
+                    graphicDropDownResolution.GetComponent<Dropdown>().value = 1;
+                    graphicDropDownResolution.GetComponent<Dropdown>().captionText = graphicDropDownResolution.GetComponent<Dropdown>().captionText;
+                    break;
+                case 900:
+                    graphicDropDownResolution.GetComponent<Dropdown>().value = 2;
+                    graphicDropDownResolution.GetComponent<Dropdown>().captionText = graphicDropDownResolution.GetComponent<Dropdown>().captionText;
+                    break;
+                case 720:
+                    graphicDropDownResolution.GetComponent<Dropdown>().value = 3;
+                    graphicDropDownResolution.GetComponent<Dropdown>().captionText = graphicDropDownResolution.GetComponent<Dropdown>().captionText;
+                    break;
+                case 768:
+                    graphicDropDownResolution.GetComponent<Dropdown>().value = 4;
+                    graphicDropDownResolution.GetComponent<Dropdown>().captionText = graphicDropDownResolution.GetComponent<Dropdown>().captionText;
+                    break;
+                default:
+                    graphicDropDownResolution.GetComponent<Dropdown>().value = 0;
+                    graphicDropDownResolution.GetComponent<Dropdown>().captionText = graphicDropDownResolution.GetComponent<Dropdown>().captionText;
+                    break;
+            }
+
+
         }
         else
         {
             fullScreen = false;
             resW = 1600;
-            resW = 900;
+            resH = 900;
         }
 
         //INPUTS
@@ -295,6 +326,8 @@ public class MenuMain : MonoBehaviour
                 Screen.SetResolution(1024, 768, fullScreen);
                 break;
         }
+        if (Camera.main.GetComponent<Crosshair>() != null)
+            Camera.main.GetComponent<Crosshair>().ReInitPosition();
     }
 
     public void InputsButtonClic(GameObject p_changingKey)
@@ -318,52 +351,9 @@ public class MenuMain : MonoBehaviour
 
     public void ExitLevel()
     {
+        GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().Save();
+        GameObject.FindWithTag("CaracSorts").GetComponent<CaracZones>().Save();
         Time.timeScale = 1;
         SceneManager.LoadScene("RoomMaintenance");
     }
 }
-
-
-/*
-
-     switch(index)
-        {
-            case 0: //Forward
-                //inputsListButton[index]
-                break;
-            case 1: //Backward
-                break;
-            case 2: //Left
-                break;
-            case 3: //Right
-                break;
-            case 4: //Shoot
-                break;
-            case 5: //Face 1
-                break;
-            case 6: //Face 2 
-                break;
-            case 7: //Face 3
-                break;
-            case 8: //Face 4 
-                break;
-            case 9: //Face 5
-                break;
-            case 10: //Face 6
-                break;
-            case 11: //Interact
-                break;
-            case 12: //Jump
-                break;
-            case 13: //FreeCam
-                break;
-            case 14: //FollowCam
-                break;
-            case 15: //Zoom+
-                break;
-            case 16: //Zoom-
-                break;
-        }
-
-
-    */

@@ -266,6 +266,7 @@ public class MenuManagerInGame : MonoBehaviour, IDisplayable
         classChooser.GetComponent<Canvas>().enabled = true;
         classEditor.GetComponent<Canvas>().enabled = true;
         classCreator.GetComponent<Canvas>().enabled = true;
+        GameObject.FindWithTag("Player").GetComponent<PlayerController>().showCanvas(false);
     }
 
     public void hide()
@@ -273,6 +274,7 @@ public class MenuManagerInGame : MonoBehaviour, IDisplayable
         classChooser.GetComponent<Canvas>().enabled = false;
         classEditor.GetComponent<Canvas>().enabled = false;
         classCreator.GetComponent<Canvas>().enabled = false;
+        GameObject.FindWithTag("Player").GetComponent<PlayerController>().showCanvas(true);
     }
 
     public void changeCanvas(int can)
@@ -567,7 +569,7 @@ public class MenuManagerInGame : MonoBehaviour, IDisplayable
         fillClassChooserTable();
     }
 
-    public void sauvegarderSort()
+    public void Save()
     {
         if (selectedType == 1) //Projectile / Jet
         {
@@ -592,6 +594,8 @@ public class MenuManagerInGame : MonoBehaviour, IDisplayable
         }
         resetClassChooser();
         fillClassChooserTable();
+        if(GameObject.Find("Saving") != null)
+            GameObject.Find("Saving").GetComponent<SavingLogo>().DisplayLogo();
     }
 
     public void buttonClicked(int position)
@@ -1082,8 +1086,7 @@ public class MenuManagerInGame : MonoBehaviour, IDisplayable
 
     public void exitMenu()
     {
-        GameObject.FindWithTag("Player").GetComponent<Player>().sauvegarderSorts();
-        GameObject.FindWithTag("Player").GetComponent<Player>().sauvegarderSorts();
+        GameObject.FindWithTag("Player").GetComponent<Player>().Save();
         accessMenu.GetComponent<accessMenu>().exitMenu();
     }
 

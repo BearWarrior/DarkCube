@@ -105,7 +105,7 @@ public class CaracZones : MonoBehaviour
     *   pointsInCooldown
     *   pointsInDegats
     */
-    public void sauvegarder()
+    public void Save()
     {
         PlayerPrefs.SetInt("CaracZones", tabSort.Count);
         for (int i = 0; i < tabSort.Count; i++)
@@ -114,9 +114,11 @@ public class CaracZones : MonoBehaviour
                           tabSort[i].pointsInDuree + ";" + tabSort[i].pointsInCooldown + ";" + tabSort[i].pointsInDegats; ;
             PlayerPrefs.SetString("CaracZones" + i, save);
         }
+        if (GameObject.Find("Saving") != null)
+            GameObject.Find("Saving").GetComponent<SavingLogo>().DisplayLogo();
     }
 
-    public void charger()
+    public void Load()
     {
         int nbSort = PlayerPrefs.GetInt("CaracZones", -1);
         if (nbSort != -1)
@@ -175,7 +177,7 @@ public class CaracZones : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.P))
         {
-            sauvegarder();
+            Save();
         }
     }
 

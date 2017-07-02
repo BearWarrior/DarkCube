@@ -7,6 +7,8 @@ public class SortChooser : MonoBehaviour, IInputsObservable
     private int cubeFace = 1;
     private GameObject posAllCubes;
 
+    private PlayerController playerController;
+
     private Quaternion f1;
     private Quaternion f2;
     private Quaternion f3;
@@ -15,9 +17,6 @@ public class SortChooser : MonoBehaviour, IInputsObservable
     private Quaternion f6;
     private Quaternion fdefault;
     private Quaternion fActualCanvas;
-
-    private bool changingFaceV = false;
-    private bool changingFaceH = false;
 
     private List<List<GameObject>> horizFaces = new List<List<GameObject>>();
     private List<GameObject> vertFaces = new List<GameObject>();
@@ -31,7 +30,6 @@ public class SortChooser : MonoBehaviour, IInputsObservable
 
     public GameObject canvasCubeFace;
 
-    private bool canvasRotating = false;
     private float startTimeRotatingCanvas;
     private float speedRotatingCanvas = 4;
     private float journeyLengthRotatingCanvas = 1;
@@ -40,6 +38,7 @@ public class SortChooser : MonoBehaviour, IInputsObservable
     void Start()
     {
         keys = GameObject.FindWithTag("InputsLoader").GetComponent<InputsLoader>().lookAtInputs(this.gameObject);
+        playerController = GetComponent<PlayerController>();
 
         posAllCubes = this.transform.GetChild(5).gameObject;
 
@@ -56,89 +55,92 @@ public class SortChooser : MonoBehaviour, IInputsObservable
     public void Update()
     {
         int oldCubeFace = cubeFace;
-        
-        if (Input.GetKeyDown(keys["Face1"]))
-        {
-            if (rotHFinished && rotVFinished)
-            {
-                StopAllCoroutines();
-                if (oldCubeFace >= 5)
-                    StartCoroutine(coroutineRotationVH(f1, fdefault, 1));
-                else
-                    StartCoroutine(coroutineRotationHV(f1, fdefault, 1));
 
-                startTimeRotatingCanvas = Time.time;
-                StartCoroutine(coroutineRotationCanvas(fActualCanvas, f1));
+        if (playerController.getControllable())
+        {
+            if (Input.GetKeyDown(keys["Face1"]))
+            {
+                if (rotHFinished && rotVFinished)
+                {
+                    StopAllCoroutines();
+                    if (oldCubeFace >= 5)
+                        StartCoroutine(coroutineRotationVH(f1, fdefault, 1));
+                    else
+                        StartCoroutine(coroutineRotationHV(f1, fdefault, 1));
+
+                    startTimeRotatingCanvas = Time.time;
+                    StartCoroutine(coroutineRotationCanvas(fActualCanvas, f1));
+                }
             }
-        }
-        if (Input.GetKeyDown(keys["Face2"]))
-        {
-            if (rotHFinished && rotVFinished)
+            if (Input.GetKeyDown(keys["Face2"]))
             {
-                StopAllCoroutines();
-                if (oldCubeFace >= 5)
-                    StartCoroutine(coroutineRotationVH(f2, fdefault, 2));
-                else
-                    StartCoroutine(coroutineRotationHV(f2, fdefault, 2));
+                if (rotHFinished && rotVFinished)
+                {
+                    StopAllCoroutines();
+                    if (oldCubeFace >= 5)
+                        StartCoroutine(coroutineRotationVH(f2, fdefault, 2));
+                    else
+                        StartCoroutine(coroutineRotationHV(f2, fdefault, 2));
 
-                startTimeRotatingCanvas = Time.time;
-                StartCoroutine(coroutineRotationCanvas(fActualCanvas, f2));
+                    startTimeRotatingCanvas = Time.time;
+                    StartCoroutine(coroutineRotationCanvas(fActualCanvas, f2));
+                }
             }
-        }
-        if (Input.GetKeyDown(keys["Face3"]))
-        {
-            if (rotHFinished && rotVFinished)
+            if (Input.GetKeyDown(keys["Face3"]))
             {
-                StopAllCoroutines();
-                if (oldCubeFace >= 5)
-                    StartCoroutine(coroutineRotationVH(f3, fdefault, 3));
-                else
-                    StartCoroutine(coroutineRotationHV(f3, fdefault, 3));
+                if (rotHFinished && rotVFinished)
+                {
+                    StopAllCoroutines();
+                    if (oldCubeFace >= 5)
+                        StartCoroutine(coroutineRotationVH(f3, fdefault, 3));
+                    else
+                        StartCoroutine(coroutineRotationHV(f3, fdefault, 3));
 
-                startTimeRotatingCanvas = Time.time;
-                StartCoroutine(coroutineRotationCanvas(fActualCanvas, f3));
+                    startTimeRotatingCanvas = Time.time;
+                    StartCoroutine(coroutineRotationCanvas(fActualCanvas, f3));
+                }
             }
-        }
-        if (Input.GetKeyDown(keys["Face4"]))
-        {
-            if (rotHFinished && rotVFinished)
+            if (Input.GetKeyDown(keys["Face4"]))
             {
-                StopAllCoroutines();
-                if (oldCubeFace >= 5)
-                    StartCoroutine(coroutineRotationVH(f4, fdefault, 4));
-                else
-                    StartCoroutine(coroutineRotationHV(f4, fdefault, 4));
+                if (rotHFinished && rotVFinished)
+                {
+                    StopAllCoroutines();
+                    if (oldCubeFace >= 5)
+                        StartCoroutine(coroutineRotationVH(f4, fdefault, 4));
+                    else
+                        StartCoroutine(coroutineRotationHV(f4, fdefault, 4));
 
-                startTimeRotatingCanvas = Time.time;
-                StartCoroutine(coroutineRotationCanvas(fActualCanvas, f4));
+                    startTimeRotatingCanvas = Time.time;
+                    StartCoroutine(coroutineRotationCanvas(fActualCanvas, f4));
+                }
             }
-        }
-        if (Input.GetKeyDown(keys["Face5"]))
-        {
-            if (rotHFinished && rotVFinished)
+            if (Input.GetKeyDown(keys["Face5"]))
             {
-                StopAllCoroutines();
-                if (oldCubeFace >= 5)
-                    StartCoroutine(coroutineRotationVH(f1, f5, 5));
-                else
-                    StartCoroutine(coroutineRotationHV(f1, f5, 5));
+                if (rotHFinished && rotVFinished)
+                {
+                    StopAllCoroutines();
+                    if (oldCubeFace >= 5)
+                        StartCoroutine(coroutineRotationVH(f1, f5, 5));
+                    else
+                        StartCoroutine(coroutineRotationHV(f1, f5, 5));
 
-                startTimeRotatingCanvas = Time.time;
-                StartCoroutine(coroutineRotationCanvas(fActualCanvas, f5));
+                    startTimeRotatingCanvas = Time.time;
+                    StartCoroutine(coroutineRotationCanvas(fActualCanvas, f5));
+                }
             }
-        }
-        if (Input.GetKeyDown(keys["Face6"]))
-        {
-            if (rotHFinished && rotVFinished)
+            if (Input.GetKeyDown(keys["Face6"]))
             {
-                StopAllCoroutines();
-                if (oldCubeFace >= 5)
-                    StartCoroutine(coroutineRotationVH(f1, f6, 6));
-                else
-                    StartCoroutine(coroutineRotationHV(f1, f6, 6));
+                if (rotHFinished && rotVFinished)
+                {
+                    StopAllCoroutines();
+                    if (oldCubeFace >= 5)
+                        StartCoroutine(coroutineRotationVH(f1, f6, 6));
+                    else
+                        StartCoroutine(coroutineRotationHV(f1, f6, 6));
 
-                startTimeRotatingCanvas = Time.time;
-                StartCoroutine(coroutineRotationCanvas(fActualCanvas, f6));
+                    startTimeRotatingCanvas = Time.time;
+                    StartCoroutine(coroutineRotationCanvas(fActualCanvas, f6));
+                }
             }
         }
 
@@ -166,9 +168,6 @@ public class SortChooser : MonoBehaviour, IInputsObservable
 
     public IEnumerator coroutineRotationHV(Quaternion fH, Quaternion fV, int newCubeFace)
     {
-        changingFaceV = true;
-        changingFaceH = true;
-
         rotHFinished = false;
         rotVFinished = false;
         StartCoroutine(coroutineRotationHorizAll(fH));
@@ -184,9 +183,6 @@ public class SortChooser : MonoBehaviour, IInputsObservable
 
     public IEnumerator coroutineRotationVH(Quaternion fH, Quaternion fV, int newCubeFace)
     {
-        changingFaceV = true;
-        changingFaceH = true;
-
         rotHFinished = false;
         rotVFinished = false;
         StartCoroutine(coroutineRotationVertAll(fV));

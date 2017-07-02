@@ -127,6 +127,7 @@ public class PlayerController : MonoBehaviour, IInputsObservable
         canvasInteractionHelper.transform.SetAsFirstSibling();
         canvasInteractionHelper.transform.localPosition = new Vector3(4.8f, 1.5f, 0);
 
+
         canvasCubeFaces.transform.SetParent(core.transform);
         canvasCubeFaces.transform.SetAsFirstSibling();
         canvasCubeFaces.transform.localPosition = new Vector3(-4.75f, .5f, 0);
@@ -582,7 +583,6 @@ public class PlayerController : MonoBehaviour, IInputsObservable
 
     public void showCanvas(bool show)
     {
-        canvasInteractionHelper.SetActive(show);
         canvasCubeFaces.SetActive(show);
         canvasLifeBar.SetActive(show);
         canvasDash.SetActive(show);

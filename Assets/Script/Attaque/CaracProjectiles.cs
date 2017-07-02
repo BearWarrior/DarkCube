@@ -13,9 +13,10 @@ public struct structSortJet
     public List<EnumScript.Element> listElement;
 
     public int lvl;
-    public int xpActuel;
-    public int lvlPrevious;
-    public int xpTemp;
+    public float xpActuel;
+    public int lvlPrevious; //lvl before beginning a room
+    public float xpPrevious; //xp before beginning a room
+    public float xpTemp;
     public int nbXpPerShot;
     public int nbPointsDispo;
     public float degatsPerLevel; 
@@ -126,7 +127,7 @@ public class CaracProjectiles : MonoBehaviour
         tabSort.Add(BALL);
 
 
-        charger();
+        Load();
     }
 
 
@@ -154,13 +155,13 @@ public class CaracProjectiles : MonoBehaviour
         return null;
     }
 
-    /* Points a sauvegarder :
+    /*  To save :
     *   nomParticle
     *   lvl
     *   xpActuel
     *   nbPointsDispo
     */
-    public void sauvegarder()
+    public void Save()
     {
         PlayerPrefs.SetInt("CaracProjectiles", tabSort.Count);
         for(int i = 0; i < tabSort.Count; i++)
@@ -168,9 +169,11 @@ public class CaracProjectiles : MonoBehaviour
             string save = tabSort[i].nomParticle + ";" + tabSort[i].lvl + ";" + tabSort[i].xpActuel + ";" + tabSort[i].nbPointsDispo + ";";
             PlayerPrefs.SetString("CaracProjectiles" + i, save);
         }
+        if (GameObject.Find("Saving") != null)
+            GameObject.Find("Saving").GetComponent<SavingLogo>().DisplayLogo();
     }
 
-    public void charger()
+    public void Load()
     {
         int nbSort = PlayerPrefs.GetInt("CaracProjectiles", -1);
         if(nbSort != -1)
@@ -187,7 +190,9 @@ public class CaracProjectiles : MonoBehaviour
                         {
                             structSortJet s = tabSort[j];
                             s.lvl = Int32.Parse(array[1]);
-                            s.xpActuel = Int32.Parse(array[2]);
+                            s.lvlPrevious = s.lvl;
+                            s.xpActuel = float.Parse(array[2]);
+                            s.xpPrevious = s.xpActuel;
                             s.nbPointsDispo = Int32.Parse(array[3]);
                             tabSort[j] = s;
                             break;
@@ -198,21 +203,22 @@ public class CaracProjectiles : MonoBehaviour
         }
     }
 
-    public void gagnerXP(string nameParticule)
-    {
+    public void gagnerXP(string nameParticule, float divider)
+    {  
         for(int i = 0; i < tabSort.Count; i++)
         {
             if (tabSort[i].nomParticle.Equals(nameParticule))
             {
                 structSortJet s = tabSort[i];
-                s.xpActuel += s.nbXpPerShot;
-                s.xpTemp += s.nbXpPerShot;
+                //Debug.Log("Gagner XP : " + nameParticule + "  nbPart : " + divider + "   xpGagné : " + (float)(s.nbXpPerShot) / divider);
+                s.xpActuel += (float)(s.nbXpPerShot) / divider;
+                s.xpTemp += (float)(s.nbXpPerShot / divider);
 
                 //LVL UP sort
                 if (s.xpActuel > xpToLvlUp * Math.Pow(multXpByLvl, s.lvl))
                 {
-                    print("lvl UP");
-                    s.xpActuel -= (int) ( xpToLvlUp * Math.Pow(multXpByLvl, s.lvl));
+                    //print("lvl UP");
+                    s.xpActuel -= (float)(xpToLvlUp * Math.Pow(multXpByLvl, s.lvl));
                     s.lvl++;
                     s.nbPointsDispo++;
                     GameObject.FindWithTag("Player").GetComponent<Player>().majSortsProjEquip(s);
@@ -225,7 +231,7 @@ public class CaracProjectiles : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.P))
-            sauvegarder();
+            Save();
     }
 
     public int getLvlFromNamePart(string nameParticule)

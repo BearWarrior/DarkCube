@@ -53,6 +53,10 @@ public class MenuUnivers : MonoBehaviour, IDisplayable
 
     public GameObject teleporter;
 
+    private const float delayDoubleClick = 0.4f;
+    private float doubleClickStart = -1;
+    private int lastStellarSystem;
+
     private List<string> listNameStellarSystem = new List<string>
     {
         "SS-X28",
@@ -148,10 +152,21 @@ public class MenuUnivers : MonoBehaviour, IDisplayable
 
     public void stellarSystemClic(int ss)
     {
-        unclicAllMission();
-        activeStellarSystem = ss;
-        updateCanvasScreen(listNameStellarSystem[ss], listDescrStellarSystem[ss], "Choisir");
-        listPanels[ss].GetComponent<Image>().fillAmount = 1;
+        if (doubleClickStart > 0 && (Time.time - doubleClickStart) < delayDoubleClick) //double click
+        {
+            if (ss == lastStellarSystem) //Si le clic se fait au même endroit que le précédent
+                oK();
+            doubleClickStart = -1;
+        }
+        else // premier click ou click trop tard, on considere ce clic comme le nouveau premier click
+        {
+            doubleClickStart = Time.time;
+            lastStellarSystem = ss;
+            unclicAllMission();
+            activeStellarSystem = ss;
+            updateCanvasScreen(listNameStellarSystem[ss], listDescrStellarSystem[ss], "Choisir");
+            listPanels[ss].GetComponent<Image>().fillAmount = 1;
+        }
     }
 
     private void unclicAllMission()
@@ -185,11 +200,11 @@ public class MenuUnivers : MonoBehaviour, IDisplayable
         startTimeCentering = Time.time; //Start time of lerping 
         journeyLength = Vector3.Distance(listInitStellarSystem[activeStellarSystem], Vector3.zero); //Calcul the distance between their pos and their destination
         rotateStellarSystem.stopRotation();
-        
+
         //change RigidBodies
         Destroy(GetComponent<Rigidbody>());
         Rigidbody rigidbody;
-        for(int i = 0; i < listStellarSystem.Count; i++)
+        for (int i = 0; i < listStellarSystem.Count; i++)
         {
             rigidbody = listStellarSystem[i].AddComponent<Rigidbody>();
             rigidbody.useGravity = false;
@@ -239,7 +254,7 @@ public class MenuUnivers : MonoBehaviour, IDisplayable
 
     public void oK()
     {
-        if (!isUnCentering && !isUnScaling)
+        if (!isUnCentering && !isUnScaling && !isCentering && !isScaling)
         {
             if (panelAct == 0)
             {
@@ -253,7 +268,7 @@ public class MenuUnivers : MonoBehaviour, IDisplayable
                 cameraTp.newDest(destinationTP.transform.position, lookAtTP.transform.position);
                 teleporter.GetComponent<Teleporter>().startTP();
                 GameObject.FindWithTag("Player").GetComponent<PlayerController>().showCanvas(false);
-
+                hide();
                 StartCoroutine(launchLvlInSec(4.5f));
             }
         }
@@ -267,14 +282,11 @@ public class MenuUnivers : MonoBehaviour, IDisplayable
 
     public void back()
     {
-        if (!isCentering && !isScaling)
+        if (!isCentering && !isScaling && !isUnCentering && !isUnScaling)
         {
             if (panelAct == 0)
             {
-               /* if (accessMenu.GetComponent<accessMenu>().isReady())
-                {*/
-                    accessMenu.exitMenu();
-               /*}*/
+                accessMenu.exitMenu();
             }
             else if (panelAct == 1)
             {
@@ -299,7 +311,7 @@ public class MenuUnivers : MonoBehaviour, IDisplayable
             float distCovered = (Time.time - startTimeCentering) * speedCentering;
             float fracJourney = distCovered / journeyLength;
             transform.position = Vector3.Lerp(startPosCentering, startPosCentering - endPosCentering, fracJourney);
-            
+
             if (fracJourney > 1)
                 isCentering = false;
         }
@@ -343,8 +355,7 @@ public class MenuUnivers : MonoBehaviour, IDisplayable
         //Back to game
         if (Input.GetKeyDown(KeyCode.Escape))
             if (isMenuActive)
-                if (accessMenu.GetComponent<accessMenu>().isReady())
-                    accessMenu.GetComponent<accessMenu>().exitMenu();
+                accessMenu.GetComponent<accessMenu>().exitMenu();
     }
 
 

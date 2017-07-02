@@ -52,7 +52,7 @@ public abstract class Attaque
         }
     }
 
-    public void setAllProjData(GameObject go, float p_degats, EnumScript.Element p_elem, int p_type, string p_nameParticle)
+    public void setAllProjData(GameObject go, float p_degats, EnumScript.Element p_elem, int p_type, string p_nameParticle, int nbProj)
     {
         if (go.GetComponent<Rigidbody>() != null)
         {
@@ -61,10 +61,11 @@ public abstract class Attaque
             projD.element = p_elem;
             projD.type = p_type;
             projD.nomParticule = p_nameParticle;
+            projD.nbProj = nbProj;
         }
         for (int i = 0; i < go.transform.childCount; i++)
         {
-            setAllProjData(go.transform.GetChild(i).transform.gameObject, p_degats, p_elem, p_type, p_nameParticle);
+            setAllProjData(go.transform.GetChild(i).transform.gameObject, p_degats, p_elem, p_type, p_nameParticle, nbProj);
         }
     }
 

@@ -17,6 +17,20 @@ public class EnumScript
 
     public enum Character { Player, Enemy};
 
+    public enum Cardinal { NORTH, EAST, SOUTH, WEST, NONE };
+
+    public static Cardinal getOppositeCard(Cardinal c)
+    {
+        if (c == Cardinal.NORTH)
+            return Cardinal.SOUTH;
+        else if (c == Cardinal.EAST)
+            return Cardinal.WEST;
+        else if (c == Cardinal.SOUTH)
+            return Cardinal.NORTH;
+        else
+            return Cardinal.EAST;
+    }
+
     public static Element getElemFromStr(string nom)
     {
         switch(nom)
