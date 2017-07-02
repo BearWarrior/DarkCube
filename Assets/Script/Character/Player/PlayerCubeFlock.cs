@@ -18,6 +18,14 @@ public class PlayerCubeFlock : MonoBehaviour
     private bool dead;
     private bool deathApplied;
 
+    //SHADER DISSOLVE
+    private bool dissolving = false;
+    private float from = 0.2f;
+    private float to = .8f;
+    private float startTime;
+    private float journeyLength = 1.0f;
+    private float speed = .4f;
+
     // Use this for initialization
     void Start ()
     {
@@ -44,9 +52,26 @@ public class PlayerCubeFlock : MonoBehaviour
 	// Update is called once per frame
 	void FixedUpdate ()
     {
+        if(dissolving)
+        {
+            float dissolveCovered = (Time.time - startTime) * speed;
+            float fracJourney = dissolveCovered / journeyLength;
+
+            for (int i = 0; i < cubes.transform.childCount; i++)
+                if (i != cubes.transform.childCount - 1)
+                    cubes.transform.GetChild(i).GetComponent<Renderer>().material.SetFloat("_SliceAmount", Mathf.Lerp(from, to, fracJourney));
+
+            if (fracJourney > 1)
+            {
+                dissolving = false;
+                for (int i = 0; i < cubes.transform.childCount; i++)
+                    if (i != cubes.transform.childCount - 1)
+                        cubes.transform.GetChild(i).GetComponent<Renderer>().material.SetFloat("_SliceAmount", 1);
+            }
+        }
+
         if (!dead)
         {
-
             directionPoint.transform.localPosition = 1f * direction;
 
             //Calcul de la distance entre le cube et la sphere de direction
@@ -55,7 +80,6 @@ public class PlayerCubeFlock : MonoBehaviour
             for (i = 0; i < nbCube; i++)
             {
                 distance[i] = Mathf.Sqrt(Vector3.Distance(directionPoint.transform.position, cubes.transform.GetChild(i).transform.position));
-
                 distMax = (distance[i] > distMax) ? distance[i] : distMax;
             }
             distMax -= 0.0f;
@@ -81,9 +105,7 @@ public class PlayerCubeFlock : MonoBehaviour
                     cubes.transform.GetChild(i).transform.position = Vector3.Lerp(cubes.transform.GetChild(i).transform.position, posToGo.transform.GetChild(cptFace).GetChild(j).transform.position, 1.4f - ((distance[i] / distMax)));
                     sortie += (distance[i] / distMax) * (distance[i] / distMax) + "\n";
                     cubes.transform.GetChild(i).transform.rotation = Quaternion.Lerp(cubes.transform.GetChild(i).transform.rotation, posToGo.transform.GetChild(cptFace).GetChild(j).transform.rotation, 1.4f - ((distance[i] / distMax)));
-
                     cubes.transform.GetChild(i).transform.position += Random.insideUnitSphere * shakiness;
-
                     i++;
                 }
             }
@@ -140,5 +162,51 @@ public class PlayerCubeFlock : MonoBehaviour
     public void Die()
     {
         dead = true;
+    }
+
+    public void disapear()
+    {
+        dissolving = true;
+        startTime = Time.time;
+
+        Material dissolverMat = Resources.Load("Player/Materials/Dissolver") as Material;
+        Texture textureCube = GameObject.FindWithTag("Player").GetComponent<Player>().getSkin();
+        dissolverMat.mainTexture = textureCube;
+
+        for (int i = 0; i < cubes.transform.childCount; i++)
+        {
+            if (i != cubes.transform.childCount - 1)
+            {
+                cubes.transform.GetChild(i).GetComponent<Renderer>().material = dissolverMat;
+                cubes.transform.GetChild(i).GetComponent<Renderer>().material.SetTextureOffset("_Dissolver", new Vector2(Random.Range(0, 1.0f), Random.Range(0, 1.0f)));
+            }
+            else
+            {
+                cubes.transform.GetChild(i).gameObject.AddComponent<FadeOutParticl>();
+            }
+        }
+    }
+
+    public void changeSkin(Texture newText)
+    {
+        dissolving = true;
+        startTime = Time.time;
+
+        Material changeSkin = Resources.Load("Player/Materials/ChangeSkin") as Material;
+        Texture textureCube = GameObject.FindWithTag("Player").GetComponent<Player>().getSkin();
+        changeSkin.SetTexture("_MainTex", textureCube);
+        changeSkin.SetTexture("_SecondaryTex", newText);
+
+        for (int i = 0; i < cubes.transform.childCount; i++)
+        {
+            if (i != cubes.transform.childCount - 1)
+            {
+                float x = Random.Range(0, 1.0f);
+                float y = Random.Range(0, 1.0f);
+                cubes.transform.GetChild(i).GetComponent<Renderer>().material = changeSkin;
+                cubes.transform.GetChild(i).GetComponent<Renderer>().material.SetTextureOffset("_Dissolver", new Vector2(x, y));
+                cubes.transform.GetChild(i).GetComponent<Renderer>().material.SetTextureOffset("_DissolverOpposite", new Vector2(x, y));
+            }
+        }
     }
 }

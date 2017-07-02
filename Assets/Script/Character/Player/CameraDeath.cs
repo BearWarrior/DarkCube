@@ -13,6 +13,8 @@ public class CameraDeath : MonoBehaviour
     private float startTime = 0;
     private float speed = 4;
 
+    private bool canvasDeathAnimationLaunched = false;
+
 	// Use this for initialization
 	void Start ()
     {
@@ -31,12 +33,12 @@ public class CameraDeath : MonoBehaviour
             }
         }
 
-        canvasDeath = GameObject.Find("CanvasDeathMenu");
-        canvasDeath.transform.position = placeToGo.position + 0.8f*((player.transform.position - placeToGo.position) / distance);
-        canvasDeath.transform.rotation = Camera.main.transform.rotation;
-
-        placeToGo.LookAt(player.transform);
-        canvasDeath.transform.rotation = placeToGo.transform.rotation;
+        canvasDeath = GameObject.Find("MenuDeath");
+        canvasDeath.transform.SetParent(placeToGo); //Temporary, used to move
+        canvasDeath.transform.position = placeToGo.position;
+        canvasDeath.transform.localPosition += new Vector3(0, -.6f, .75f);
+        canvasDeath.transform.eulerAngles = new Vector3(45, placeToGo.transform.eulerAngles.y, 0);
+        canvasDeath.transform.SetParent(null);
 
         startTime = Time.time;
     }
@@ -49,12 +51,17 @@ public class CameraDeath : MonoBehaviour
             float distCovered = (Time.time - startTime) * speed;
             float fracJourney = distCovered / distance;
             transform.position = Vector3.Lerp(playerCameraTarget.position, placeToGo.position, fracJourney);
-            transform.LookAt(player.transform);
+            transform.eulerAngles = new Vector3(45, placeToGo.eulerAngles.y, 0);
         }
         else
         {
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
+            if (!canvasDeathAnimationLaunched)
+            {
+                canvasDeath.GetComponent<MenuDeath>().animateMenu();
+                canvasDeathAnimationLaunched = true;
+            }
         }
     }
 }

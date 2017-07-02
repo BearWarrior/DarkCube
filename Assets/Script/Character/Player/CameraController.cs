@@ -11,79 +11,88 @@ public class CameraController : MonoBehaviour
 
     public float vitesse;
 
-    public GameObject cameraLookAtPlayer;
-    public Vector3 cameraLookAtMenuTR;
+    public GameObject cameraLookAtPlayer; //Will be set by the accessMenu script
+    public Vector3 cameraLookAtMenuTR; //Will be set by the accessMenu script
+    public GameObject menuAssociatedWith; //Will be set by the accessMenu script
 
     //Place camera
-    public GameObject posCameraMenu;
+    public GameObject posCameraMenu { get; set; }
+    public float cameraToMenuSpeed { get; set; }
     private float cameraStartTime;
-    private float cameraSpeed;
     private float cameraJourneyLength;
     private Vector3 cameraFrom;
     private Vector3 cameraTo;
 
-    private bool cameraPlayerToMenu;
-    private bool cameraMenuToPlayer;
+    public bool cameraPlayerToMenu;
+    public bool cameraMenuToPlayer;
 
     void Start () 
     {
         if (player == null)
             player = GameObject.FindWithTag("Player");
         if (target == null)
-        {
             target = GameObject.FindWithTag("CameraTarget");
-        }
         if (cameraLookAtPlayer == null)
             cameraLookAtPlayer = GameObject.FindWithTag("CameraLookAt");
 
-        if(GameObject.FindWithTag("Menu") != null)
-            posCameraMenu = GameObject.FindWithTag("Menu").transform.GetChild(0).gameObject;
         playerInMenu = false;
         lookAtPlayer = true;
-
-        //Camera to Menu
-        cameraSpeed = 2.5f;
     }
 
-	void FixedUpdate () 
+	void FixedUpdate ( )
     {
+
         //Camera sur la cible et regarde le joueur si il n'est pas en menu
         if (!playerInMenu)
+        {
             transform.position = target.transform.position;
-        RaycastHit hit;
-        Ray ray = new Ray(player.transform.position, (target.transform.position - player.transform.position));
-        LayerMask layerPlayer = LayerMask.GetMask("Player");
-        LayerMask layerProj = LayerMask.GetMask("Projectile");
+            RaycastHit hit;
+            Ray ray = new Ray(player.transform.position, (target.transform.position - player.transform.position));
+            LayerMask layerPlayer = LayerMask.GetMask("Player");
+            LayerMask layerProj = LayerMask.GetMask("Projectile");
 
-        int layerValue = ~(layerPlayer.value | layerProj.value);
+            int layerValue = ~(layerPlayer.value | layerProj.value);
 
-        //Si il y a un obstable entre la target et le point a regarder, on place la caméra sur le point de contact et on la décale par rapport a sa normale
-        if (Physics.Raycast(ray, out hit, Vector3.Distance(player.transform.position, target.transform.position), layerValue))
-            this.transform.position = hit.point + new Vector3(0.1f * hit.normal.x, 0.1f * hit.normal.y, 0.1f * hit.normal.z);
+            //Si il y a un obstable entre la target et le point a regarder, on place la caméra sur le point de contact en restant à la hauteur initiale et on la décale par rapport a sa normale
+            if (Physics.Raycast(ray, out hit, Vector3.Distance(player.transform.position, target.transform.position), layerValue))
+            {
+                if (!hit.collider.isTrigger)
+                {
+                    this.transform.position = hit.point + new Vector3(0.1f * hit.normal.x, 0.1f * hit.normal.y, 0.1f * hit.normal.z);
+                    /*if(!(hit.collider.gameObject.layer == LayerMask.NameToLayer("GroundAndCeiling")))
+                        this.transform.position = new Vector3(hit.point.x, this.transform.position.y, hit.point.z) + new Vector3(0.1f * hit.normal.x, 0.1f * hit.normal.y, 0.1f * hit.normal.z);
+                    else
+                        this.transform.position = hit.point + new Vector3(0.1f * hit.normal.x, 0.1f * hit.normal.y, 0.1f * hit.normal.z);*/
+                }
+            }
 
-        if (lookAtPlayer)
             this.transform.LookAt(cameraLookAtPlayer.transform);
+        }
         else
+        {
             this.transform.LookAt(cameraLookAtMenuTR);
+        }
 
-
-        //Camera to and from menu managment
+        //Camera to and from menu management
         if(cameraPlayerToMenu) //Camera from player to menu
         {
-            float distCovered = (Time.time - cameraStartTime) * cameraSpeed;
+            float distCovered = (Time.time - cameraStartTime) * cameraToMenuSpeed;
             float fracJourney = distCovered / cameraJourneyLength;
             Camera.main.transform.position = Vector3.Lerp(cameraFrom, cameraTo, fracJourney);
             
             if(fracJourney > 1)
             {
                 cameraPlayerToMenu = false;
+                menuAssociatedWith.SendMessage("show");
             }
         }
         else if(cameraMenuToPlayer) //Camera from menu to player
         {
-            float distCovered = (Time.time - cameraStartTime) * cameraSpeed;
+            float distCovered = (Time.time - cameraStartTime) * cameraToMenuSpeed;
             float fracJourney = distCovered / cameraJourneyLength;
             Camera.main.transform.position = Vector3.Lerp(cameraFrom, cameraTo, fracJourney);
+
+            menuAssociatedWith.SendMessage("hide");
 
             if (fracJourney > 1)
             {
@@ -94,7 +103,7 @@ public class CameraController : MonoBehaviour
                 //cursor invisible and locked + crosshair
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
-                Camera.main.GetComponent<Crosshair>().display = true;
+                Camera.main.GetComponent<Crosshair>().display = true;    
             }
         }        
     }
@@ -118,6 +127,7 @@ public class CameraController : MonoBehaviour
     public void exitMenu()
     {
         //Reset Camera
+        cameraLookAtMenuTR = cameraLookAtPlayer.transform.position;
         cameraStartTime = Time.time;
         cameraFrom = Camera.main.transform.position;
         cameraTo = target.transform.position;

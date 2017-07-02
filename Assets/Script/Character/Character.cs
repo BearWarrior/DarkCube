@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
-public class Character : MonoBehaviour
+public class Character : MonoBehaviour, ITakeDamages
 {
-    protected float PDVmax;
+    public float PDVmax;
     protected float PDVactuel;
     protected float armureMax;
     protected float armureActuel;
@@ -34,12 +35,7 @@ public class Character : MonoBehaviour
         }
     }
 
-
-
-
-
-
-    public void equipeAttaqueAt(int face, int indexInList)
+    public virtual void equipeAttaqueAt(int face, int indexInList)
     {
         if(listAttaque[face-1] != null)
             listAttaqueInventaire.Add(listAttaque[face - 1]);
@@ -49,7 +45,6 @@ public class Character : MonoBehaviour
 
     public void desequipeAttaque(int face)
     {
-        print(listAttaqueInventaire.Count);
         listAttaqueInventaire.Add(listAttaque[face - 1]);
         print(listAttaqueInventaire.Count);
         listAttaque[face - 1] = null;
@@ -99,4 +94,8 @@ public class Character : MonoBehaviour
         return listAttaque[face - 1];
     }
 
+    public virtual void takeDamages(float damages)
+    {
+        //throw new NotImplementedException();
+    }
 }

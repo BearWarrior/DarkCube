@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System;
 
-public class Player : Character
+public class Player : Character, IInputsObservable, ITakeDamages
 {
     public GameObject sphere;
     public GameObject armature;
@@ -13,11 +14,27 @@ public class Player : Character
     private bool isTransparent = false;
     private float alpha = 0.15f;
 
-    private int cubeFace;
+    private int cubeFace = 1;
 
     public GameObject spawnProjectile;
+    [Space(15)]
+    public Image lifeBar;
+    public Text lifeDisplay;
 
-    private bool dead;
+    private bool dead = false;
+
+    private Dictionary<string, KeyCode> keys = new Dictionary<string, KeyCode>();
+
+    public List<GameObject> listLogosSorts;
+    public List<Image> listCooldownDisplay;
+
+    private Texture textureCubes;
+    private string textureCubesStr;
+
+    void Awake()
+    {
+         keys = GameObject.FindWithTag("InputsLoader").GetComponent<InputsLoader>().lookAtInputs(this.gameObject);
+    }
 
     // Use this for initialization
     void Start()
@@ -27,15 +44,18 @@ public class Player : Character
         for (int i = 0; i < 6; i++)
             listAttaque[i] = null;
         listAttaqueInventaire = new List<Attaque>();
-        chargerSorts();
+        LoadSorts();
 
         PDVmax = 100;
         PDVactuel = PDVmax;
         armureMax = 10;
         armureActuel = armureMax;
 
-        cubeFace = 1;
-        dead = false;
+        lifeBar.fillAmount =1;
+        lifeDisplay.text = PDVmax.ToString();
+
+        LoadSkin();
+        GetComponent<PlayerCubeFlock>().changeSkin(textureCubes);
     }
 
 
@@ -44,7 +64,7 @@ public class Player : Character
     {
         //Clic gauche 
         if (GetComponent<PlayerController>().getControllable())
-            if (Input.GetMouseButton(0) && GetComponent<PlayerController>().isAiming() && GetComponent<SortChooser>().playerCanShoot())
+            if (Input.GetKey(keys["Shoot"]) && GetComponent<PlayerController>().isAiming() && GetComponent<SortChooser>().playerCanShoot())
                 if (listAttaque[cubeFace - 1] != null)
                     listAttaque[cubeFace - 1].AttackFromPlayer(spawnProjectile.transform.position);
 
@@ -54,19 +74,30 @@ public class Player : Character
         else if (Vector3.Distance(transform.position, Camera.main.transform.position) > 1.5f && isTransparent)
             setTransparecy(false);
 
+        float[] cooldownRestant = new float[6];
         //cooldowns
         for (int i = 0; i < 6; i++)
             if (listAttaque[i] != null)
-                listAttaque[i].reload();
+                cooldownRestant[i] = listAttaque[i].reload();
+
+        //Display cooldown
+        for (int i = 0; i < 6; i++)
+            if (listAttaque[i] != null)
+                listCooldownDisplay[i].fillAmount = (listAttaque[i].getCooldown() - cooldownRestant[i])/(listAttaque[i].getCooldown());
 
         if (Input.GetKeyDown(KeyCode.P))
         {
-            sauvegarderSorts();
+            SaveSorts();
         }
         if(Input.GetKeyDown(KeyCode.N))
         {
             PlayerPrefs.DeleteAll();
         }
+    }
+
+    public void keysChanged(Dictionary<string, KeyCode> keys)
+    {
+        this.keys = keys;
     }
 
     public void cubeFaceChanged(int face)
@@ -107,9 +138,31 @@ public class Player : Character
         return cubeFace;
     }
 
-    public void takeDegats(float degats)
+    public override void takeDamages(float degats)
     {
         PDVactuel -= degats;
+        //shakiness
+        GetComponent<PlayerCubeFlock>().setShakiness(PDVactuel, PDVmax);
+        //lifebar
+        lifeBar.fillAmount = PDVactuel / PDVmax;
+        lifeDisplay.text = PDVactuel.ToString();
+        //dead ?
+        if (PDVactuel <= 0)
+            EndLvl(true);
+    }
+
+    public void Save()
+    {
+        SaveSorts();
+        SaveSkin();
+        if (GameObject.Find("Saving") != null)
+            GameObject.Find("Saving").GetComponent<SavingLogo>().DisplayLogo();
+    }
+
+    public void Load()
+    {
+        LoadSorts();
+        LoadSkin();
     }
 
     //   SAUVEGARDE / CHARGEMENT
@@ -124,7 +177,7 @@ public class Player : Character
     *
     * xp et lvl stocké dans CaracProj et CaracZone
     */
-    public void sauvegarderSorts()
+    private void SaveSorts()
     {
         //Attaque equipé
         for (int i = 0; i < 6; i++)
@@ -146,7 +199,6 @@ public class Player : Character
             {
                 save = "null";
             }
-            //print("save : " + save);
             PlayerPrefs.SetString("attaqueEquipe" + i.ToString(), save);
         }
 
@@ -163,12 +215,11 @@ public class Player : Character
                     save += ";" + ((SortDeJet) listAttaqueInventaire[i]).getCustom1().ToString() + ";" + ((SortDeJet)listAttaqueInventaire[i]).getCustom2().ToString();
                     break;
             }
-            //print("save : " + save);
             PlayerPrefs.SetString("attaqueInventaire" + i.ToString(), save);
         }
     }
 
-    public void chargerSorts()
+    private void LoadSorts()
     {
         //Attaque equipé
         for (int i = 0; i < 6; i++)
@@ -232,7 +283,6 @@ public class Player : Character
                                 Int32.Parse(array[8]),
                                 EnumScript.getCustom1FromString(array[9]), 
                                 EnumScript.getCustom2FromString(array[10])
-                                
                                 );
                             listAttaqueInventaire.Add(sortJ);
                             break;
@@ -246,10 +296,33 @@ public class Player : Character
         }
     }
 
+    private void SaveSkin()
+    {
+        PlayerPrefs.SetString("skinCubes", textureCubesStr);
+    }
+
+    private void LoadSkin()
+    {
+        textureCubesStr = PlayerPrefs.GetString("skinCubes", "none");
+        if (textureCubesStr == "none")
+            textureCubesStr = "hexRed";
+        textureCubes = Resources.Load("Player/Textures/" + textureCubesStr) as Texture;
+    }
+
+    public Texture getSkin()
+    {
+        return textureCubes;
+    }
+
+    public void setSkin(Texture texture, string name)
+    {
+        textureCubesStr = name;
+        textureCubes = texture;
+        SaveSkin();
+    }
+
     public void majSortsProjEquip(structSortJet s)
     {
-        print(s.nomParticle);
-        print(listAttaque[0].getNameParticle());
         for(int i = 0; i < 6; i++)
         { 
             if(listAttaque[i] != null && (listAttaque[i].getNameParticle() == s.nomParticle))
@@ -282,27 +355,29 @@ public class Player : Character
     }
 
     //Player shot 
-    void OnTriggerEnter(Collider other)
+    /*void OnTriggerEnter(Collider other)
     {
         if (other.tag == "AttaqueEnemy")
         {
-            //print("ARGHH attaqueEnemy" + other.GetComponent<ProjectileData>().degats);
             takeDegats(other.GetComponent<ProjectileData>().degats);
             GetComponent<PlayerCubeFlock>().setShakiness(PDVactuel, PDVmax);
 
-            if(PDVactuel < 0)
+            lifeBar.fillAmount = PDVactuel / PDVmax;
+            lifeDisplay.text = PDVactuel.ToString();
+
+            if (PDVactuel <= 0)
             {
                 EndLvl(true);
             }
         }
-        //Debug.Log(PDVactuel);
-    }
+    }*/
 
     public void EndLvl(bool dead)
     {
         if (dead)
         {
             GetComponent<PlayerCubeFlock>().Die();
+            GameObject.FindWithTag("World").GetComponent<EnemyBehaviour>().resetAllEnemies();
         }
         
         GetComponent<PlayerController>().setControllable(false);
@@ -326,12 +401,17 @@ public class Player : Character
         }
 
         GameObject.Find("MenuDeath").GetComponent<MenuDeath>().displayResults(noms, nomsPart, types, dead);
-
     }
 
     public bool isDead()
     {
         return dead;
+    }
+
+    public override void equipeAttaqueAt(int face, int indexInList)
+    {
+        base.equipeAttaqueAt(face, indexInList);
+        listLogosSorts[face-1].GetComponent<RawImage>().texture = Resources.Load("Player/LogosSorts/" + listAttaque[face-1].getNameParticle()) as Texture;
     }
 
     //Player touch enemy

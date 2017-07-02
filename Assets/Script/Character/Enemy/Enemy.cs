@@ -2,23 +2,27 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Enemy : Character
+public class Enemy : Character, ITakeDamages
 {
 
-    public GameObject spawnPoint;
+    public List<GameObject> spawnPoints;
     public int numRoom;
     private GameObject caracSorts;
+
+    private int spawnPointAct;
 
 	// Use this for initialization
 	void Start ()
     {
-        PDVmax = 10;
-        PDVactuel = 10;
+        //PDVmax = 10;
+        PDVactuel = PDVmax;
         armureMax = 10;
         armureActuel = 10;
 
         caracSorts = GameObject.FindWithTag("CaracSorts");
         GetComponent<ListSorts>().initSort();
+
+        spawnPointAct = 0;
     }
 	
 	// Update is called once per frame
@@ -27,21 +31,21 @@ public class Enemy : Character
         GetComponent<ListSorts>().getAttaqueEquiped().reload();
     }
 
-    void OnTriggerEnter(Collider other)
+    /*void OnTriggerEnter(Collider other)
     {
         if(other.tag == "AttaquePlayer")
         {
-            takeDamage(other.GetComponent<ProjectileData>().degats);
+            takeDamages(other.GetComponent<ProjectileData>().degats);
             if (other.GetComponent<ProjectileData>().type == 1)
             {
                 caracSorts.GetComponent<CaracProjectiles>().gagnerXP(other.GetComponent<ProjectileData>().nomParticule);
             }
         }
-    }
+    }*/
 
-    private void takeDamage(float damage)
+    public override void takeDamages(float damages)
     {
-        PDVactuel -= damage;
+        PDVactuel -= damages;
         if (PDVactuel <= 0)
         {
             GameObject.FindWithTag("World").GetComponent<EnemyBehaviour>().enemyDied(this.gameObject);
@@ -51,6 +55,9 @@ public class Enemy : Character
 
     public void shoot(RaycastHit hit)
     {
-        GetComponent<ListSorts>().getAttaqueEquiped().AttackFromEnemy(hit, this.spawnPoint.transform.position);
+        GetComponent<ListSorts>().getAttaqueEquiped().AttackFromEnemy(hit, this.spawnPoints[spawnPointAct].transform.position);
+        spawnPointAct++;
+        if (spawnPointAct > spawnPoints.Count -1)
+            spawnPointAct = 0;
     }
 }

@@ -59,6 +59,18 @@ public class SortDeZone : Attaque
         degats = str.degats;
     }
 
+    public override void AttackFromTestWeapons(Vector3 spawnPoint) //spawnPoint used for SortDeJet
+    {
+        /*if (canShoot)
+        {
+            launchSortDeZone();
+            lastShot = Time.time;
+            canShoot = false;
+        }*/
+        //TODO implent this
+        Debug.Log("Not implemented yet");
+    }
+
     public override void AttackFromPlayer(Vector3 spawnPoint) //spawnPoint used for SortDeJet
     {
         if (canShoot)

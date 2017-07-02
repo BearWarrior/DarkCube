@@ -1,15 +1,22 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
-public class accessMenu : MonoBehaviour
+public class accessMenu : MonoBehaviour, IInputsObservable
 {
     public GameObject menu;
     public GameObject menuActif;
     public GameObject playerLookAt;
-    public GameObject lookAt;
+    public GameObject cameraLookAt;
 
     private GameObject player;
     private bool inMenu;
+
+    public GameObject menuAssociatedWith; 
+    
+    //Camera
+    public GameObject posCameraMenu;
+    public float cameraToMenuSpeed;
 
     //Center Cube
     private float centerStartTime;
@@ -22,8 +29,20 @@ public class accessMenu : MonoBehaviour
     //Used en MenuManagerInGame to exit or not the menu when escape pressed
     private bool menuReady;
 
-	// Use this for initialization
-	void Start () 
+    private Dictionary<string, KeyCode> keys = new Dictionary<string, KeyCode>();
+
+    void Awake()
+    {
+        keys = GameObject.FindWithTag("InputsLoader").GetComponent<InputsLoader>().lookAtInputs(this.gameObject);
+    }
+
+    public void keysChanged(Dictionary<string, KeyCode> keys)
+    {
+        this.keys = keys;
+    }
+
+    // Use this for initialization
+    void Start () 
     {
         inMenu = false;
         menuReady = false;
@@ -34,13 +53,19 @@ public class accessMenu : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Player")
+        {
             player = other.gameObject;
+            other.GetComponent<PlayerController>().displayInteractionHelper(true);
+        }
     }
 
     void OnTriggerExit(Collider other)
     {
         if (other.tag == "Player")
+        {
             player = null;
+            other.GetComponent<PlayerController>().displayInteractionHelper(false);
+        }
     }
 
     void OnTriggerStay(Collider other)
@@ -49,25 +74,36 @@ public class accessMenu : MonoBehaviour
         {
             if (!inMenu)
             {
-                if (Input.GetKeyDown(KeyCode.E))
+                if (Input.GetKeyDown(keys["Interact"]))
                 {
-                    inMenu = true;
-                    //On centre le cube sur la platform
-                    centerStartTime = Time.time;
-                    centerFrom = new Vector3(other.transform.position.x, 0, other.transform.position.z);
-                    centerTo = new Vector3(this.GetComponent<BoxCollider>().transform.TransformPoint(Vector3.zero).x, 0, this.GetComponent<BoxCollider>().transform.TransformPoint(Vector3.zero).z);
-                    centerOldPlayer = other.transform.position;
-                    centerJourneyLength = Vector3.Distance(centerFrom, centerTo);
-                    StartCoroutine(centerCube(other.gameObject));
-                    //On lance le mvt de camera pour regarder le menu (+ toutes les actions anneces
-                    Camera.main.GetComponent<CameraController>().launchMenu();
+                    if (player.GetComponent<PlayerController>().getControllable())
+                    {
+                        inMenu = true;
+                        other.GetComponent<PlayerController>().displayInteractionHelper(false);
+                        //On centre le cube sur la platform
+                        centerStartTime = Time.time;
+                        centerFrom = new Vector3(other.transform.position.x, 0, other.transform.position.z);
+                        centerTo = new Vector3(this.GetComponent<BoxCollider>().transform.TransformPoint(Vector3.zero).x, 0, this.GetComponent<BoxCollider>().transform.TransformPoint(Vector3.zero).z);
+                        centerOldPlayer = other.transform.position;
+                        centerJourneyLength = Vector3.Distance(centerFrom, centerTo);
+                        StartCoroutine(centerCube(other.gameObject));
+                        //On lance le mvt de camera pour regarder le menu (+ toutes les actions anneces
+                        Camera.main.GetComponent<CameraController>().posCameraMenu = posCameraMenu;
+                        Camera.main.GetComponent<CameraController>().cameraToMenuSpeed = cameraToMenuSpeed;
+                        Camera.main.GetComponent<CameraController>().menuAssociatedWith = menuAssociatedWith;
+                        Camera.main.GetComponent<CameraController>().launchMenu();
+
+                        GameObject.FindWithTag("Lights").GetComponent<LightManager>().fadeOutLight(cameraToMenuSpeed / 2);
+                    }
                 }
             }
             if(inMenu)
             {
                 //look straight
                 player.transform.LookAt(playerLookAt.transform);
-                Camera.main.GetComponent<CameraController>().cameraLookAtMenuTR = lookAt.transform.position;
+                CameraController cc = Camera.main.GetComponent<CameraController>();
+                if(cc != null)
+                    cc.cameraLookAtMenuTR = cameraLookAt.transform.position;
             }        
         }
     }
@@ -83,7 +119,7 @@ public class accessMenu : MonoBehaviour
             other.transform.position = Vector3.Lerp(new Vector3(centerFrom.x, centerOldPlayer.y, centerFrom.z), new Vector3(centerTo.x, centerOldPlayer.y, centerTo.z), fracJourney);
             yield return new WaitForEndOfFrame();
         }
-        GetComponent<MecaArm>().launchMenu();
+        gameObject.SendMessage("launchMenu", SendMessageOptions.DontRequireReceiver);
     }
 
     public void exitMenu()
@@ -95,8 +131,12 @@ public class accessMenu : MonoBehaviour
             player.GetComponent<Player>().cubeFaceChanged(player.GetComponent<Player>().getCubeFace());
             //On sort du menu (camera)
             Camera.main.GetComponent<CameraController>().exitMenu();
+            GameObject.FindWithTag("Lights").GetComponent<LightManager>().fadeInLight(cameraToMenuSpeed/2);
             //On remet le MecaArm en posInit
-            GetComponent<MecaArm>().quitMenu();
+            gameObject.SendMessage("quitMenu", SendMessageOptions.DontRequireReceiver);
+            //On sauve les sorts équipé et dans l'inventaire
+            player.GetComponent<Player>().Save();
+            GameObject.FindWithTag("CaracSorts").GetComponent<CaracProjectiles>().Save();
         }
     }
 
@@ -109,42 +149,3 @@ public class accessMenu : MonoBehaviour
         menuReady = p_menuReady;
     }
 }
-
-//Place camera
-/*cameraStartTime = Time.time;
-cameraFrom = Camera.main.transform.position;
-cameraTo = posCamera.transform.position;
-cameraJourneyLength = Vector3.Distance(cameraFrom, cameraTo);
-StartCoroutine(placeCamera());*/
-/*  public IEnumerator placeCamera()
-  {
-      float distCovered = (Time.time - cameraStartTime) * cameraSpeed;
-      float fracJourney = distCovered / cameraJourneyLength;
-      while (fracJourney < 1)
-      {
-          distCovered = (Time.time - cameraStartTime) * cameraSpeed;
-          fracJourney = distCovered / cameraJourneyLength;
-          Camera.main.transform.position = Vector3.Lerp(cameraFrom, cameraTo, fracJourney);
-          yield return new WaitForEndOfFrame();
-      }
-  }*/
-
-//ResetCamera
-/*cameraStartTime = Time.time;
-cameraFrom = Camera.main.transform.position;
-cameraTo = GameObject.FindWithTag("CameraTarget").transform.position;
-cameraJourneyLength = Vector3.Distance(cameraFrom, cameraTo);
-StartCoroutine(resetCamera());*/
-/* public IEnumerator resetCamera()
- {
-     float distCovered = (Time.time - cameraStartTime) * cameraSpeed;
-     float fracJourney = distCovered / cameraJourneyLength;
-     while (fracJourney < 1)
-     {
-         distCovered = (Time.time - cameraStartTime) * cameraSpeed;
-         fracJourney = distCovered / cameraJourneyLength;
-         Camera.main.transform.position = Vector3.Lerp(cameraFrom, cameraTo, fracJourney);
-         yield return new WaitForEndOfFrame();
-     }
-     Camera.main.GetComponent<CameraController>().playerInMenu = false;
- }*/

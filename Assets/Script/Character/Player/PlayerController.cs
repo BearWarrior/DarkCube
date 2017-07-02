@@ -3,20 +3,24 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IInputsObservable
 {
     public float vitesseMarche;
     public float vitesseSprint;
     public float vitesseRotation;
     public float impulsionSaut;
+    [Space(15)]
+    public GameObject canvasInteractionHelper;
+    public GameObject canvasCubeFaces;
+    public GameObject canvasLifeBar;
+    public GameObject canvasDash;
+    [Space(15)]
 
-    private float HorizontalAxis;
-    private float lastHorizontalAxis;
-    private float lastlastHorizontalAxis;
-
-    private float VerticalAxis;
-    private float lastVerticalAxis;
-    private float lastlastVerticalAxis;
+    //Used for the deplacmennt
+    private int cptZ = 0;
+    private int cptQ = 0;
+    private int cptS = 0;
+    private int cptD = 0;
 
     private float timerZoneConeAct;
     private float timerZoneConeMax;
@@ -32,7 +36,7 @@ public class PlayerController : MonoBehaviour
     private bool gabaritUsed;
     private bool controllable;
     private bool projectorAtMouse; //true : projector au niveau de la souris   false : projector devant le joueur position fixe
-    
+
     private SortDeZone sortDeZone;
 
     protected float enduranceMax;
@@ -42,9 +46,19 @@ public class PlayerController : MonoBehaviour
     protected float timeBeforeRunningAct;
     protected bool regenEndurance;
 
+    private float acceleration = 0.075f;
+    private int accelerationInvers;
+
+    private Dictionary<string, KeyCode> keys = new Dictionary<string, KeyCode>();
+
+    public GameObject menuPause { get; set; }
+
     // Use this for initialization
     void Awake()
     {
+        keys = GameObject.FindWithTag("InputsLoader").GetComponent<InputsLoader>().lookAtInputs(this.gameObject);
+
+        accelerationInvers = (int)(1 / acceleration);
         //Creating the cube full of cubes
         int nbCubeSide = 6;
         float sideLength = 0.60000f;
@@ -62,7 +76,7 @@ public class PlayerController : MonoBehaviour
             faceVert.transform.SetParent(posCubes.transform);
             posCubesVert.Add(faceVert);
         }
-
+        Material matHexaCube = Resources.Load("Player/Materials/ChangeSkin") as Material;
         List<List<GameObject>> horizFaces = new List<List<GameObject>>();
         for (int i = 0; i < 6; i++)
         {
@@ -82,7 +96,7 @@ public class PlayerController : MonoBehaviour
                             if ((height < nbCubeSide / 3 || height >= 2 * nbCubeSide / 3) || (length < nbCubeSide / 3 || length >= 2 * nbCubeSide / 3))
                             {
                                 GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                                //GameObject cube = (GameObject) Instantiate(Resources.Load("Particle/prefabs/others/miniCubeV2"), new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0));
+                                cube.GetComponent<Renderer>().material =  matHexaCube;
                                 cube.name = "Cube" + cpt;
                                 cube.transform.localScale = new Vector3(1, 1, 1) * scale;
                                 cube.transform.position = new Vector3(distPerCube * width - sideLength / 2 + distPerCube / 2, distPerCube * length - sideLength / 2 + distPerCube / 2, distPerCube * height - sideLength / 2 + distPerCube / 2);
@@ -91,7 +105,6 @@ public class PlayerController : MonoBehaviour
 
                                 GameObject posCube = new GameObject("posCube" + cpt);
                                 posCube.transform.position = new Vector3(distPerCube * width - sideLength / 2 + distPerCube / 2, distPerCube * length - sideLength / 2 + distPerCube / 2, distPerCube * height - sideLength / 2 + distPerCube / 2);
-                                //posCube.transform.SetParent(posCubes.transform);
                                 posCube.transform.SetParent(posCubesVert[width].transform);
 
                                 horizFaces[length].Add(posCube); //face pointant en haut/bas
@@ -103,13 +116,29 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        //GameObject core = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         GameObject core = (GameObject)Instantiate(Resources.Load("Particle/prefabs/others/core"), new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0));
         core.name = "Core";
         core.transform.localScale = new Vector3(1, 1, 1) * scale * 2;
         core.transform.position = new Vector3(0, 0, 0);
         core.transform.SetParent(cubes.transform);
         Destroy(core.GetComponent<SphereCollider>());
+
+        canvasInteractionHelper.transform.SetParent(core.transform);
+        canvasInteractionHelper.transform.SetAsFirstSibling();
+        canvasInteractionHelper.transform.localPosition = new Vector3(4.8f, 1.5f, 0);
+
+
+        canvasCubeFaces.transform.SetParent(core.transform);
+        canvasCubeFaces.transform.SetAsFirstSibling();
+        canvasCubeFaces.transform.localPosition = new Vector3(-4.75f, .5f, 0);
+
+        canvasDash.transform.SetParent(core.transform);
+        canvasDash.transform.SetAsFirstSibling();
+        canvasDash.transform.localPosition = new Vector3(-4.75f, -0.4f, -0.6f);
+
+        canvasLifeBar.transform.SetParent(core.transform);
+        canvasLifeBar.transform.SetAsFirstSibling();
+        canvasLifeBar.transform.localPosition = new Vector3(0f, .5f, -3.1f);
 
         GameObject posCore = new GameObject("posCore");
         posCore.transform.position = new Vector3(0, 0, 0);
@@ -123,22 +152,14 @@ public class PlayerController : MonoBehaviour
 
         SortChooser sortChooser = gameObject.AddComponent<SortChooser>();
         sortChooser.setListCubes(horizFaces, posCubes);
+        sortChooser.setCanvas(canvasCubeFaces);
+
 
         PlayerCubeFlock flock = gameObject.AddComponent<PlayerCubeFlock>();
         flock.init(cubes, posCubes);
-
-
-
-        HorizontalAxis = 0;
-        lastHorizontalAxis = 0;
-        lastlastHorizontalAxis = 0;
-
-        VerticalAxis = 0;
-        lastVerticalAxis = 0;
-        lastlastVerticalAxis = 0;
-
+       
         player = GameObject.FindWithTag("Player");
-        
+
         isGrounded = false;
         controllable = true;
         gabaritUsed = false;
@@ -168,6 +189,18 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (controllable) //Joueur controllable (pas dans un menu)
+        {
+            if(Input.GetKey(KeyCode.F10))
+            {
+                Time.timeScale = 0;
+                controllable = false;
+                menuPause.SetActive(true);
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+        }
+
         //RegenDash
         if (!isRunning())
             timeBeforeRunningAct += Time.deltaTime;
@@ -227,36 +260,40 @@ public class PlayerController : MonoBehaviour
 
         if (controllable) //Joueur controllable (pas dans un menu)
         {
+            //____________________________________REFACTOR DASH_______________________________//
             //SPRINT
-            if (Input.GetKeyDown(KeyCode.LeftShift) && (HorizontalAxis != 0 || VerticalAxis != 0))
+            /*if (Input.GetKeyDown(KeyCode.LeftShift) && (HorizontalAxis != 0 || VerticalAxis != 0))
             {
                 if (running)
                     running = false;
                 else
                     if (getEndurance() > 0)
                     running = true;
-            }
+            }*/
 
             if (running && getEndurance() == 0)
                 running = false;
 
-            if (HorizontalAxis == 0 && VerticalAxis == 0)
-                running = false;
+            //Using Axes (can't change input from axes THANKS UNITY)
+            /*if (HorizontalAxis == 0 && VerticalAxis == 0)
+                running = false;*/
 
             if (running)
                 downEndurance();
-
+            //____________________________________REFACTOR DASH_______________________________//
             //Instatiation du particle Dash
-            Vector3 dire = new Vector3(HorizontalAxis, 0, VerticalAxis);
-            float angle = Vector3.Angle(dire, Vector3.forward);
-            if (HorizontalAxis < 0)
-                angle *= -1;
-            if (running && !dashUsed)
+            //Using Axes (can't change input from axes THANKS UNITY)
+            //Vector3 dire = new Vector3(HorizontalAxis, 0, VerticalAxis);
+            //float angle = Vector3.Angle(dire, Vector3.forward);
+            //Using Axes (can't change input from axes THANKS UNITY)
+            /*if (HorizontalAxis < 0)
+                angle *= -1;*/
+            /*if (running && !dashUsed)
             {
                 GameObject dash = (GameObject) Instantiate(Resources.Load("Particle/Prefabs/Others/BlueDash"), this.transform.position, Quaternion.Euler(new Vector3(0, angle, 0) + this.transform.localEulerAngles));
                 Destroy(dash, 3);
                 dashUsed = true;
-            }
+            }*/
         }
 
         if (usingZoneCone) //Le joueur utilsie un sort de zone qui part de lui.
@@ -280,7 +317,6 @@ public class PlayerController : MonoBehaviour
                 timerZoneConeAct += Time.deltaTime;
         }
     }
-
 
     public void useZoneCone(float time)
     {
@@ -383,15 +419,57 @@ public class PlayerController : MonoBehaviour
     {
         if (controllable)
         {
-            //Moyenne entre les 3 derniers input pour eviter la saccade lors du chagement direction
-            lastlastHorizontalAxis = lastHorizontalAxis;
-            lastHorizontalAxis = HorizontalAxis;
-            HorizontalAxis = Input.GetAxis("Horizontal");
-            lastlastVerticalAxis = lastVerticalAxis;
-            lastVerticalAxis = VerticalAxis;
-            VerticalAxis = Input.GetAxis("Vertical");
-            float mvtH = (HorizontalAxis + lastHorizontalAxis + lastlastHorizontalAxis) / 3;
-            float mvtV = (VerticalAxis + lastVerticalAxis + lastlastVerticalAxis) / 3;
+            //Using KeyCode
+            float mvtH = 0;
+            float mvtV = 0;
+            if (Input.GetKey(keys["Left"]))
+            {
+                cptQ++;
+                cptQ = (cptQ > accelerationInvers) ? accelerationInvers : cptQ;
+            }
+            else
+            {
+                cptQ--;
+                cptQ = (cptQ < 0) ? 0 : cptQ--;
+            }
+
+            if (Input.GetKey(keys["Right"]))
+            {
+                cptD++;
+                cptD = (cptD > accelerationInvers) ? accelerationInvers : cptD;
+            }
+            else
+            {
+                cptD--;
+                cptD = (cptD < 0) ? 0 : cptD--;
+            }
+
+            if (Input.GetKey(keys["Forward"]))
+            {
+                cptZ++;
+                cptZ = (cptZ > accelerationInvers) ? accelerationInvers : cptZ;
+            }
+            else
+            {
+                cptZ--;
+                cptZ = (cptZ < 0) ? 0 : cptZ--;
+            }
+
+            if (Input.GetKey(keys["Backward"]))
+            {
+                cptS++;
+                cptS = (cptS > accelerationInvers) ? accelerationInvers : cptS;
+            }
+            else
+            {
+                cptS--;
+                cptS = (cptS < 0) ? 0 : cptS--;
+            }
+
+            mvtH -= cptQ * acceleration;
+            mvtH += cptD * acceleration;
+            mvtV += cptZ * acceleration;
+            mvtV -= cptS * acceleration;
 
             //Deplacement droite gauche avant arriere
             Vector3 movement = new Vector3((Convert.ToInt32(running) * vitesseSprint + vitesseMarche) * Time.deltaTime * mvtH, GetComponent<Rigidbody>().velocity.y, (Convert.ToInt32(running) * vitesseSprint + vitesseMarche) * Time.deltaTime * mvtV);
@@ -423,7 +501,7 @@ public class PlayerController : MonoBehaviour
             }
 
             //On quitte le mode visée
-            if (Input.GetKey(KeyCode.Escape))
+            if (Input.GetKey(keys["FreeCam"]))
                 aiming = false;
 
             //Si clic gauche enfoncé et pas en mode visée -> Caméra rotation autour jouuer
@@ -441,14 +519,28 @@ public class PlayerController : MonoBehaviour
             if (Input.GetAxis("Mouse ScrollWheel") != 0)
                 GameObject.FindWithTag("CameraTarget").GetComponent<CameraTarget>().Zoom(Input.GetAxis("Mouse ScrollWheel"));
 
-            //Gestion du saut
-            if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
+            //Jump management
+            if (Input.GetKeyDown(keys["Jump"]) && IsGrounded())
                 GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity + new Vector3(0, impulsionSaut, 0);
         }
     }
 
+    public void displayInteractionHelper(bool display)
+    {
+        canvasInteractionHelper.SetActive(display);
+    }
 
+    public void exitMenuPause()
+    {
+        controllable = true;
+        menuPause.SetActive(false);
+        keys = GameObject.FindWithTag("InputsLoader").GetComponent<InputsLoader>().getInputs();
+    }
 
+    public void keysChanged(Dictionary<string, KeyCode> keys)
+    {
+        this.keys = keys;
+    }
 
     public bool IsGrounded()
     {
@@ -480,14 +572,19 @@ public class PlayerController : MonoBehaviour
     public void setControllable(bool b)
     {
         if (!b) //incontrollable
-        {
             GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
-        }
         controllable = b;
     }
 
     public bool getControllable()
     {
         return controllable;
+    }
+
+    public void showCanvas(bool show)
+    {
+        canvasCubeFaces.SetActive(show);
+        canvasLifeBar.SetActive(show);
+        canvasDash.SetActive(show);
     }
 }

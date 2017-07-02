@@ -4,13 +4,15 @@ using System.Collections;
 using System;
 
 
-public class MenuManagerInGame : MonoBehaviour
+public class MenuManagerInGame : MonoBehaviour, IDisplayable
 {
+    private GameObject player;
+
     public GameObject accessMenu;
     [Space(15)]
-    public GameObject player;
+    
+    public TestWeapons testWeapon;
     [Space(15)]
-
     public Sprite buttonNotPressed;
     public Sprite buttonPressed;
 
@@ -226,6 +228,9 @@ public class MenuManagerInGame : MonoBehaviour
         classCreator.transform.position = menuTop.transform.position;
         classEditor.transform.position = menuTop.transform.position + new Vector3(0, 0, .25f);
 
+        classEditor.GetComponent<CanvasGroup>().alpha = .2f;
+        classCreator.GetComponent<CanvasGroup>().alpha = .2f;
+
         //EDITOR
         editorProjCustom1.GetComponent<Dropdown>().options.Clear();
         foreach (EnumScript.CustomProj1 cust in EnumScript.CustomProj1.GetValues(typeof(EnumScript.CustomProj1)))
@@ -233,22 +238,43 @@ public class MenuManagerInGame : MonoBehaviour
         editorProjCustom2.GetComponent<Dropdown>().options.Clear();
         foreach (EnumScript.CustomProj2 cust in EnumScript.CustomProj2.GetValues(typeof(EnumScript.CustomProj2)))
             editorProjCustom2.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData(cust.ToString()));
+
+        hide();
     }
 
     // Update is called once per frame
     void Update()
     {
         if (lerpingCanvas) lerpCanvas();
-        if(Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (canvasType == 1)
             {
                 if (accessMenu.GetComponent<accessMenu>().isReady())
+                {
+                    exitMenu();
                     accessMenu.GetComponent<accessMenu>().exitMenu();
+                }
             }
             else
                 changeCanvas(1);
         }
+    }
+
+    public void show()
+    {
+        classChooser.GetComponent<Canvas>().enabled = true;
+        classEditor.GetComponent<Canvas>().enabled = true;
+        classCreator.GetComponent<Canvas>().enabled = true;
+        GameObject.FindWithTag("Player").GetComponent<PlayerController>().showCanvas(false);
+    }
+
+    public void hide()
+    {
+        classChooser.GetComponent<Canvas>().enabled = false;
+        classEditor.GetComponent<Canvas>().enabled = false;
+        classCreator.GetComponent<Canvas>().enabled = false;
+        GameObject.FindWithTag("Player").GetComponent<PlayerController>().showCanvas(true);
     }
 
     public void changeCanvas(int can)
@@ -259,18 +285,24 @@ public class MenuManagerInGame : MonoBehaviour
             {
                 //On passe le chooser en actif
                 classChooser.GetComponent<CanvasGroup>().interactable = true;
+                classChooser.GetComponent<CanvasGroup>().blocksRaycasts = true;
                 classChooser.GetComponent<CanvasGroup>().alpha = 1f;
                 classChooser.GetComponent<RectTransform>().localScale = new Vector3(0.03f, 0.03f, 0.03f);
 
                 //On passe le creator en top
                 classCreator.GetComponent<CanvasGroup>().interactable = false;
-                classCreator.GetComponent<CanvasGroup>().alpha = .5f;
+                classCreator.GetComponent<CanvasGroup>().blocksRaycasts = false;
+                classCreator.GetComponent<CanvasGroup>().alpha = .2f;
                 classCreator.GetComponent<RectTransform>().localScale = new Vector3(0.027f, 0.027f, 0.027f);
 
                 //On passe le creator en top
                 classEditor.GetComponent<CanvasGroup>().interactable = false;
+                classEditor.GetComponent<CanvasGroup>().blocksRaycasts = false;
                 classEditor.GetComponent<CanvasGroup>().alpha = .5f;
                 classEditor.GetComponent<RectTransform>().localScale = new Vector3(0.027f, 0.027f, 0.027f);
+
+                //On désactive testWeapons
+                testWeapon.setAttaque(null);
 
                 lerpingCanvas = true;
 
@@ -280,15 +312,24 @@ public class MenuManagerInGame : MonoBehaviour
             {
                 //On passe le chooser en bottom
                 classChooser.GetComponent<CanvasGroup>().interactable = false;
-                classChooser.GetComponent<CanvasGroup>().alpha = 0.5f;
+                classChooser.GetComponent<CanvasGroup>().blocksRaycasts = false;
+                classChooser.GetComponent<CanvasGroup>().alpha = 0.2f;
                 classChooser.GetComponent<RectTransform>().localScale = new Vector3(0.027f, 0.027f, 0.027f);
 
                 //On passe le creator en actif
                 classCreator.GetComponent<CanvasGroup>().interactable = true;
+                classCreator.GetComponent<CanvasGroup>().blocksRaycasts = true;
                 classCreator.GetComponent<CanvasGroup>().alpha = 1;
                 classCreator.GetComponent<RectTransform>().localScale = new Vector3(0.03f, 0.03f, 0.03f);
 
+                classEditor.GetComponent<CanvasGroup>().interactable = false;
+                classEditor.GetComponent<CanvasGroup>().blocksRaycasts = false;
+
                 lerpingCanvas = true;
+
+                //On active testWeapons avec le sort en construction
+                //TODO prévoir sort de zone
+                testWeapon.setAttaque(sortDeJetEnConstruction);
 
                 canvasType = can;
             }
@@ -298,15 +339,24 @@ public class MenuManagerInGame : MonoBehaviour
                 {
                     //On passe le chooser en bottom
                     classChooser.GetComponent<CanvasGroup>().interactable = false;
-                    classChooser.GetComponent<CanvasGroup>().alpha = 0.5f;
+                    classChooser.GetComponent<CanvasGroup>().blocksRaycasts = false;
+                    classChooser.GetComponent<CanvasGroup>().alpha = 0.2f;
                     classChooser.GetComponent<RectTransform>().localScale = new Vector3(0.027f, 0.027f, 0.027f);
 
                     //On passe le editor en actif
                     classEditor.GetComponent<CanvasGroup>().interactable = true;
+                    classEditor.GetComponent<CanvasGroup>().blocksRaycasts = true;
                     classEditor.GetComponent<CanvasGroup>().alpha = 1;
                     classEditor.GetComponent<RectTransform>().localScale = new Vector3(0.03f, 0.03f, 0.03f);
 
+                    classCreator.GetComponent<CanvasGroup>().interactable = false;
+                    classCreator.GetComponent<CanvasGroup>().blocksRaycasts = false;
+
                     setEditorCanvas(true);
+
+                    //On active testWeapons avec le sort en édition
+                    //TODO prévoir sort de zone
+                    testWeapon.setAttaque(sortSelectionne);
 
                     lerpingCanvas = true;
 
@@ -421,6 +471,9 @@ public class MenuManagerInGame : MonoBehaviour
         creatorProjElement.GetComponent<Dropdown>().value = 0;
         creatorProjElement.GetComponent<Dropdown>().captionText = creatorProjElement.GetComponent<Dropdown>().captionText;
 
+        //On change l'élément par le premier de la liste
+        sortDeJetEnConstruction.setElement(caracSorts.GetComponent<CaracProjectiles>().getElemFromProj(sortDeJetEnConstruction.getNameParticle())[creatorProjElement.GetComponent<Dropdown>().value]);
+
         //Mise a jour des carac + affichage
         majCaracSortEnConstr();
     }
@@ -440,6 +493,13 @@ public class MenuManagerInGame : MonoBehaviour
 
         //Mise a jour des carac + affichage
         majCaracSortEnConstr();
+    }
+
+    public void creatorCustomChanged()
+    {
+        Debug.Log("lolo");
+        sortDeJetEnConstruction.setCustom1((EnumScript.CustomProj1)creatorProjCustom1.GetComponent<Dropdown>().value);
+        sortDeJetEnConstruction.setCustom2((EnumScript.CustomProj2)creatorProjCustom2.GetComponent<Dropdown>().value);
     }
 
     public void supprimerClassDel()
@@ -509,7 +569,7 @@ public class MenuManagerInGame : MonoBehaviour
         fillClassChooserTable();
     }
 
-    public void sauvegarderSort()
+    public void Save()
     {
         if (selectedType == 1) //Projectile / Jet
         {
@@ -534,6 +594,8 @@ public class MenuManagerInGame : MonoBehaviour
         }
         resetClassChooser();
         fillClassChooserTable();
+        if(GameObject.Find("Saving") != null)
+            GameObject.Find("Saving").GetComponent<SavingLogo>().DisplayLogo();
     }
 
     public void buttonClicked(int position)
@@ -793,7 +855,8 @@ public class MenuManagerInGame : MonoBehaviour
             editorProjPointsRestants.GetComponent<Text>().text = (structSortDeJetEnEdition.nbPointsDispo - ((SortDeJet)sortSelectionne).nbDePointsTot).ToString();
 
             //ProgressBar and Lvl
-            editorProgressBar.GetComponent<Image>().fillAmount = structSortDeJetEnEdition.xpActuel / caracSorts.GetComponent<CaracProjectiles>().xpToLvlUp * Mathf.Pow(caracSorts.GetComponent<CaracProjectiles>().multXpByLvl, sortDeJetEnConstruction.getLvl());
+            print(structSortDeJetEnEdition.xpActuel / (caracSorts.GetComponent<CaracProjectiles>().xpToLvlUp * Mathf.Pow(caracSorts.GetComponent<CaracProjectiles>().multXpByLvl, structSortDeJetEnEdition.lvl)));
+            editorProgressBar.GetComponent<Image>().fillAmount = structSortDeJetEnEdition.xpActuel / (caracSorts.GetComponent<CaracProjectiles>().xpToLvlUp * Mathf.Pow(caracSorts.GetComponent<CaracProjectiles>().multXpByLvl, structSortDeJetEnEdition.lvl));
             editorLvl.GetComponent<Text>().text = structSortDeJetEnEdition.lvl.ToString();
         }
         else if (type == 2) //Sort de zone
@@ -865,6 +928,18 @@ public class MenuManagerInGame : MonoBehaviour
         fillClassChooserTable();
     }
 
+    public void editorCustomChanged()
+    {
+        ((SortDeJet)sortSelectionne).setCustom1((EnumScript.CustomProj1)editorProjCustom1.GetComponent<Dropdown>().value);
+        ((SortDeJet)sortSelectionne).setCustom2((EnumScript.CustomProj2)editorProjCustom2.GetComponent<Dropdown>().value);
+    }
+
+    public void editorElementChanged()
+    {
+        EnumScript.Element newElem = caracSorts.GetComponent<CaracProjectiles>().getElemFromProj(sortSelectionne.getNameParticle())[editorProjElement.GetComponent<Dropdown>().value];
+        sortSelectionne.setElement(newElem);
+    }
+
     public void editerProjVitesse(int point)
     {
         if (point == 1)
@@ -929,7 +1004,7 @@ public class MenuManagerInGame : MonoBehaviour
     {
         if (point == 1)
         {
-            if (structSortDeJetEnEdition.nbPointsDispo - ((SortDeJet)sortSelectionne).nbDePointsTot > 9)
+            if (structSortDeJetEnEdition.nbPointsDispo - ((SortDeJet)sortSelectionne).nbDePointsTot > 4)
             {
                 ((SortDeJet)sortSelectionne).pointsInCustom1++;
                 ((SortDeJet)sortSelectionne).nbDePointsTot += 5;
@@ -943,13 +1018,14 @@ public class MenuManagerInGame : MonoBehaviour
                 ((SortDeJet)sortSelectionne).nbDePointsTot -=5;
             }
         }
+        editerSort();
         setEditorCanvas(false);
     }
     public void editerProjCustom2(int point) //TODO METTRE 10
     {
         if (point == 1)
         {
-            if (structSortDeJetEnEdition.nbPointsDispo - ((SortDeJet)sortSelectionne).nbDePointsTot > 9 )
+            if (structSortDeJetEnEdition.nbPointsDispo - ((SortDeJet)sortSelectionne).nbDePointsTot > 4 )
             {
                 ((SortDeJet)sortSelectionne).pointsInCustom2++;
                 ((SortDeJet)sortSelectionne).nbDePointsTot += 5;
@@ -963,6 +1039,7 @@ public class MenuManagerInGame : MonoBehaviour
                 ((SortDeJet)sortSelectionne).nbDePointsTot -= 5;
             }
         }
+        editerSort();
         setEditorCanvas(false);
     }
 
@@ -1009,7 +1086,7 @@ public class MenuManagerInGame : MonoBehaviour
 
     public void exitMenu()
     {
-        GameObject.FindWithTag("Player").GetComponent<Player>().sauvegarderSorts();
+        GameObject.FindWithTag("Player").GetComponent<Player>().Save();
         accessMenu.GetComponent<accessMenu>().exitMenu();
     }
 
