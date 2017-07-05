@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Hangar
+public class SuiteOfRoom
 {
     private const int NB_ROOM = 4;
     private const int WIDTH_MIN = 3;
@@ -83,7 +83,7 @@ public class Hangar
             }
         }
 
-        room.posInHangar = position;
+        room.posInSuite = position;
         ActualGlobalExitDoorPos = position + room.ExitDoorPos;
 
         return true;
@@ -100,7 +100,7 @@ public class Hangar
         TransposeMatrixMap();
         
         foreach(Room room in rooms)
-            room.UpdatePosInHangar(offset);
+            room.UpdatePosInSuite(offset);
     }
 
     public void TransposeMatrixMap()
