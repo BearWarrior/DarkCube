@@ -11,7 +11,7 @@ public class Room
     public EnumScript.Cardinal ExitDoorCardinal { get; set; }
     public Vector2 EntryDoorPos { get; set; }
     public Vector2 ExitDoorPos { get; set; }
-    public Vector2 posInHangar { get; set; }
+    public Vector2 posInSuite { get; set; }
 
     public Room()
     {
@@ -89,8 +89,8 @@ public class Room
         Debug.Log(affichage);
     }
 
-    public void UpdatePosInHangar(Vector2 offset)
+    public void UpdatePosInSuite(Vector2 offset)
     {
-        posInHangar -= offset;
+        posInSuite -= offset;
     }
 }
