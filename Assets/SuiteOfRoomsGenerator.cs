@@ -6,13 +6,19 @@ public class SuiteOfRoomsGenerator : MonoBehaviour
 {
     enum TileType { GROUND = 9, WALL = 1, DOOR = 2 };
 
-    RoomCaracEnum roomCarac { get; set; }
+    //RoomCaracEnum roomCarac { get; set; }
 
     public GameObject InstantiateSuiteOfRooms()
     {
         SuiteOfRoom suiteOfRoom = new SuiteOfRoom();
         suiteOfRoom.Generate();
         return InstantiateHangar(suiteOfRoom, 0.6f);
+    }
+
+    void Start()
+    {
+        SuiteOfRoomsGenerator generator = new SuiteOfRoomsGenerator();
+        InstantiateSuiteOfRooms();
     }
 
     private GameObject InstantiateHangar(SuiteOfRoom suiteOfRoom, float scale)
@@ -32,6 +38,7 @@ public class SuiteOfRoomsGenerator : MonoBehaviour
     private GameObject InstantiateRoom(Room room)
     {
 
+        RoomCaracEnum caracs = RoomsCarac.Caracs["Hangar"];
         GameObject roomGO = new GameObject("Room");
         GameObject tuile = null;
 
@@ -41,39 +48,39 @@ public class SuiteOfRoomsGenerator : MonoBehaviour
             {
                 if (ThisOneIs(room.Table, w, l, TileType.WALL))
                 {
-                    if(w == 0 && l == 0)
+                    if (w == 0 && l == 0)
                     {
-                        tuile = (GameObject)Instantiate(Resources.Load(roomCarac.BlocCorner), new Vector3(roomCarac.BlocSize * w, 0, -roomCarac.BlocSize * l), Quaternion.Euler(0, 180, 0));
+                        tuile = (GameObject)Instantiate(Resources.Load(caracs.BlocCorner), new Vector3(caracs.BlocSize * w, 0, -caracs.BlocSize * l), Quaternion.Euler(0, 270, 0));
                     }
                     else if (w == room.Table[0].Count -1  && l == 0)
                     {
-                        tuile = (GameObject)Instantiate(Resources.Load(roomCarac.BlocCorner), new Vector3(roomCarac.BlocSize * w, 0, -roomCarac.BlocSize * l), Quaternion.Euler(0, 270, 0));
+                        tuile = (GameObject)Instantiate(Resources.Load(caracs.BlocCorner), new Vector3(caracs.BlocSize * w, 0, -caracs.BlocSize * l), Quaternion.Euler(0, 0, 0));
                     }
                     else if (w == room.Table[0].Count - 1 && l == room.Table.Count - 1)
                     {
-                        tuile = (GameObject)Instantiate(Resources.Load(roomCarac.BlocCorner), new Vector3(roomCarac.BlocSize * w, 0, -roomCarac.BlocSize * l), Quaternion.Euler(0, 0, 0));
+                        tuile = (GameObject)Instantiate(Resources.Load(caracs.BlocCorner), new Vector3(caracs.BlocSize * w, 0, -caracs.BlocSize * l), Quaternion.Euler(0, 90, 0));
                     }
                     else if (w == 0 && l == room.Table.Count - 1)
                     {
-                        tuile = (GameObject)Instantiate(Resources.Load(roomCarac.BlocCorner), new Vector3(roomCarac.BlocSize * w, 0, -roomCarac.BlocSize * l), Quaternion.Euler(0, 90, 0));
+                        tuile = (GameObject)Instantiate(Resources.Load(caracs.BlocCorner), new Vector3(caracs.BlocSize * w, 0, -caracs.BlocSize * l), Quaternion.Euler(0, 180, 0));
                     }
                     else
                     {
                         if (BottomIs(room.Table, w, l, TileType.GROUND))
                         {
-                            tuile = (GameObject)Instantiate(Resources.Load(roomCarac.BlocStraight), new Vector3(roomCarac.BlocSize * w, 0, -roomCarac.BlocSize * l), Quaternion.Euler(0, 270, 0));
+                            tuile = (GameObject)Instantiate(Resources.Load(caracs.BlocStraight), new Vector3(caracs.BlocSize * w, 0, -caracs.BlocSize * l), Quaternion.Euler(0, 270, 0));
                         }
                         else if (TopIs(room.Table, w, l, TileType.GROUND))
                         {
-                            tuile = (GameObject)Instantiate(Resources.Load(roomCarac.BlocStraight), new Vector3(roomCarac.BlocSize * w, 0, -roomCarac.BlocSize * l), Quaternion.Euler(0, 90, 0));
+                            tuile = (GameObject)Instantiate(Resources.Load(caracs.BlocStraight), new Vector3(caracs.BlocSize * w, 0, -caracs.BlocSize * l), Quaternion.Euler(0, 90, 0));
                         }
                         else if (RightIs(room.Table, w, l, TileType.GROUND))
                         {
-                            tuile = (GameObject)Instantiate(Resources.Load(roomCarac.BlocStraight), new Vector3(roomCarac.BlocSize * w, 0, -roomCarac.BlocSize * l), Quaternion.Euler(0, 180, 0));
+                            tuile = (GameObject)Instantiate(Resources.Load(caracs.BlocStraight), new Vector3(caracs.BlocSize * w, 0, -caracs.BlocSize * l), Quaternion.Euler(0, 180, 0));
                         }
                         else if (LeftIs(room.Table, w, l, TileType.GROUND))
                         {
-                            tuile = (GameObject)Instantiate(Resources.Load(roomCarac.BlocStraight), new Vector3(roomCarac.BlocSize * w, 0, -roomCarac.BlocSize * l), Quaternion.Euler(0, 0, 0));
+                            tuile = (GameObject)Instantiate(Resources.Load(caracs.BlocStraight), new Vector3(caracs.BlocSize * w, 0, -caracs.BlocSize * l), Quaternion.Euler(0, 0, 0));
                         }
                     }
                 }
@@ -81,23 +88,23 @@ public class SuiteOfRoomsGenerator : MonoBehaviour
                 {
                     if (TopIs(room.Table, w, l, TileType.WALL))
                     {
-                        tuile = (GameObject)Instantiate(Resources.Load(roomCarac.BlocDoor), new Vector3(roomCarac.BlocSize * w, 0, -roomCarac.BlocSize * l), Quaternion.Euler(0, 90, 0));
+                        tuile = (GameObject)Instantiate(Resources.Load(caracs.BlocDoor), new Vector3(caracs.BlocSize * w, 0, -caracs.BlocSize * l), Quaternion.Euler(0, 90, 0));
                     }
                     else
                     {
-                        tuile = (GameObject)Instantiate(Resources.Load(roomCarac.BlocDoor), new Vector3(roomCarac.BlocSize * w, 0, -roomCarac.BlocSize * l), Quaternion.Euler(0, 0, 0));
+                        tuile = (GameObject)Instantiate(Resources.Load(caracs.BlocDoor), new Vector3(caracs.BlocSize * w, 0, -caracs.BlocSize * l), Quaternion.Euler(0, 0, 0));
                     }
                 }
                 else if (ThisOneIs(room.Table, w, l, TileType.GROUND))
                 {
-                    tuile = (GameObject)Instantiate(Resources.Load(roomCarac.BlocGround), new Vector3(roomCarac.BlocSize * w, 0, -roomCarac.BlocSize * l), Quaternion.Euler(0, 0, 0));
+                    tuile = (GameObject)Instantiate(Resources.Load(caracs.BlocGround), new Vector3(caracs.BlocSize * w, 0, -caracs.BlocSize * l), Quaternion.Euler(0, 0, 0));
                 }
 
                 if(tuile!=null)
                     tuile.transform.SetParent(roomGO.transform);
             }
         }
-        roomGO.transform.position = new Vector3(roomCarac.BlocSize * room.posInSuite.x, 0, -roomCarac.BlocSize * room.posInSuite.y);
+        roomGO.transform.position = new Vector3(caracs.BlocSize * room.posInSuite.x, 0, -caracs.BlocSize * room.posInSuite.y);
 
         return roomGO;
     }

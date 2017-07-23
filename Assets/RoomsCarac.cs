@@ -12,18 +12,19 @@ public struct RoomCaracEnum
     public float Scale;
 }
 
-public class RoomsCarac
+public static class RoomsCarac
 {
-    Dictionary<string, RoomCaracEnum> Caracs = new Dictionary<string, RoomCaracEnum> 
+    public static Dictionary<string, RoomCaracEnum> Caracs = new Dictionary<string, RoomCaracEnum> 
     {
         {"Hangar",
             new RoomCaracEnum()
             {
-                BlocCorner = "Rooms/HangarProc/Prefab/Corner",
-                BlocGround = "Rooms/HangarProc/Prefab/Ground",
-                BlocStraight = "Rooms/HangarProc/Prefab/WallStraight",
-                BlocDoor = "Rooms/HangarProc/Prefab/Door",
-                BlocSize = 64.516f,
+                BlocCorner = "Rooms/HangarProc/Blocs/Corner",
+                BlocGround = "Rooms/HangarProc/Blocs/Ground",
+                BlocStraight = "Rooms/HangarProc/Blocs/Straight",
+                BlocDoor = "Rooms/HangarProc/Blocs/Door",
+                //BlocSize = 64.516f,
+                BlocSize = 50,
             }
         }
     };
